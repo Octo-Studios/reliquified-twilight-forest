@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.142'
+    id 'net.neoforged.gradle.userdev' version '7.0.170'
     id 'io.freefair.lombok' version '8.4'
 }
 
@@ -69,6 +69,7 @@ repositories {
         url = uri("https://maven.octo-studios.com/releases")
     }
     maven { url "https://maven.architectury.dev/" }
+    maven { url = "https://maven.tamaized.com/releases" }
     exclusiveContent {
         forRepository {
             maven {
@@ -88,6 +89,7 @@ dependencies {
 
     implementation "it.hurts.octostudios.octolib:octolib-neoforge:0.5.0.1+1.21"
     implementation 'top.theillusivec4.curios:curios-neoforge:9.0.9+1.21'
+    implementation "team-twilight:twilightforest:4.6.3003:universal"
 
     implementation "dev.architectury:architectury-neoforge:13.0.6"
 
