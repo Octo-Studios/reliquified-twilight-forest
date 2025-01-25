@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "it.hurts.octostudios.reliquified_twilight_forest.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "reliquified_twilight_forest.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
