@@ -42,15 +42,15 @@ public class MinotaurHoofItem extends RelicItem {
                         .ability(AbilityData.builder("momentum_rush")
                                 .stat(StatData.builder("max_speed_multiplier")
                                         .initialValue(0.25f, 0.3f)
-                                        .formatValue(value -> MathUtils.round(value*100, 1))
+                                        .formatValue(value -> MathUtils.round(value * 100, 1))
                                         .upgradeModifier(UpgradeOperation.ADD, 0.1f)
                                         .build())
                                 .stat(StatData.builder("damage_reduction")
                                         .initialValue(0.25f, 0.3f)
-                                        .formatValue(value -> MathUtils.round(value*100, 1))
-                                            .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.1f)
+                                        .formatValue(value -> MathUtils.round(value * 100, 1))
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.125f)
                                         .build())
-                                .stat(StatData.builder("rush_damage")
+                                .stat(StatData.builder("damage")
                                         .initialValue(1, 2)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .upgradeModifier(UpgradeOperation.ADD, 0.5f)
@@ -71,37 +71,53 @@ public class MinotaurHoofItem extends RelicItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(stack.getItem() instanceof IRelicItem relic)) return;
+        if (!(stack.getItem() instanceof MinotaurHoofItem relic)) return;
 
         LivingEntity livingEntity = slotContext.entity();
         if (livingEntity.level().isClientSide) return;
 
         AttributeInstance movementSpeed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeed == null) return;
+        AttributeInstance knockbackResistance = livingEntity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+        AttributeInstance stepHeight = livingEntity.getAttribute(Attributes.STEP_HEIGHT);
+
+        if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
         double maxSpeedMultiplier = relic.getStatValue(stack, "momentum_rush", "max_speed_multiplier");
 
-        int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        int time = relic.getTime(stack);
+        stack.set(DataComponentRegistry.TIME, Mth.clamp(time + (livingEntity.isSprinting() ? 1 : -1), 0, 60));
+        if (time == 0) return;
 
         movementSpeed.addOrUpdateTransientModifier(
                 new AttributeModifier(
                         MOVEMENT_MODIFIER,
-                        (float)maxSpeedMultiplier * (float)time/(float)MAX_TIME,
+                        (float) maxSpeedMultiplier * (float) time / (float) MAX_TIME,
                         AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                 )
         );
-        //livingEntity.sendSystemMessage(Component.literal(time+": "+(float)maxSpeedMultiplier * (float)time/(float)MAX_TIME));
-
-        stack.set(DataComponentRegistry.TIME, Mth.clamp(time + (livingEntity.isSprinting() ? 1 : -1), 0, 60));
+        knockbackResistance.addOrUpdateTransientModifier(
+                new AttributeModifier(
+                        MOVEMENT_MODIFIER,
+                        (float) time / (float) MAX_TIME,
+                        AttributeModifier.Operation.ADD_VALUE
+                )
+        );
+        stepHeight.addOrUpdateTransientModifier(
+                new AttributeModifier(
+                        MOVEMENT_MODIFIER,
+                        isActive(stack) ? 0.55 : 0,
+                        AttributeModifier.Operation.ADD_VALUE
+                )
+        );
     }
 
     @SubscribeEvent
     public static void onDamageTaken(LivingIncomingDamageEvent e) {
         ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MINOTAUR_HOOF.get());
-        if (!(stack.getItem() instanceof IRelicItem relic)) return;
-        double reducedDamage = e.getAmount() * Mth.clamp(1 - relic.getStatValue(stack, "momentum_rush", "damage_reduction"),0, 1);
-        e.getEntity().sendSystemMessage(Component.literal(e.getAmount()+" : "+reducedDamage));
+        if (!(stack.getItem() instanceof MinotaurHoofItem relic)) return;
+        double reducedDamage = e.getAmount() * Mth.clamp(1 - relic.getStatValue(stack, "momentum_rush", "damage_reduction"), 0, 1);
+        //e.getEntity().sendSystemMessage(Component.literal(e.getAmount()+" : "+reducedDamage));
 
-        if (!isActive(stack)) return;
+        if (!relic.isActive(stack)) return;
         e.setAmount((float) reducedDamage);
 
     }
@@ -109,18 +125,32 @@ public class MinotaurHoofItem extends RelicItem {
     @SubscribeEvent
     public static void playerTick(PlayerTickEvent.Post e) {
         if (e.getEntity().level().isClientSide) return;
-        List<LivingEntity> entities = e.getEntity().level().getEntitiesOfClass(LivingEntity.class, e.getEntity().getBoundingBox().inflate(0.025));
+        ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MINOTAUR_HOOF.get());
+        if (MinotaurHoofItem.getTime(stack) == 0) MinotaurHoofItem.resetAttributes(e.getEntity());
+        if (!(stack.getItem() instanceof MinotaurHoofItem relic)) return;
+        if (!relic.isActive(stack)) return;
+        List<LivingEntity> entities = e.getEntity().level().getEntitiesOfClass(LivingEntity.class, e.getEntity().getBoundingBox().inflate(0.025), livingEntity -> e.getEntity() != livingEntity);
 
         for (LivingEntity entity : entities) {
-            entity.hurt(e.getEntity().level().damageSources().source(DamageTypes.PLAYER_ATTACK), 2);
+            entity.hurt(e.getEntity().damageSources().playerAttack(e.getEntity()), (float) relic.getStatValue(stack, "momentum_rush", "damage"));
         }
     }
 
-    @Override
-    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {LivingEntity livingEntity = slotContext.entity();AttributeInstance movementSpeed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);if (movementSpeed == null || newStack.getItem() == stack.getItem()) return;movementSpeed.removeModifier(MOVEMENT_MODIFIER);}
+    public static int getTime(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.TIME, 0);
+    }
 
-    public static boolean isActive(ItemStack stack) {
-        if (!(stack.getItem() instanceof MinotaurHoofItem)) return false;
-        return stack.getOrDefault(DataComponentRegistry.TIME, 0) == MAX_TIME;
+    public boolean isActive(ItemStack stack) {
+        return getTime(stack) == MAX_TIME;
+    }
+
+    public static void resetAttributes(LivingEntity livingEntity) {
+        AttributeInstance movementSpeed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
+        AttributeInstance knockbackResistance = livingEntity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+        AttributeInstance stepHeight = livingEntity.getAttribute(Attributes.STEP_HEIGHT);
+        if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
+        movementSpeed.removeModifier(MOVEMENT_MODIFIER);
+        knockbackResistance.removeModifier(MOVEMENT_MODIFIER);
+        stepHeight.removeModifier(MOVEMENT_MODIFIER);
     }
 }
