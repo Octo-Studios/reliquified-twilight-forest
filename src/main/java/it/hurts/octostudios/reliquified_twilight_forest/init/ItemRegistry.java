@@ -1,17 +1,13 @@
 package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.items.relics.HydraHeartItem;
-import it.hurts.octostudios.reliquified_twilight_forest.items.relics.LichCrownItem;
-import it.hurts.octostudios.reliquified_twilight_forest.items.relics.MinotaurHoofItem;
-import net.minecraft.core.component.DataComponents;
+import it.hurts.octostudios.reliquified_twilight_forest.item.relic.HydraHeartItem;
+import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
+import it.hurts.octostudios.reliquified_twilight_forest.item.relic.MinotaurHoofItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.component.BundleContents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ItemRegistry {
