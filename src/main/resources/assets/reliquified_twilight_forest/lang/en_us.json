@@ -4,5 +4,12 @@
   "tooltip.relics.minotaur_hoof.ability.momentum_rush": "Momentum Rush",
   "tooltip.relics.minotaur_hoof.ability.momentum_rush.description": "While running, gradually increases movement speed by %1$s%% over 3 seconds until maximum speed is reached. At maximum speed, the player takes %2$s%% reduced damage, pushes away enemies, and deals %3$s damage to all enemies in their path.",
   "tooltip.relics.minotaur_hoof.leveling_source.momentum_rush.title": "Momentum Rush",
-  "tooltip.relics.minotaur_hoof.leveling_source.momentum_rush.description": "This relic receives 1 experience point for every mob hit by the ability"
+  "tooltip.relics.minotaur_hoof.leveling_source.momentum_rush.description": "This relic receives 1 experience point for every mob hit by the ability",
+
+  "item.reliquified_twilight_forest.hydra_heart": "Hydra's Heart",
+  "tooltip.relics.hydra_heart.description": "descriptipnik",
+  "tooltip.relics.hydra_heart.ability.regenerative_heads": "Regenerative Heads",
+  "tooltip.relics.hydra_heart.ability.regenerative_heads.description": "Adds up to %1$s new head slots. These slots are initially inactive and activate as the player's health drops to certain thresholds.",
+  "tooltip.relics.hydra_heart.leveling_source.regenerative_heads.title": "Regenerative Heads",
+  "tooltip.relics.hydra_heart.leveling_source.regenerative_heads.description": "This relic receives 1 experience point for every relic equipped in the ability slots"
 }

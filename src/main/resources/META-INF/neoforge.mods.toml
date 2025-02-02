@@ -23,7 +23,7 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "neoforge"
 type="required"
-versionRange = "[21.1.62,)"
+versionRange = "[21.1.93,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]

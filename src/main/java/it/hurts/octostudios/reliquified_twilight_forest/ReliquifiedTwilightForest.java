@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest;
 
+import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import net.neoforged.bus.api.IEventBus;
@@ -15,6 +16,7 @@ public class ReliquifiedTwilightForest {
 
         ItemRegistry.register(bus);
         EntityRegistry.register(bus);
+        DataComponentRegistry.register(bus);
     }
 
     private void setupCommon(final FMLCommonSetupEvent event) {

@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "reliquified_twilight_forest.refmap.json",
   "mixins": [
+    "HurtByTargetGoalAccessor",
+    "NearestAttackableTargetGoalAccessor"
   ],
   "client": [
   ],

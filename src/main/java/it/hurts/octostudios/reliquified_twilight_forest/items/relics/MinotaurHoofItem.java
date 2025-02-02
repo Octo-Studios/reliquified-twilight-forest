@@ -3,7 +3,6 @@ package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
-import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -12,10 +11,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -30,7 +27,7 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 @EventBusSubscriber
-public class MinotaurHoofItem extends RelicItem {
+public class MinotaurHoofItem extends RelicItem  {
     private static final ResourceLocation MOVEMENT_MODIFIER = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "momentum_rush");
 
     private static final int MAX_TIME = 60;
@@ -83,31 +80,13 @@ public class MinotaurHoofItem extends RelicItem {
         if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
         double maxSpeedMultiplier = relic.getStatValue(stack, "momentum_rush", "max_speed_multiplier");
 
-        int time = relic.getTime(stack);
-        stack.set(DataComponentRegistry.TIME, Mth.clamp(time + (livingEntity.isSprinting() ? 1 : -1), 0, 60));
+        int time = getTime(stack);
+        stack.set(DataComponentRegistry.TIME, Mth.clamp(time + (livingEntity.isSprinting() ? 1 : -1), 0, MAX_TIME));
         if (time == 0) return;
 
-        movementSpeed.addOrUpdateTransientModifier(
-                new AttributeModifier(
-                        MOVEMENT_MODIFIER,
-                        (float) maxSpeedMultiplier * (float) time / (float) MAX_TIME,
-                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE
-                )
-        );
-        knockbackResistance.addOrUpdateTransientModifier(
-                new AttributeModifier(
-                        MOVEMENT_MODIFIER,
-                        (float) time / (float) MAX_TIME,
-                        AttributeModifier.Operation.ADD_VALUE
-                )
-        );
-        stepHeight.addOrUpdateTransientModifier(
-                new AttributeModifier(
-                        MOVEMENT_MODIFIER,
-                        isActive(stack) ? 0.55 : 0,
-                        AttributeModifier.Operation.ADD_VALUE
-                )
-        );
+        movementSpeed.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, maxSpeedMultiplier * time / (float) MAX_TIME, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        knockbackResistance.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, time / (float) MAX_TIME, AttributeModifier.Operation.ADD_VALUE));
+        stepHeight.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, isActive(stack) ? 0.55 : 0, AttributeModifier.Operation.ADD_VALUE));
     }
 
     @SubscribeEvent
@@ -149,8 +128,8 @@ public class MinotaurHoofItem extends RelicItem {
         AttributeInstance knockbackResistance = livingEntity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         AttributeInstance stepHeight = livingEntity.getAttribute(Attributes.STEP_HEIGHT);
         if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
-        movementSpeed.removeModifier(MOVEMENT_MODIFIER);
-        knockbackResistance.removeModifier(MOVEMENT_MODIFIER);
-        stepHeight.removeModifier(MOVEMENT_MODIFIER);
+        if (movementSpeed.hasModifier(MOVEMENT_MODIFIER)) movementSpeed.removeModifier(MOVEMENT_MODIFIER);
+        if (knockbackResistance.hasModifier(MOVEMENT_MODIFIER)) knockbackResistance.removeModifier(MOVEMENT_MODIFIER);
+        if (stepHeight.hasModifier(MOVEMENT_MODIFIER)) stepHeight.removeModifier(MOVEMENT_MODIFIER);
     }
 }
