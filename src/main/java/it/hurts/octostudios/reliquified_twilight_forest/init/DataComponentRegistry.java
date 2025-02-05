@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import com.mojang.serialization.Codec;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +17,7 @@ public class DataComponentRegistry {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> GEMS = DATA_COMPONENTS.register("gems", () ->
             DataComponentType.<List<ItemStack>>builder()
-                    .persistent(Codec.list(ItemStack.CODEC))
+                    .persistent(ItemStack.CODEC.listOf())
                     .build()
     );
 

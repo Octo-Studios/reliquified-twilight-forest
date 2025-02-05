@@ -2,14 +2,28 @@
   "item.reliquified_twilight_forest.minotaur_hoof": "Minotaur's Hoof",
   "tooltip.relics.minotaur_hoof.description": "descriptipnik",
   "tooltip.relics.minotaur_hoof.ability.momentum_rush": "Momentum Rush",
-  "tooltip.relics.minotaur_hoof.ability.momentum_rush.description": "While running, gradually increases movement speed by %1$s%% over 3 seconds until maximum speed is reached. At maximum speed, the player takes %2$s%% reduced damage, pushes away enemies, and deals %3$s damage to all enemies in their path.",
+  "tooltip.relics.minotaur_hoof.ability.momentum_rush.description": "While running, gradually increases movement speed by %1$s%% over 3 seconds until maximum speed is reached. At maximum speed, the player takes %2$s%% reduced damage, pushes away enemies, and deals %3$s damage to all enemies in their path",
   "tooltip.relics.minotaur_hoof.leveling_source.momentum_rush.title": "Momentum Rush",
   "tooltip.relics.minotaur_hoof.leveling_source.momentum_rush.description": "This relic receives 1 experience point for every mob hit by the ability",
 
   "item.reliquified_twilight_forest.hydra_heart": "Hydra's Heart",
   "tooltip.relics.hydra_heart.description": "descriptipnik",
   "tooltip.relics.hydra_heart.ability.regenerative_heads": "Regenerative Heads",
-  "tooltip.relics.hydra_heart.ability.regenerative_heads.description": "Adds up to %1$s new head slots. These slots are initially inactive and activate as the player's health drops to certain thresholds.",
+  "tooltip.relics.hydra_heart.ability.regenerative_heads.description": "Adds up to %1$s new head slots. These slots are initially inactive and activate as the player's health drops to certain thresholds",
   "tooltip.relics.hydra_heart.leveling_source.regenerative_heads.title": "Regenerative Heads",
-  "tooltip.relics.hydra_heart.leveling_source.regenerative_heads.description": "This relic receives 1 experience point for every relic equipped in the ability slots"
+  "tooltip.relics.hydra_heart.leveling_source.regenerative_heads.description": "This relic receives 1 experience point for every relic equipped in the ability slots",
+
+  "item.reliquified_twilight_forest.absorption_gem": "Absorption Gem",
+  "item.reliquified_twilight_forest.necromancy_gem": "Necromancy Gem",
+  "item.reliquified_twilight_forest.shielding_gem":  "Shielding Gem",
+  "item.reliquified_twilight_forest.twilight_gem":   "Twilight Gem",
+  "item.reliquified_twilight_forest.gem.tip": "Right-click Lich's Crown in your inventory to equip",
+
+
+  "item.reliquified_twilight_forest.lich_crown": "Lich's Crown",
+  "tooltip.relics.lich_crown.description": "descriptipnik",
+  "tooltip.relics.lich_crown.ability.soulbound_gems": "Soulbound Gems",
+  "tooltip.relics.lich_crown.ability.soulbound_gems.description": "Adds up to %1$s gem slots to the item. You can equip certain gems in these slots to unlock new abilities",
+  "tooltip.relics.lich_crown.ability.bone_pact": "Bone Pact",
+  "tooltip.relics.lich_crown.ability.bone_pact.description": "All skeletons are friendly towards the user"
 }

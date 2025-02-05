@@ -1,7 +1,8 @@
 package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.sskirillss.relics.items.relics.InfiniteHamItem;
+import it.hurts.octostudios.reliquified_twilight_forest.client.gui.tooltip.ClientGemTooltip;
+import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -17,6 +18,6 @@ public class RemoteRegistry {
 
     @SubscribeEvent
     public static void onTooltipRegistry(RegisterClientTooltipComponentFactoriesEvent event) {
-
+        event.register(GemTooltip.class, ClientGemTooltip::new);
     }
 }
