@@ -1,6 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.ability;
 
-import it.hurts.octostudios.reliquified_twilight_forest.util.BetterMath;
+import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
@@ -15,7 +15,7 @@ public class LichCrownAbilities {
             .stat(StatData.builder("interval")
                     .initialValue(4, 6)
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.66f)
-                    .formatValue(BetterMath::roundSingleDigit)
+                    .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .maxLevel(5)
             .build();
@@ -29,12 +29,12 @@ public class LichCrownAbilities {
             .stat(StatData.builder("damage")
                     .initialValue(1, 2)
                     .upgradeModifier(UpgradeOperation.ADD, 1)
-                    .formatValue(BetterMath::roundSingleDigit)
+                    .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .stat(StatData.builder("interval")
                     .initialValue(4, 6)
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.66f)
-                    .formatValue(BetterMath::roundSingleDigit)
+                    .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .maxLevel(5)
             .build();
@@ -43,12 +43,12 @@ public class LichCrownAbilities {
             .stat(StatData.builder("damage")
                     .initialValue(3, 4)
                     .upgradeModifier(UpgradeOperation.ADD, 1)
-                    .formatValue(BetterMath::roundSingleDigit)
+                    .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .stat(StatData.builder("interval")
                     .initialValue(4, 6)
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.66f)
-                    .formatValue(BetterMath::roundSingleDigit)
+                    .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .maxLevel(5)
             .build();
@@ -57,7 +57,7 @@ public class LichCrownAbilities {
             .stat(StatData.builder("heal_percentage")
                     .initialValue(0.03, 0.04)
                     .upgradeModifier(UpgradeOperation.ADD, 0.02)
-                    .formatValue(BetterMath::percentage)
+                    .formatValue(MathButCool::percentage)
                     .build())
             .stat(StatData.builder("radius")
                     .initialValue(3, 6)
@@ -67,7 +67,7 @@ public class LichCrownAbilities {
             .stat(StatData.builder("interval")
                     .initialValue(4, 6)
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.66f)
-                    .formatValue(BetterMath::roundSingleDigit)
+                    .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .maxLevel(5)
             .build();
