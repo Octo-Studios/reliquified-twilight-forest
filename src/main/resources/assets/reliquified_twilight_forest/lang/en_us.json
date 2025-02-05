@@ -25,5 +25,9 @@
   "tooltip.relics.lich_crown.ability.soulbound_gems": "Soulbound Gems",
   "tooltip.relics.lich_crown.ability.soulbound_gems.description": "Adds up to %1$s gem slots to the item. You can equip certain gems in these slots to unlock new abilities",
   "tooltip.relics.lich_crown.ability.bone_pact": "Bone Pact",
-  "tooltip.relics.lich_crown.ability.bone_pact.description": "All skeletons are friendly towards the user"
+  "tooltip.relics.lich_crown.ability.bone_pact.description": "All skeletons are friendly towards the user",
+  "tooltip.relics.lich_crown.ability.fortification": "Fortification",
+  "tooltip.relics.lich_crown.ability.fortification.description": "%1$s max shields, CD: %2$s seconds",
+  "tooltip.relics.lich_crown.ability.lifedrain": "Lifedrain",
+  "tooltip.relics.lich_crown.ability.lifedrain.description": "%1$s%% HP, %2$sm, CD: %3$s seconds"
 }

@@ -22,26 +22,33 @@ public class ClientGemTooltip implements ClientTooltipComponent {
         this.contents = tooltip.contents;
     }
 
+    public int getRowCount() {
+        return 9;
+    }
+
     @Override
     public int getHeight() {
-        return contents.getSize() > 0 ? 20 : 0;
+        return 16 * ((contents.getSize() - 1) / getRowCount() + 1) + 4;
     }
 
     @Override
     public int getWidth(Font font) {
-        return contents.getSize() * 16;
+        return contents.getSize() >= getRowCount() ? 16 * getRowCount() : contents.getSize() * 16;
     }
 
     @Override
     public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
         for (int i = 0; i < contents.getSize(); i++) {
             ItemStack stack = contents.get(i);
+            int ix = x + i % getRowCount() * 16;
+            int iy = y + i / getRowCount() * 16;
+
             if (stack.isEmpty()) {
-                guiGraphics.blitSprite(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "tooltip/lich_crown/empty_slot"), x + i * 16, y, 16, 16);
+                guiGraphics.blitSprite(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "tooltip/lich_crown/empty_slot"), ix, iy, 16, 16);
                 continue;
             }
-            guiGraphics.renderItem(stack, x + i * 16, y);
-            guiGraphics.renderItemDecorations(font, stack, x+i*16, y);
+            guiGraphics.renderItem(stack, ix, iy);
+            guiGraphics.renderItemDecorations(font, stack, ix, iy);
         }
     }
 }

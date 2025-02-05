@@ -2,7 +2,6 @@ package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import com.mojang.serialization.Codec;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +20,14 @@ public class DataComponentRegistry {
                     .build()
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FORTIFICATION_TIME = DATA_COMPONENTS.register("fortification_time", DataComponentRegistry::integer);
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LIFEDRAIN_TIME = DATA_COMPONENTS.register("absorption_time", DataComponentRegistry::integer);
+
+    public static DataComponentType<Integer> integer() {
+        return DataComponentType.<Integer>builder()
+                .persistent(Codec.INT)
+                .build();
+    }
     public static void register(IEventBus bus) {
         DATA_COMPONENTS.register(bus);
     }

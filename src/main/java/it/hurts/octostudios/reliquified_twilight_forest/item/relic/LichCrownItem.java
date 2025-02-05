@@ -5,7 +5,6 @@ import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWith
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.IGem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
@@ -17,9 +16,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -57,13 +54,12 @@ public class LichCrownItem extends RelicItem {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("soulbound_gems")
-                                .requiredPoints(3)
                                 .stat(StatData.builder("gem_amount")
                                         .initialValue(1, 3)
                                         .formatValue(Math::round)
                                         .upgradeModifier(UpgradeOperation.ADD, 1)
                                         .build())
-                                .maxLevel(5)
+                                .maxLevel(15)
                                 .build())
                         .ability(LichCrownAbilities.ZOMBIE)
                         .ability(LichCrownAbilities.TWILIGHT)
@@ -74,7 +70,7 @@ public class LichCrownItem extends RelicItem {
                 .leveling(LevelingData.builder()
                         .initialCost(100)
                         .step(125)
-                        .maxLevel(30)
+                        .maxLevel(15)
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("soulbound_gems")
                                         .gem(GemShape.OVAL, GemColor.PURPLE)
@@ -96,6 +92,9 @@ public class LichCrownItem extends RelicItem {
         if (!(stack.getItem() instanceof LichCrownItem relic)) return;
         LivingEntity livingEntity = slotContext.entity();
         if (livingEntity.level().isClientSide) return;
+
+        if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
+        if (relic.isAbilityUnlocked(stack, "lifedrain")) LichCrownAbilities.lifedrainTick(livingEntity, stack);
     }
 
     @Override
@@ -136,10 +135,7 @@ public class LichCrownItem extends RelicItem {
         if (event.getLevel().isClientSide) return;
         if (!(event.getEntity() instanceof AbstractSkeleton skeleton)) return;
 
-        Predicate<LivingEntity> predicate = target -> {
-            if (!(target instanceof Player player)) return false;
-            return EntityUtils.findEquippedCurio(player, ItemRegistry.LICH_CROWN.get()).isEmpty();
-        };
+        Predicate<LivingEntity> predicate = target -> EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
 
         skeleton.targetSelector.getAvailableGoals().removeIf(goal ->
                 goal.getGoal() instanceof NearestAttackableTargetGoal<?> g
@@ -176,8 +172,8 @@ public class LichCrownItem extends RelicItem {
     }
 
     public ItemStack pop(ItemStack stack) {
-        List<ItemStack> notMutable = stack.get(DataComponentRegistry.GEMS);
-        if (notMutable == null || notMutable.isEmpty()) return ItemStack.EMPTY;
+        List<ItemStack> notMutable = getGemContents(stack);
+        if (notMutable.isEmpty()) return ItemStack.EMPTY;
 
         ArrayList<ItemStack> gems = Lists.newArrayList(notMutable);
 
@@ -188,8 +184,7 @@ public class LichCrownItem extends RelicItem {
     }
 
     public void dropExcessive(Player player, ItemStack stack) {
-        List<ItemStack> notMutable = stack.get(DataComponentRegistry.GEMS);
-        if (notMutable == null) return;
+        List<ItemStack> notMutable = getGemContents(stack);
 
         ArrayList<ItemStack> gems = Lists.newArrayList(notMutable);
         int size = this.getSize(stack);
@@ -205,5 +200,54 @@ public class LichCrownItem extends RelicItem {
         toDrop.clear();
         gems.removeIf(ItemStack::isEmpty);
         stack.set(DataComponentRegistry.GEMS, gems);
+    }
+
+    public @NotNull List<ItemStack> getGemContents(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.GEMS, List.of());
+    }
+
+    public int getGems(ItemStack stack, IGem gem) {
+        List<ItemStack> notMutable = getGemContents(stack);
+        return (int) notMutable.stream().filter(itemStack -> itemStack.getItem() == gem).count();
+    }
+
+    @Override
+    public int getAbilityLevel(ItemStack stack, String ability) {
+        return switch (ability) {
+            case "fortification" -> getGems(stack, ItemRegistry.SHIELDING_GEM.get());
+            case "zombie" -> getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
+            case "twilight" -> getGems(stack, ItemRegistry.TWILIGHT_GEM.get());
+            case "lifedrain" -> getGems(stack, ItemRegistry.ABSORPTION_GEM.get());
+            default -> super.getAbilityLevel(stack, ability);
+        };
+    }
+
+    @Override
+    public boolean mayUpgrade(ItemStack stack, String ability) {
+        return switch (ability) {
+            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            default -> super.mayUpgrade(stack, ability);
+        };
+    }
+
+    @Override
+    public boolean mayReset(ItemStack stack, String ability) {
+        return switch (ability) {
+            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            default -> super.mayReset(stack, ability);
+        };
+    }
+
+    @Override
+    public boolean isAbilityUnlocked(ItemStack stack, String ability) {
+        return switch (ability) {
+            case "fortification", "zombie", "twilight", "lifedrain" -> getAbilityLevel(stack, ability) > 0;
+            default -> super.isAbilityUnlocked(stack, ability);
+        };
+    }
+
+    @Override
+    public boolean isRelicFlawless(ItemStack stack) {
+        return isAbilityFlawless(stack, "soulbound_gems") && isAbilityMaxLevel(stack, "soulbound_gems") && getGemContents(stack).size() >= getSize(stack);
     }
 }
