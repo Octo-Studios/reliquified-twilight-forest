@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class DataComponentRegistry {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ReliquifiedTwilightForest.MODID);
@@ -22,6 +23,7 @@ public class DataComponentRegistry {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FORTIFICATION_TIME = DATA_COMPONENTS.register("fortification_time", DataComponentRegistry::integer);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LIFEDRAIN_TIME = DATA_COMPONENTS.register("absorption_time", DataComponentRegistry::integer);
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> TWILIGHT_TIME = DATA_COMPONENTS.register("twilight_time", DataComponentRegistry::integer);
 
     public static DataComponentType<Integer> integer() {
         return DataComponentType.<Integer>builder()

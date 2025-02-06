@@ -9,6 +9,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.IGem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
+import it.hurts.sskirillss.relics.client.particles.BasicColoredParticle;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -16,10 +17,19 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -32,16 +42,28 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
+import twilightforest.data.tags.EntityTagGenerator;
+import twilightforest.init.TFDamageTypes;
+import twilightforest.loot.TFLootTables;
+import twilightforest.util.entities.EntityUtil;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
 @EventBusSubscriber
 public class LichCrownItem extends RelicItem {
@@ -95,6 +117,7 @@ public class LichCrownItem extends RelicItem {
 
         if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "lifedrain")) LichCrownAbilities.lifedrainTick(livingEntity, stack);
+        if (relic.isAbilityUnlocked(stack, "twilight")) LichCrownAbilities.twilightTick(livingEntity, stack);
     }
 
     @Override
@@ -239,15 +262,78 @@ public class LichCrownItem extends RelicItem {
     }
 
     @Override
-    public boolean isAbilityUnlocked(ItemStack stack, String ability) {
+    public boolean isAbilityEnabled(ItemStack stack, String ability) {
         return switch (ability) {
             case "fortification", "zombie", "twilight", "lifedrain" -> getAbilityLevel(stack, ability) > 0;
-            default -> super.isAbilityUnlocked(stack, ability);
+            default -> super.isAbilityEnabled(stack, ability);
+        };
+    }
+
+    @Override
+    public boolean isAbilityUpgradeEnabled(ItemStack stack, String ability) {
+        return switch (ability) {
+            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            default -> super.isAbilityUpgradeEnabled(stack, ability);
+        };
+    }
+
+    @Override
+    public boolean isAbilityResetEnabled(ItemStack stack, String ability) {
+        return switch (ability) {
+            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            default -> super.isAbilityResetEnabled(stack, ability);
         };
     }
 
     @Override
     public boolean isRelicFlawless(ItemStack stack) {
         return isAbilityFlawless(stack, "soulbound_gems") && isAbilityMaxLevel(stack, "soulbound_gems") && getGemContents(stack).size() >= getSize(stack);
+    }
+
+    public static void makeRedMagicTrail(Level level, LivingEntity source, Vec3 target) {
+        float r = 1.0F;
+        float g = 0.5F;
+        float b = 0.5F;
+        // make particle trail
+        Vec3 pos = source.position().add(0, source.getBbHeight() / 2f, 0);
+        double distance = pos.distanceTo(target);
+
+        for (double i = 0; i <= distance * 6; i++) {
+            Vec3 particlePos = pos.subtract(target).scale(i / (distance * 6));
+            particlePos = pos.subtract(particlePos);
+            //level.addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, r, g, b), particlePos.x(), particlePos.y(), particlePos.z(), 0.0D, 0.0D, 0.0D);
+            level.addParticle(ParticleUtils.constructSimpleSpark(new Color(r, g, b, 0.25f), 0.35f, 20, 0.75f), particlePos.x, particlePos.y, particlePos.z, 0, 0.05, 0);
+        }
+    }
+
+    public static void explodeEntity(LivingEntity living, LivingEntity target, DamageSource damageSource) {
+        Level level = target.level();
+        if (!target.getType().is(EntityTagGenerator.LIFEDRAIN_DROPS_NO_FLESH) && level instanceof ServerLevel serverLevel && living instanceof Player player) {
+            LootParams ctx = new LootParams.Builder(serverLevel)
+                    .withParameter(LootContextParams.THIS_ENTITY, target)
+                    .withParameter(LootContextParams.ORIGIN, target.getEyePosition())
+                    .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
+                    .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
+                    .withParameter(LootContextParams.ATTACKING_ENTITY, player)
+                    .withParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player).create(LootContextParamSets.ENTITY);
+            serverLevel.getServer().reloadableRegistries().getLootTable(TFLootTables.LIFEDRAIN_SCEPTER_KILL_BONUS).getRandomItems(ctx).forEach(target::spawnAtLocation);
+            animateTargetShatter(serverLevel, target);
+        }
+
+        if (target instanceof Mob mob) {
+            mob.spawnAnim();
+        }
+        SoundEvent deathSound = EntityUtil.getDeathSound(target);
+        if (deathSound != null) {
+            level.playSound(null, target.blockPosition(), deathSound, SoundSource.HOSTILE, 1.0F, target.getVoicePitch());
+        }
+        if (!target.isDeadOrDying()) {
+            if (target instanceof Player) {
+                target.hurt(TFDamageTypes.getEntityDamageSource(level, TFDamageTypes.LIFEDRAIN, living), Float.MAX_VALUE);
+            } else {
+                target.die(TFDamageTypes.getEntityDamageSource(level, TFDamageTypes.LIFEDRAIN, living));
+                target.discard();
+            }
+        }
     }
 }

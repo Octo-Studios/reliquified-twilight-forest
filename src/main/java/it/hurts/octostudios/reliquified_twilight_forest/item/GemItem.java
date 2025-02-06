@@ -5,10 +5,7 @@ import it.hurts.sskirillss.relics.items.misc.CreativeContentConstructor;
 import it.hurts.sskirillss.relics.items.misc.ICreativeTabContent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.ItemLike;
-import twilightforest.TwilightForestMod;
 import twilightforest.init.TFCreativeTabs;
 
 import java.util.List;
