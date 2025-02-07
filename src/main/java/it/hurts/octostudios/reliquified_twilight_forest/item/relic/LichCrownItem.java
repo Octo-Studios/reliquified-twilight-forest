@@ -9,6 +9,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.IGem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
+import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -114,6 +115,18 @@ public class LichCrownItem extends RelicItem {
         if (relic.isAbilityUnlocked(stack, "twilight")) LichCrownAbilities.twilightTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "lifedrain")) LichCrownAbilities.lifedrainTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
+    }
+
+    @Override
+    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
+        super.onUnequip(slotContext, newStack, stack);
+        if (newStack.getItem() instanceof LichCrownItem newRelic) {
+            if (newRelic.getAbilitiesComponent(newStack).equals(this.getAbilitiesComponent(stack))) return;
+        }
+
+        if (slotContext.entity().level().isClientSide) return;
+        LichCrownAbilities.fortificationUnequip(slotContext, stack);
+        LichCrownAbilities.zombieUnequip(slotContext, stack);
     }
 
     @Override

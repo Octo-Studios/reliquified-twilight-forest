@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.ability;
 
+import com.google.common.collect.Lists;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.octostudios.reliquified_twilight_forest.network.LaunchTwilightBoltPacket;
@@ -33,11 +34,15 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.apache.logging.log4j.core.jmx.Server;
+import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.entity.monster.LoyalZombie;
 import twilightforest.init.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
@@ -59,10 +64,10 @@ public class LichCrownAbilities {
             .build();
 
     public static final AbilityData ZOMBIE = AbilityData.builder("zombie")
-            .stat(StatData.builder("lifetime")
-                    .initialValue(200, 300)
-                    .upgradeModifier(UpgradeOperation.ADD, 50)
-                    .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
+            .stat(StatData.builder("max_zombies")
+                    .initialValue(1, 2)
+                    .upgradeModifier(UpgradeOperation.ADD, 1)
+                    .formatValue(Math::round)
                     .build())
             .stat(StatData.builder("damage")
                     .initialValue(2, 3)
@@ -134,6 +139,20 @@ public class LichCrownAbilities {
         stack.set(DataComponentRegistry.FORTIFICATION_TIME, time);
     }
 
+    public static void fortificationUnequip(SlotContext slotContext, ItemStack stack) {
+        slotContext.entity().getData(TFDataAttachments.FORTIFICATION_SHIELDS).setShields(slotContext.entity(), 0, false);
+    }
+
+    public static void zombieUnequip(SlotContext slotContext, ItemStack stack) {
+        ArrayList<UUID> uuids = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
+        uuids.forEach(uuid -> {
+            Entity entity = ((ServerLevel) slotContext.entity().level()).getEntity(uuid);
+            if (entity != null) entity.discard();
+        });
+        uuids.clear();
+        stack.set(DataComponentRegistry.ZOMBIES, List.of());
+    }
+
     public static void lifedrainTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()) return;
 
@@ -180,20 +199,34 @@ public class LichCrownAbilities {
 //        stack.set(DataComponentRegistry.TWILIGHT_TIME, time);
     }
 
+    @SuppressWarnings("unchecked")
     public static void zombieTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()) return;
         if (!(stack.getItem() instanceof LichCrownItem relic)) return;
         int time = stack.getOrDefault(DataComponentRegistry.ZOMBIE_TIME, 0);
-        if (time <= 0) {
+        ArrayList<UUID> uuids = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
+        int maxZombies = (int) Math.round(relic.getStatValue(stack, "zombie", "max_zombies"));
+
+        if (time <= 0 && uuids.size() < maxZombies) {
             time = (int) Math.round(relic.getStatValue(stack, "zombie", "interval"));
 
-            spawnZombie(entity, (float) relic.getStatValue(stack, "zombie", "damage"), (int) Math.round(relic.getStatValue(stack, "zombie", "lifetime")), entity.position());
+            LoyalZombie zombie = spawnZombie(entity, (float) relic.getStatValue(stack, "zombie", "damage"), entity.position());
+            if (zombie != null) uuids.add( zombie.getUUID());
         }
-        else time--;
+        if (time > 0) time--;
         stack.set(DataComponentRegistry.ZOMBIE_TIME, time);
+
+        if (entity.tickCount % 15 == 0) uuids.removeIf(uuid -> {
+            Entity e = ((ServerLevel) entity.level()).getEntity(uuid);
+            if (e == null) return true;
+            boolean flag = !e.isAlive() || !((ServerLevel) entity.level()).isPositionEntityTicking(e.blockPosition());
+            if (flag) e.discard();
+            return flag;
+        });
+        stack.set(DataComponentRegistry.ZOMBIES, uuids);
     }
 
-    public static void spawnZombie(LivingEntity entity, float damage, int lifetime, Vec3 position) {
+    public static LoyalZombie spawnZombie(LivingEntity entity, float damage, Vec3 position) {
         Level level = entity.level();
         LoyalZombie zombie = new LoyalZombie(TFEntities.LOYAL_ZOMBIE.get(), level) {
             @Override
@@ -223,19 +256,19 @@ public class LichCrownAbilities {
 
         zombie.moveTo(position);
         if (!level.noCollision(zombie, zombie.getBoundingBox())) {
-            return;
+            return null;
         }
         zombie.spawnAnim();
         zombie.setTame(true, false);
         zombie.setOwnerUUID(entity.getUUID());
-        zombie.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, lifetime, 0, true, false, false));
-        if (entity.getItemBySlot(EquipmentSlot.HEAD).is(TFItems.MYSTIC_CROWN) && level.getRandom().nextFloat() <= 0.1f) {
-            zombie.setBaby(true);
-        }
+        zombie.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, Integer.MAX_VALUE, 0, true, false, false));
+        zombie.setBaby(true);
         level.addFreshEntity(zombie);
         level.gameEvent(entity, GameEvent.ENTITY_PLACE, position);
 
         zombie.playSound(TFSounds.ZOMBIE_SCEPTER_USE.get(), 1.0F, 1.0F);
+        zombie.setSilent(true);
+        return zombie;
     }
 
     @EventBusSubscriber(Dist.CLIENT)

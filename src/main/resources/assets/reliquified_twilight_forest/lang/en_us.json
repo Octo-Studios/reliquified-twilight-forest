@@ -33,5 +33,5 @@
   "tooltip.relics.lich_crown.ability.twilight": "Twilight",
   "tooltip.relics.lich_crown.ability.twilight.description": "%1$s damage, %2$sx speed",
   "tooltip.relics.lich_crown.ability.zombie": "Zombie",
-  "tooltip.relics.lich_crown.ability.zombie.description": "%1$s seconds lifetime, %2$s damage, CD: %3$s seconds"
+  "tooltip.relics.lich_crown.ability.zombie.description": "%1$s max zombies, %2$s damage, CD: %3$s seconds"
 }
