@@ -29,7 +29,9 @@
   "tooltip.relics.lich_crown.ability.fortification": "Fortification",
   "tooltip.relics.lich_crown.ability.fortification.description": "%1$s max shields, CD: %2$s seconds",
   "tooltip.relics.lich_crown.ability.lifedrain": "Lifedrain",
-  "tooltip.relics.lich_crown.ability.lifedrain.description": "When in danger, absorb %1$s%% of your max health from all enemies within %2$sm. Recharges in %3$s seconds.",
+  "tooltip.relics.lich_crown.ability.lifedrain.description": "When in danger, absorb %1$s%% of your max health per second for 5 seconds from all enemies within %2$sm. Recharges in %3$s seconds.",
   "tooltip.relics.lich_crown.ability.twilight": "Twilight",
-  "tooltip.relics.lich_crown.ability.twilight.description": "%1$s damage, %2$sx speed"
+  "tooltip.relics.lich_crown.ability.twilight.description": "%1$s damage, %2$sx speed",
+  "tooltip.relics.lich_crown.ability.zombie": "Zombie",
+  "tooltip.relics.lich_crown.ability.zombie.description": "%1$s seconds lifetime, %2$s damage, CD: %3$s seconds"
 }

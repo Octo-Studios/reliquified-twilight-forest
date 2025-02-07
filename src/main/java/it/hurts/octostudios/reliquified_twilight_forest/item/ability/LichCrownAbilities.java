@@ -10,29 +10,36 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.components.entity.FortificationShieldAttachment;
-import twilightforest.init.TFDamageTypes;
-import twilightforest.init.TFDataAttachments;
-import twilightforest.init.TFSounds;
+import twilightforest.entity.monster.LoyalZombie;
+import twilightforest.init.*;
 
-import javax.annotation.Nullable;
 import java.util.List;
+
+import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
 public class LichCrownAbilities {
     public static final int MAX_LIFEDRAIN_TIME = 120;
@@ -52,19 +59,19 @@ public class LichCrownAbilities {
             .build();
 
     public static final AbilityData ZOMBIE = AbilityData.builder("zombie")
-            .stat(StatData.builder("max_zombies")
-                    .initialValue(3, 5)
-                    .upgradeModifier(UpgradeOperation.ADD, 1)
-                    .formatValue(Math::round)
+            .stat(StatData.builder("lifetime")
+                    .initialValue(200, 300)
+                    .upgradeModifier(UpgradeOperation.ADD, 50)
+                    .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
             .stat(StatData.builder("damage")
-                    .initialValue(1, 2)
-                    .upgradeModifier(UpgradeOperation.ADD, 1)
+                    .initialValue(2, 3)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.5)
                     .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .stat(StatData.builder("interval")
-                    .initialValue(260, 200)
-                    .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.1f)
+                    .initialValue(400, 320)
+                    .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.075f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
             .maxLevel(5)
@@ -118,10 +125,10 @@ public class LichCrownAbilities {
         int time = stack.getOrDefault(DataComponentRegistry.FORTIFICATION_TIME, 0);
 
         if (attachment.permanentShieldsLeft() < relic.getStatValue(stack, "fortification", "max_shields")) {
-            if (time >= maxTime) {
+            if (time <= 0) {
                 attachment.addShields(entity, 1, false);
-                time = 0;
-            } else time += 1;
+                time = maxTime;
+            } else time--;
         }
 
         stack.set(DataComponentRegistry.FORTIFICATION_TIME, time);
@@ -171,6 +178,64 @@ public class LichCrownAbilities {
 //        int time = stack.getOrDefault(DataComponentRegistry.TWILIGHT_TIME, 0);
 //        if (time > 0) time--;
 //        stack.set(DataComponentRegistry.TWILIGHT_TIME, time);
+    }
+
+    public static void zombieTick(LivingEntity entity, ItemStack stack) {
+        if (entity.isSpectator()) return;
+        if (!(stack.getItem() instanceof LichCrownItem relic)) return;
+        int time = stack.getOrDefault(DataComponentRegistry.ZOMBIE_TIME, 0);
+        if (time <= 0) {
+            time = (int) Math.round(relic.getStatValue(stack, "zombie", "interval"));
+
+            spawnZombie(entity, (float) relic.getStatValue(stack, "zombie", "damage"), (int) Math.round(relic.getStatValue(stack, "zombie", "lifetime")), entity.position());
+        }
+        else time--;
+        stack.set(DataComponentRegistry.ZOMBIE_TIME, time);
+    }
+
+    public static void spawnZombie(LivingEntity entity, float damage, int lifetime, Vec3 position) {
+        Level level = entity.level();
+        LoyalZombie zombie = new LoyalZombie(TFEntities.LOYAL_ZOMBIE.get(), level) {
+            @Override
+            public boolean doHurtTarget(Entity entity) {
+                if (entity.hurt(this.damageSources().mobAttack(this), damage)) {
+                    entity.push(0.0D, 0.2D, 0.0D);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public InteractionResult interactAt(Player player, Vec3 vec3, InteractionHand hand) {
+                return InteractionResult.PASS;
+            }
+
+            @Override
+            public void aiStep() {
+                if (!this.hasEffect(MobEffects.DAMAGE_BOOST)) {
+                    if (!level.isClientSide) animateTargetShatter((ServerLevel) level, this);
+                    this.hurt(TFDamageTypes.getDamageSource(this.level(), TFDamageTypes.EXPIRED), Float.MAX_VALUE);
+                    this.discard();
+                }
+                super.aiStep();
+            }
+        };
+
+        zombie.moveTo(position);
+        if (!level.noCollision(zombie, zombie.getBoundingBox())) {
+            return;
+        }
+        zombie.spawnAnim();
+        zombie.setTame(true, false);
+        zombie.setOwnerUUID(entity.getUUID());
+        zombie.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, lifetime, 0, true, false, false));
+        if (entity.getItemBySlot(EquipmentSlot.HEAD).is(TFItems.MYSTIC_CROWN) && level.getRandom().nextFloat() <= 0.1f) {
+            zombie.setBaby(true);
+        }
+        level.addFreshEntity(zombie);
+        level.gameEvent(entity, GameEvent.ENTITY_PLACE, position);
+
+        zombie.playSound(TFSounds.ZOMBIE_SCEPTER_USE.get(), 1.0F, 1.0F);
     }
 
     @EventBusSubscriber(Dist.CLIENT)

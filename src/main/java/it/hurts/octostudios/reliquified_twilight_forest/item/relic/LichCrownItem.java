@@ -9,7 +9,6 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.IGem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
-import it.hurts.sskirillss.relics.client.particles.BasicColoredParticle;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -18,10 +17,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ColorParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -48,7 +44,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
@@ -115,9 +110,10 @@ public class LichCrownItem extends RelicItem {
         LivingEntity livingEntity = slotContext.entity();
         if (livingEntity.level().isClientSide) return;
 
-        if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
-        if (relic.isAbilityUnlocked(stack, "lifedrain")) LichCrownAbilities.lifedrainTick(livingEntity, stack);
+        if (relic.isAbilityUnlocked(stack, "zombie")) LichCrownAbilities.zombieTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "twilight")) LichCrownAbilities.twilightTick(livingEntity, stack);
+        if (relic.isAbilityUnlocked(stack, "lifedrain")) LichCrownAbilities.lifedrainTick(livingEntity, stack);
+        if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class DataComponentRegistry {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FORTIFICATION_TIME = DATA_COMPONENTS.register("fortification_time", DataComponentRegistry::integer);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LIFEDRAIN_TIME = DATA_COMPONENTS.register("absorption_time", DataComponentRegistry::integer);
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> TWILIGHT_TIME = DATA_COMPONENTS.register("twilight_time", DataComponentRegistry::integer);
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ZOMBIE_TIME = DATA_COMPONENTS.register("zombie_time", DataComponentRegistry::integer);
 
     public static DataComponentType<Integer> integer() {
         return DataComponentType.<Integer>builder()

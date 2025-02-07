@@ -6,9 +6,12 @@ import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightFores
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.tooltip.ClientGemTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
+import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -36,7 +39,11 @@ public class RemoteRegistry {
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "twilight_indicator"), ((guiGraphics, deltaTracker) -> {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null || LichCrownAbilities.ClientEvents.getEntityLookingAt(Minecraft.getInstance().player, 64) == null) return;
+            if (mc.player == null) return;
+            ItemStack stack = EntityUtils.findEquippedCurio(mc.player, ItemRegistry.LICH_CROWN.get());
+            if (!(stack.getItem() instanceof LichCrownItem relic)) return;
+            if (relic.getAbilityLevel(stack, "twilight") <= 0) return;
+            if (LichCrownAbilities.ClientEvents.getEntityLookingAt(mc.player, 64) == null) return;
             boolean flag = mc.getCameraEntity() instanceof LivingEntity living && living.isSleeping();
             if (!mc.options.getCameraType().isFirstPerson()
                     || flag
