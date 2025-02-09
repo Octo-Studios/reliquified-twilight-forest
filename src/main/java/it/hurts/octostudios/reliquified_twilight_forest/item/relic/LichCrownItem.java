@@ -9,7 +9,6 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.IGem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
-import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -71,6 +70,7 @@ public class LichCrownItem extends RelicItem {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
+                        .ability(AbilityData.builder("bone_pact").maxLevel(0).build())
                         .ability(AbilityData.builder("soulbound_gems")
                                 .stat(StatData.builder("gem_amount")
                                         .initialValue(1, 3)
@@ -83,7 +83,6 @@ public class LichCrownItem extends RelicItem {
                         .ability(LichCrownAbilities.TWILIGHT)
                         .ability(LichCrownAbilities.LIFEDRAIN)
                         .ability(LichCrownAbilities.FORTIFICATION)
-                        .ability(AbilityData.builder("bone_pact").maxLevel(0).build())
                         .build())
                 .leveling(LevelingData.builder()
                         .initialCost(100)
@@ -117,6 +116,7 @@ public class LichCrownItem extends RelicItem {
         if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
     }
 
+    // TODO: If the player has generated as many shields as the Shielding Gem allows, shields will not disappear when gem is removed
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         super.onUnequip(slotContext, newStack, stack);
@@ -162,6 +162,7 @@ public class LichCrownItem extends RelicItem {
         }
     }
 
+    // TODO: If skeleton previously considered the player as its target, it must stop attacking them and, if possible, choose a different target
     @SubscribeEvent
     public static void onEntitySpawn(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide) return;
