@@ -17,17 +17,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
 @EventBusSubscriber
-public class MinotaurHoofItem extends RelicItem  {
+public class MinotaurHoofItem extends RelicItem {
     private static final ResourceLocation MOVEMENT_MODIFIER = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "momentum_rush");
 
     private static final int MAX_TIME = 60;
@@ -66,27 +67,75 @@ public class MinotaurHoofItem extends RelicItem  {
                 .build();
     }
 
+    public int getTime(ItemStack stack) {
+        return stack.getOrDefault(DataComponentRegistry.TIME, 0);
+    }
+
+    public void setTime(ItemStack stack, int time) {
+        stack.set(DataComponentRegistry.TIME, Math.clamp(time, 0, MAX_TIME));
+    }
+
+    public void addTime(ItemStack stack, int time) {
+        setTime(stack, getTime(stack) + time);
+    }
+
+    public boolean isActive(ItemStack stack) {
+        return getTime(stack) == MAX_TIME;
+    }
+
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(stack.getItem() instanceof MinotaurHoofItem relic)) return;
+        if (!(stack.getItem() instanceof MinotaurHoofItem relic)
+                || !(slotContext.entity() instanceof Player player))
+            return;
 
-        LivingEntity livingEntity = slotContext.entity();
-        if (livingEntity.level().isClientSide) return;
+        Level level = player.getCommandSenderWorld();
 
-        AttributeInstance movementSpeed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
-        AttributeInstance knockbackResistance = livingEntity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-        AttributeInstance stepHeight = livingEntity.getAttribute(Attributes.STEP_HEIGHT);
+        if (level.isClientSide())
+            return;
+
+        AttributeInstance movementSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        AttributeInstance knockbackResistance = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+        AttributeInstance stepHeight = player.getAttribute(Attributes.STEP_HEIGHT);
 
         if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
         double maxSpeedMultiplier = relic.getStatValue(stack, "momentum_rush", "max_speed_multiplier");
 
         int time = getTime(stack);
-        stack.set(DataComponentRegistry.TIME, Mth.clamp(time + (livingEntity.isSprinting() ? 1 : -1), 0, MAX_TIME));
+        addTime(stack, player.isSprinting() ? 1 : -1);
         if (time == 0) return;
 
         movementSpeed.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, maxSpeedMultiplier * time / (float) MAX_TIME, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         knockbackResistance.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, time / (float) MAX_TIME, AttributeModifier.Operation.ADD_VALUE));
         stepHeight.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, isActive(stack) ? 0.55 : 0, AttributeModifier.Operation.ADD_VALUE));
+
+        if (!relic.isActive(stack)) return;
+        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(0.025), target -> !target.getStringUUID().equals(player.getStringUUID()));
+
+        for (LivingEntity entity : entities) {
+            entity.hurt(player.damageSources().playerAttack(player), (float) relic.getStatValue(stack, "momentum_rush", "damage"));
+        }
+    }
+
+    @Override
+    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
+        super.onUnequip(slotContext, newStack, stack);
+
+        if (newStack.getItem() == stack.getItem())
+            return;
+
+        setTime(stack, 0);
+        resetAttributes(slotContext.entity());
+    }
+
+    private static void resetAttributes(LivingEntity livingEntity) {
+        AttributeInstance movementSpeed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
+        AttributeInstance knockbackResistance = livingEntity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+        AttributeInstance stepHeight = livingEntity.getAttribute(Attributes.STEP_HEIGHT);
+        if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
+        if (movementSpeed.hasModifier(MOVEMENT_MODIFIER)) movementSpeed.removeModifier(MOVEMENT_MODIFIER);
+        if (knockbackResistance.hasModifier(MOVEMENT_MODIFIER)) knockbackResistance.removeModifier(MOVEMENT_MODIFIER);
+        if (stepHeight.hasModifier(MOVEMENT_MODIFIER)) stepHeight.removeModifier(MOVEMENT_MODIFIER);
     }
 
     @SubscribeEvent
@@ -99,37 +148,5 @@ public class MinotaurHoofItem extends RelicItem  {
         if (!relic.isActive(stack)) return;
         e.setAmount((float) reducedDamage);
 
-    }
-
-    @SubscribeEvent
-    public static void playerTick(PlayerTickEvent.Post e) {
-        if (e.getEntity().level().isClientSide) return;
-        ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MINOTAUR_HOOF.get());
-        if (MinotaurHoofItem.getTime(stack) == 0) MinotaurHoofItem.resetAttributes(e.getEntity());
-        if (!(stack.getItem() instanceof MinotaurHoofItem relic)) return;
-        if (!relic.isActive(stack)) return;
-        List<LivingEntity> entities = e.getEntity().level().getEntitiesOfClass(LivingEntity.class, e.getEntity().getBoundingBox().inflate(0.025), livingEntity -> e.getEntity() != livingEntity);
-
-        for (LivingEntity entity : entities) {
-            entity.hurt(e.getEntity().damageSources().playerAttack(e.getEntity()), (float) relic.getStatValue(stack, "momentum_rush", "damage"));
-        }
-    }
-
-    public static int getTime(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TIME, 0);
-    }
-
-    public boolean isActive(ItemStack stack) {
-        return getTime(stack) == MAX_TIME;
-    }
-
-    public static void resetAttributes(LivingEntity livingEntity) {
-        AttributeInstance movementSpeed = livingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
-        AttributeInstance knockbackResistance = livingEntity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-        AttributeInstance stepHeight = livingEntity.getAttribute(Attributes.STEP_HEIGHT);
-        if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
-        if (movementSpeed.hasModifier(MOVEMENT_MODIFIER)) movementSpeed.removeModifier(MOVEMENT_MODIFIER);
-        if (knockbackResistance.hasModifier(MOVEMENT_MODIFIER)) knockbackResistance.removeModifier(MOVEMENT_MODIFIER);
-        if (stepHeight.hasModifier(MOVEMENT_MODIFIER)) stepHeight.removeModifier(MOVEMENT_MODIFIER);
     }
 }
