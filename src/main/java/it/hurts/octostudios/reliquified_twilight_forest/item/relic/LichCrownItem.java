@@ -200,7 +200,7 @@ public class LichCrownItem extends RelicItem {
         if (gems.size() >= size) return false;
         gems.add(toInsert.copyAndClear());
         gems.removeIf(ItemStack::isEmpty);
-        stack.set(DataComponentRegistry.GEMS, gems);
+        setGemsContent(stack, gems);
         return true;
     }
 
@@ -212,7 +212,7 @@ public class LichCrownItem extends RelicItem {
 
         ItemStack toReturn = gems.removeLast();
         gems.removeIf(ItemStack::isEmpty);
-        stack.set(DataComponentRegistry.GEMS, gems);
+        setGemsContent(stack, gems);
         return toReturn;
     }
 
@@ -232,16 +232,39 @@ public class LichCrownItem extends RelicItem {
 
         toDrop.clear();
         gems.removeIf(ItemStack::isEmpty);
-        stack.set(DataComponentRegistry.GEMS, gems);
+        setGemsContent(stack, gems);
     }
 
     public @NotNull List<ItemStack> getGemContents(ItemStack stack) {
         return stack.getOrDefault(DataComponentRegistry.GEMS, List.of());
     }
 
+    public void setGemsContent(ItemStack stack, List<ItemStack> gems) {
+        List<ItemStack> oldGems = getGemContents(stack);
+        stack.set(DataComponentRegistry.GEMS, gems);
+        onGemsChanged(stack, oldGems, gems);
+    }
+
     public int getGems(ItemStack stack, IGem gem) {
-        List<ItemStack> notMutable = getGemContents(stack);
-        return (int) notMutable.stream().filter(itemStack -> itemStack.getItem() == gem).count();
+        return getGems(stack, gem, getGemContents(stack));
+    }
+
+    public int getGems(ItemStack stack, IGem gem, List<ItemStack> gems) {
+        return (int) gems.stream().filter(itemStack -> itemStack.getItem() == gem).count();
+    }
+
+    public void onGemsChanged(ItemStack stack, List<ItemStack> oldGems, List<ItemStack> gems) {
+        int oldShielding = getGems(stack, ItemRegistry.SHIELDING_GEM.get(), oldGems);
+        int oldNecromancy = getGems(stack, ItemRegistry.NECROMANCY_GEM.get(), oldGems);
+        int oldTwilight = getGems(stack, ItemRegistry.TWILIGHT_GEM.get(), oldGems);
+        int oldAbsorption = getGems(stack, ItemRegistry.ABSORPTION_GEM.get(), oldGems);
+
+        int shielding = getGems(stack, ItemRegistry.SHIELDING_GEM.get());
+        int necromancy = getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
+        int twilight = getGems(stack, ItemRegistry.TWILIGHT_GEM.get());
+        int absorption = getGems(stack, ItemRegistry.ABSORPTION_GEM.get());
+
+        if (shielding < oldShielding) {}
     }
 
     @Override
