@@ -149,6 +149,7 @@ public class LichCrownAbilities {
     public static void lifedrainTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()
                 || !(stack.getItem() instanceof LichCrownItem relic)
+                || !entity.isAlive()
         ) return;
 
         int maxTime = (int) Math.round(relic.getStatValue(stack, "lifedrain", "interval")) + MAX_LIFEDRAIN_TIME;
