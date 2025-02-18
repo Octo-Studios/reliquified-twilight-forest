@@ -26,9 +26,7 @@ import twilightforest.TwilightForestMod;
 @EventBusSubscriber(modid = ReliquifiedTwilightForest.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class RemoteRegistry {
     @SubscribeEvent
-    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-
-    }
+    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {}
 
     @SubscribeEvent
     public static void onTooltipRegistry(RegisterClientTooltipComponentFactoriesEvent event) {
@@ -39,31 +37,28 @@ public class RemoteRegistry {
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "twilight_indicator"), ((guiGraphics, deltaTracker) -> {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null) return;
             ItemStack stack = EntityUtils.findEquippedCurio(mc.player, ItemRegistry.LICH_CROWN.get());
-            if (!(stack.getItem() instanceof LichCrownItem relic)) return;
-            if (relic.getAbilityLevel(stack, "twilight") <= 0) return;
-            if (LichCrownAbilities.ClientEvents.getEntityLookingAt(mc.player, 64) == null) return;
-            boolean flag = mc.getCameraEntity() instanceof LivingEntity living && living.isSleeping();
-            if (!mc.options.getCameraType().isFirstPerson()
-                    || flag
+            if (mc.player == null
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || relic.getAbilityLevel(stack, "twilight") <= 0
+                    || LichCrownAbilities.ClientEvents.getEntityLookingAt(mc.player, 64) == null
+                    || !mc.options.getCameraType().isFirstPerson()
+                    || (mc.getCameraEntity() instanceof LivingEntity living && living.isSleeping())
                     || mc.options.hideGui
                     || mc.player.isSpectator()
-            || mc.crosshairPickEntity != null) return;
+                    || mc.crosshairPickEntity != null
+            ) return;
 
-            float partialTick = mc.player.tickCount+deltaTracker.getGameTimeDeltaPartialTick(true);
+            float partialTick = mc.player.tickCount + deltaTracker.getGameTimeDeltaPartialTick(true);
             guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(guiGraphics.guiWidth()/2f+4, guiGraphics.guiHeight()/2f+4, 0);
-//            guiGraphics.pose().mulPose(Axis.YP.rotationDegrees(2*(mc.player.tickCount+deltaTracker.getGameTimeDeltaPartialTick(true))));
-//            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(1.7f*(mc.player.tickCount+deltaTracker.getGameTimeDeltaPartialTick(true))));
-//            guiGraphics.pose().mulPose(Axis.XP.rotationDegrees(2.13f*(mc.player.tickCount+deltaTracker.getGameTimeDeltaPartialTick(true))));
-            guiGraphics.pose().scale(0.5f,0.5f,0.5f);
+            guiGraphics.pose().translate(guiGraphics.guiWidth() / 2f + 4, guiGraphics.guiHeight() / 2f + 4, 0);
+            guiGraphics.pose().scale(0.5f, 0.5f, 0.5f);
 
-            float sin = (float) (Math.sin(partialTick/2f)/4f+0.75f);
-            guiGraphics.pose().translate(0,0, -150);
-            RenderSystem.setShaderColor(sin/2f+1.125f,sin/2f+1.125f,sin+1.25f, sin);
+            float sin = (float) (Math.sin(partialTick / 2f) / 4f + 0.75f);
+            guiGraphics.pose().translate(0, 0, -150);
+            RenderSystem.setShaderColor(sin / 2f + 1.125f, sin / 2f + 1.125f, sin + 1.25f, sin);
             guiGraphics.renderItem(ItemRegistry.TWILIGHT_GEM.get().getDefaultInstance(), -8, -8);
-            RenderSystem.setShaderColor(1f,1f,1f,1f);
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             guiGraphics.pose().popPose();
         }));
     }

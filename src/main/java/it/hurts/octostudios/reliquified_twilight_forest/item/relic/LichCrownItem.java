@@ -18,6 +18,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -47,8 +48,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
+import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.data.tags.EntityTagGenerator;
+import twilightforest.entity.monster.LoyalZombie;
 import twilightforest.init.TFDamageTypes;
+import twilightforest.init.TFDataAttachments;
 import twilightforest.loot.TFLootTables;
 import twilightforest.util.entities.EntityUtil;
 
@@ -56,6 +60,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
@@ -116,7 +121,8 @@ public class LichCrownItem extends RelicItem {
         if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
     }
 
-    // TODO: If the player has generated as many shields as the Shielding Gem allows, shields will not disappear when gem is removed
+    // TODO: If the player has generated as many shields as the Shielding Gem allows,
+    //  shields will not disappear when gem is removed
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         super.onUnequip(slotContext, newStack, stack);
@@ -148,13 +154,13 @@ public class LichCrownItem extends RelicItem {
         ItemStack heldStack = event.getHeldStack();
 
         if (heldStack.getItem() instanceof IGem) {
-            if (relic.tryInsert(stack, heldStack))
+            if (relic.tryInsert(event.getEntity(), stack, heldStack))
                 event.getEntity().playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
 
             event.setCanceled(true);
         } else if (heldStack.isEmpty()) {
             event.setCanceled(true);
-            ItemStack gem = relic.pop(stack);
+            ItemStack gem = relic.pop(event.getEntity(), stack);
             if (gem.isEmpty()) return;
 
             event.getEntity().playSound(SoundEvents.ITEM_PICKUP, 0.75f, 1.25f);
@@ -190,7 +196,7 @@ public class LichCrownItem extends RelicItem {
         return (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
     }
 
-    public boolean tryInsert(ItemStack stack, ItemStack toInsert) {
+    public boolean tryInsert(Player player, ItemStack stack, ItemStack toInsert) {
         List<ItemStack> notMutable = stack.get(DataComponentRegistry.GEMS);
         if (notMutable == null) return false;
 
@@ -200,11 +206,11 @@ public class LichCrownItem extends RelicItem {
         if (gems.size() >= size) return false;
         gems.add(toInsert.copyAndClear());
         gems.removeIf(ItemStack::isEmpty);
-        setGemsContent(stack, gems);
+        this.setGemsContent(player, stack, gems);
         return true;
     }
 
-    public ItemStack pop(ItemStack stack) {
+    public ItemStack pop(Player player, ItemStack stack) {
         List<ItemStack> notMutable = getGemContents(stack);
         if (notMutable.isEmpty()) return ItemStack.EMPTY;
 
@@ -212,7 +218,7 @@ public class LichCrownItem extends RelicItem {
 
         ItemStack toReturn = gems.removeLast();
         gems.removeIf(ItemStack::isEmpty);
-        setGemsContent(stack, gems);
+        this.setGemsContent(player, stack, gems);
         return toReturn;
     }
 
@@ -232,49 +238,78 @@ public class LichCrownItem extends RelicItem {
 
         toDrop.clear();
         gems.removeIf(ItemStack::isEmpty);
-        setGemsContent(stack, gems);
+        this.setGemsContent(player, stack, gems);
     }
 
     public @NotNull List<ItemStack> getGemContents(ItemStack stack) {
         return stack.getOrDefault(DataComponentRegistry.GEMS, List.of());
     }
 
-    public void setGemsContent(ItemStack stack, List<ItemStack> gems) {
+    public void setGemsContent(Player player, ItemStack stack, List<ItemStack> gems) {
         List<ItemStack> oldGems = getGemContents(stack);
         stack.set(DataComponentRegistry.GEMS, gems);
-        onGemsChanged(stack, oldGems, gems);
+        this.onGemsChanged(player, stack, oldGems);
     }
 
     public int getGems(ItemStack stack, IGem gem) {
-        return getGems(stack, gem, getGemContents(stack));
+        return this.getGems(stack, gem, getGemContents(stack));
     }
 
     public int getGems(ItemStack stack, IGem gem, List<ItemStack> gems) {
         return (int) gems.stream().filter(itemStack -> itemStack.getItem() == gem).count();
     }
 
-    public void onGemsChanged(ItemStack stack, List<ItemStack> oldGems, List<ItemStack> gems) {
-        int oldShielding = getGems(stack, ItemRegistry.SHIELDING_GEM.get(), oldGems);
-        int oldNecromancy = getGems(stack, ItemRegistry.NECROMANCY_GEM.get(), oldGems);
-        int oldTwilight = getGems(stack, ItemRegistry.TWILIGHT_GEM.get(), oldGems);
-        int oldAbsorption = getGems(stack, ItemRegistry.ABSORPTION_GEM.get(), oldGems);
+    public void onGemsChanged(Player player, ItemStack stack, List<ItemStack> oldGems) {
+        if (player.level().isClientSide) {
+            return;
+        }
+        ServerLevel level = (ServerLevel) player.level();
 
-        int shielding = getGems(stack, ItemRegistry.SHIELDING_GEM.get());
-        int necromancy = getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
-        int twilight = getGems(stack, ItemRegistry.TWILIGHT_GEM.get());
-        int absorption = getGems(stack, ItemRegistry.ABSORPTION_GEM.get());
+        int oldShielding = this.getGems(stack, ItemRegistry.SHIELDING_GEM.get(), oldGems);
+        int oldNecromancy = this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get(), oldGems);
+        int shielding = this.getGems(stack, ItemRegistry.SHIELDING_GEM.get());
+        int necromancy = this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
+        int maxShields = (int) Math.round(this.getStatValue(stack, "fortification", "max_shields"));
+        int maxZombies = (int) Math.round(this.getStatValue(stack, "zombie", "max_zombies"));
 
-        if (shielding < oldShielding) {}
+        FortificationShieldAttachment attachment = player.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
+        ArrayList<UUID> zombies = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
+
+        if (shielding < oldShielding && attachment.permanentShieldsLeft() > maxShields) {
+            attachment.setShields(player, shielding < 1 ? 0 : maxShields, false);
+        }
+
+        if (necromancy < oldNecromancy && zombies.size() > maxZombies) {
+            List<UUID> toClear = necromancy < 1 || maxZombies < 1 ? zombies : zombies.subList(
+                    Math.max((int) Math.round(this.getStatValue(stack, "zombie", "max_zombies")), zombies.size())-1,
+                    zombies.size()
+            );
+            toClear.forEach(uuid -> {
+                if (level.getEntity(uuid) instanceof LoyalZombie zombie) {
+                    zombie.discard();
+                }
+            });
+            toClear.clear();
+            stack.set(DataComponentRegistry.ZOMBIES, zombies);
+        }
     }
 
     @Override
     public int getAbilityLevel(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification" -> getGems(stack, ItemRegistry.SHIELDING_GEM.get());
-            case "zombie" -> getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
-            case "twilight" -> getGems(stack, ItemRegistry.TWILIGHT_GEM.get());
-            case "lifedrain" -> getGems(stack, ItemRegistry.ABSORPTION_GEM.get());
+            case "fortification" -> this.getGems(stack, ItemRegistry.SHIELDING_GEM.get());
+            case "zombie" -> this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
+            case "twilight" -> this.getGems(stack, ItemRegistry.TWILIGHT_GEM.get());
+            case "lifedrain" -> this.getGems(stack, ItemRegistry.ABSORPTION_GEM.get());
             default -> super.getAbilityLevel(stack, ability);
+        };
+    }
+
+    @Override
+    public int getAbilityMaxLevel(ItemStack stack, String ability) {
+        return switch (ability) {
+            case "fortification", "zombie", "twilight", "lifedrain" -> (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
+            default -> super.getAbilityMaxLevel(stack, ability);
         };
     }
 
@@ -297,7 +332,7 @@ public class LichCrownItem extends RelicItem {
     @Override
     public boolean isAbilityEnabled(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain" -> getAbilityLevel(stack, ability) > 0;
+            case "fortification", "zombie", "twilight", "lifedrain" -> this.getAbilityLevel(stack, ability) > 0;
             default -> super.isAbilityEnabled(stack, ability);
         };
     }
@@ -320,22 +355,31 @@ public class LichCrownItem extends RelicItem {
 
     @Override
     public boolean isRelicFlawless(ItemStack stack) {
-        return isAbilityFlawless(stack, "soulbound_gems") && isAbilityMaxLevel(stack, "soulbound_gems") && getGemContents(stack).size() >= getSize(stack);
+        return (this.isAbilityFlawless(stack, "soulbound_gems")
+                && this.isAbilityMaxLevel(stack, "soulbound_gems")
+                && this.getGemContents(stack).size() >= this.getSize(stack)
+        );
     }
 
     public static void makeRedMagicTrail(Level level, LivingEntity source, Vec3 target) {
         float r = 1.0F;
         float g = 0.5F;
         float b = 0.5F;
-        // make particle trail
         Vec3 pos = source.position().add(0, source.getBbHeight() / 2f, 0);
         double distance = pos.distanceTo(target);
 
         for (double i = 0; i <= distance * 6; i++) {
             Vec3 particlePos = pos.subtract(target).scale(i / (distance * 6));
             particlePos = pos.subtract(particlePos);
-            //level.addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, r, g, b), particlePos.x(), particlePos.y(), particlePos.z(), 0.0D, 0.0D, 0.0D);
-            level.addParticle(ParticleUtils.constructSimpleSpark(new Color(r, g, b, 0.25f), 0.35f, 20, 0.75f), particlePos.x, particlePos.y, particlePos.z, 0, 0.05, 0);
+            level.addParticle(
+                    ParticleUtils.constructSimpleSpark(new Color(r, g, b, 0.25f), 0.35f, 20, 0.75f),
+                    particlePos.x,
+                    particlePos.y,
+                    particlePos.z,
+                    0,
+                    0.05,
+                    0
+            );
         }
     }
 

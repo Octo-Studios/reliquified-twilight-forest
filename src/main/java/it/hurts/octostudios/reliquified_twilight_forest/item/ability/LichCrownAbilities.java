@@ -19,7 +19,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -34,7 +33,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.apache.logging.log4j.core.jmx.Server;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.entity.monster.LoyalZombie;
@@ -105,7 +103,6 @@ public class LichCrownAbilities {
             .stat(StatData.builder("heal_percentage")
                     .initialValue(0.01, 0.02)
                     .upgradeModifier(UpgradeOperation.ADD, 0.005)
-                    //.upgradeModifier((current, level) -> 1 - 1/(current*Math.sqrt(level)+1))
                     .formatValue(value -> MathButCool.roundSingleDigit(value * 400))
                     .build())
             .stat(StatData.builder("radius")
