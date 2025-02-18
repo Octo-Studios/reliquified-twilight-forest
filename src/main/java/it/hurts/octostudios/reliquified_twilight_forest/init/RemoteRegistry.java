@@ -76,7 +76,10 @@ public class RemoteRegistry {
                     guiGraphics.pose().scale(scale, scale, 1f);
                     guiGraphics.pose().translate(0, 0, -150);
 
-                    RenderSystem.setShaderColor(sin / 2f + 1.125f, sin / 2f + 1.125f, sin + 1.25f, sin);
+                    if (scissorOffset == 0) {
+                        RenderSystem.setShaderColor(sin / 2f + 1.125f, sin / 2f + 1.125f, sin + 1.25f, sin);
+                    }
+
                     RenderSystem.enableScissor(
                             (int) (itemX * guiScale),
                             (int) (Minecraft.getInstance().getWindow().getScreenHeight() - (14 + itemY) * guiScale),
