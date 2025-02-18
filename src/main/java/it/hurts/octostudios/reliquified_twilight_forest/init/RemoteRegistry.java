@@ -8,10 +8,13 @@ import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import it.hurts.sskirillss.relics.utils.data.GUIScissors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -26,7 +29,8 @@ import twilightforest.TwilightForestMod;
 @EventBusSubscriber(modid = ReliquifiedTwilightForest.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class RemoteRegistry {
     @SubscribeEvent
-    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {}
+    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    }
 
     @SubscribeEvent
     public static void onTooltipRegistry(RegisterClientTooltipComponentFactoriesEvent event) {
@@ -35,31 +39,57 @@ public class RemoteRegistry {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.CROSSHAIR, ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "twilight_indicator"), ((guiGraphics, deltaTracker) -> {
-            Minecraft mc = Minecraft.getInstance();
-            ItemStack stack = EntityUtils.findEquippedCurio(mc.player, ItemRegistry.LICH_CROWN.get());
-            if (mc.player == null
-                    || !(stack.getItem() instanceof LichCrownItem relic)
-                    || relic.getAbilityLevel(stack, "twilight") <= 0
-                    || LichCrownAbilities.ClientEvents.getEntityLookingAt(mc.player, 64) == null
-                    || !mc.options.getCameraType().isFirstPerson()
-                    || (mc.getCameraEntity() instanceof LivingEntity living && living.isSleeping())
-                    || mc.options.hideGui
-                    || mc.player.isSpectator()
-                    || mc.crosshairPickEntity != null
-            ) return;
+        event.registerAbove(
+                VanillaGuiLayers.CROSSHAIR,
+                ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "twilight_indicator"),
+                ((guiGraphics, deltaTracker) -> {
+                    Minecraft mc = Minecraft.getInstance();
+                    ItemStack stack = EntityUtils.findEquippedCurio(mc.player, ItemRegistry.LICH_CROWN.get());
+                    if (mc.player == null
+                            || !(stack.getItem() instanceof LichCrownItem relic)
+                            || relic.getAbilityLevel(stack, "twilight") <= 0
+                            || LichCrownAbilities.ClientEvents.getEntityLookingAt(mc.player, 64) == null
+                            || !mc.options.getCameraType().isFirstPerson()
+                            || (mc.getCameraEntity() instanceof LivingEntity living && living.isSleeping())
+                            || mc.options.hideGui
+                            || mc.player.isSpectator()
+                            || mc.crosshairPickEntity != null
+                    ) return;
 
-            float partialTick = mc.player.tickCount + deltaTracker.getGameTimeDeltaPartialTick(true);
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(guiGraphics.guiWidth() / 2f + 4, guiGraphics.guiHeight() / 2f + 4, 0);
-            guiGraphics.pose().scale(0.5f, 0.5f, 0.5f);
+                    float partialTick = mc.player.tickCount + deltaTracker.getGameTimeDeltaPartialTick(true);
+                    float scale = 0.5f;
+                    float guiScale = (float) (Minecraft.getInstance().getWindow().getGuiScale() * scale);
+                    float sin = (float) (Math.sin(partialTick / 2f) / 4f + 0.75f);
 
-            float sin = (float) (Math.sin(partialTick / 2f) / 4f + 0.75f);
-            guiGraphics.pose().translate(0, 0, -150);
-            RenderSystem.setShaderColor(sin / 2f + 1.125f, sin / 2f + 1.125f, sin + 1.25f, sin);
-            guiGraphics.renderItem(ItemRegistry.TWILIGHT_GEM.get().getDefaultInstance(), -8, -8);
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            guiGraphics.pose().popPose();
-        }));
+                    int itemX = guiGraphics.guiWidth();
+                    int itemY = guiGraphics.guiHeight();
+
+                    int scissorOffset = Math.round(Mth.map(
+                            stack.getOrDefault(DataComponentRegistry.TWILIGHT_TIME, 0),
+                            0,
+                            LichCrownAbilities.MAX_TWILIGHT_TIME,
+                            0,
+                            12 * guiScale
+                    ));
+
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.pose().scale(scale, scale, 1f);
+                    guiGraphics.pose().translate(0, 0, -150);
+
+                    RenderSystem.setShaderColor(sin / 2f + 1.125f, sin / 2f + 1.125f, sin + 1.25f, sin);
+                    RenderSystem.enableScissor(
+                            (int) (itemX * guiScale),
+                            (int) (Minecraft.getInstance().getWindow().getScreenHeight() - (14 + itemY) * guiScale),
+                            (int) (16 * guiScale),
+                            (int) (12 * guiScale - scissorOffset)
+                    );
+
+                    guiGraphics.renderItem(ItemRegistry.TWILIGHT_GEM.get().getDefaultInstance(), itemX, itemY);
+                    guiGraphics.pose().popPose();
+
+                    RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+                    RenderSystem.disableScissor();
+                })
+        );
     }
 }

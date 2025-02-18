@@ -10,7 +10,7 @@ import twilightforest.init.TFCreativeTabs;
 
 import java.util.List;
 
-public class GemItem extends Item implements IGem, ICreativeTabContent {
+public class GemItem extends Item implements Gem, ICreativeTabContent {
     public GemItem() {
         super(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1));
     }

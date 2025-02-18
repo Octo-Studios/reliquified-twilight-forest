@@ -12,9 +12,11 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record LifedrainParticlePacket(int entityID, Vec3 victimPos) implements CustomPacketPayload {
+    public static final Type<LifedrainParticlePacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "lifedrain_particles"));
 
-    public static final Type<LifedrainParticlePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "lifedrain_particles"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, LifedrainParticlePacket> STREAM_CODEC = CustomPacketPayload.codec(LifedrainParticlePacket::write, LifedrainParticlePacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, LifedrainParticlePacket> STREAM_CODEC =
+            CustomPacketPayload.codec(LifedrainParticlePacket::write, LifedrainParticlePacket::new);
 
     public LifedrainParticlePacket(RegistryFriendlyByteBuf buf) {
         this(buf.readInt(), new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble()));

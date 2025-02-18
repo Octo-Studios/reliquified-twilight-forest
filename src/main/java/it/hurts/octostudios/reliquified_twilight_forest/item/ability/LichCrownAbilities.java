@@ -37,15 +37,15 @@ import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.entity.monster.LoyalZombie;
 import twilightforest.init.*;
+import twilightforest.item.LifedrainScepterItem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
-
 public class LichCrownAbilities {
     public static final int MAX_LIFEDRAIN_TIME = 120;
+    public static final int MAX_TWILIGHT_TIME = 50;
 
     public static final AbilityData FORTIFICATION = AbilityData.builder("fortification")
             .stat(StatData.builder("max_shields")
@@ -91,11 +91,6 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.ADD, 0.1)
                     .formatValue(MathButCool::roundSingleDigit)
                     .build())
-//            .stat(StatData.builder("interval")
-//                    .initialValue(200, 180)
-//                    .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.075f)
-//                    .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
-//                    .build())
             .maxLevel(5)
             .build();
 
@@ -119,9 +114,10 @@ public class LichCrownAbilities {
             .build();
 
     public static void fortificationTick(LivingEntity entity, ItemStack stack) {
-        if (entity.isSpectator()) return;
+        if (entity.isSpectator()
+                || !(stack.getItem() instanceof LichCrownItem relic)
+        ) return;
 
-        if (!(stack.getItem() instanceof LichCrownItem relic)) return;
         FortificationShieldAttachment attachment = entity.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
         int maxTime = (int) Math.round(relic.getStatValue(stack, "fortification", "interval"));
         int time = stack.getOrDefault(DataComponentRegistry.FORTIFICATION_TIME, 0);
@@ -151,20 +147,22 @@ public class LichCrownAbilities {
     }
 
     public static void lifedrainTick(LivingEntity entity, ItemStack stack) {
-        if (entity.isSpectator()) return;
+        if (entity.isSpectator()
+                || !(stack.getItem() instanceof LichCrownItem relic)
+        ) return;
 
-        if (!(stack.getItem() instanceof LichCrownItem relic)) return;
         int maxTime = (int) Math.round(relic.getStatValue(stack, "lifedrain", "interval")) + MAX_LIFEDRAIN_TIME;
         int time = stack.getOrDefault(DataComponentRegistry.LIFEDRAIN_TIME, 0);
         float healAmount = (float) (entity.getMaxHealth() * relic.getStatValue(stack, "lifedrain", "heal_percentage"));
         DamageSource dmg = TFDamageTypes.getEntityDamageSource(entity.level(), TFDamageTypes.LIFEDRAIN, entity);
 
         if (time > maxTime - MAX_LIFEDRAIN_TIME && entity.getHealth() < entity.getMaxHealth() && entity.tickCount % 5 == 0) {
-            List<LivingEntity> toAbsorb = EntitiesButCool.findEligibleEntities(entity, relic.getStatValue(stack, "lifedrain", "radius"), e ->
-                    !EntityUtils.isAlliedTo(entity, e)
+            List<LivingEntity> toAbsorb = EntitiesButCool.findEligibleEntities(entity, relic.getStatValue(stack, "lifedrain", "radius"),
+                    e -> !EntityUtils.isAlliedTo(entity, e)
                             && e.isAlive()
                             && entity.hasLineOfSight(e)
             );
+
             toAbsorb.forEach(toHurt -> {
                 PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new LifedrainParticlePacket(entity.getId(), toHurt.getEyePosition()));
                 if (toHurt.getHealth() <= healAmount / toAbsorb.size() && !toHurt.getType().is(Tags.EntityTypes.BOSSES)) {
@@ -177,9 +175,11 @@ public class LichCrownAbilities {
                 if (toHurt.getMaxHealth() <= entity.getMaxHealth()) toHurt.setDeltaMovement(0, 0.15D, 0);
                 else toHurt.setDeltaMovement(0, 0, 0);
             });
+
             entity.heal(healAmount);
-            if (!toAbsorb.isEmpty())
+            if (!toAbsorb.isEmpty()) {
                 entity.level().playSound(null, entity.blockPosition(), TFSounds.LIFE_SCEPTER_DRAIN.get(), SoundSource.PLAYERS);
+            }
         }
 
         if (time <= 0) {
@@ -189,17 +189,22 @@ public class LichCrownAbilities {
     }
 
     public static void twilightTick(LivingEntity entity, ItemStack stack) {
-        if (entity.isSpectator()) return;
-        if (!(stack.getItem() instanceof LichCrownItem relic)) return;
-//        int time = stack.getOrDefault(DataComponentRegistry.TWILIGHT_TIME, 0);
-//        if (time > 0) time--;
-//        stack.set(DataComponentRegistry.TWILIGHT_TIME, time);
+        if (entity.isSpectator()
+                || !(stack.getItem() instanceof LichCrownItem relic)
+        ) return;
+
+        int time = stack.getOrDefault(DataComponentRegistry.TWILIGHT_TIME, 0);
+        if (time > 0) {
+            time--;
+        }
+        stack.set(DataComponentRegistry.TWILIGHT_TIME, time);
     }
 
-    @SuppressWarnings("unchecked")
     public static void zombieTick(LivingEntity entity, ItemStack stack) {
-        if (entity.isSpectator()) return;
-        if (!(stack.getItem() instanceof LichCrownItem relic)) return;
+        if (entity.isSpectator()
+                || !(stack.getItem() instanceof LichCrownItem relic)
+        ) return;
+
         int time = stack.getOrDefault(DataComponentRegistry.ZOMBIE_TIME, 0);
         ArrayList<UUID> uuids = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
         int maxZombies = (int) Math.round(relic.getStatValue(stack, "zombie", "max_zombies"));
@@ -208,7 +213,9 @@ public class LichCrownAbilities {
             time = (int) Math.round(relic.getStatValue(stack, "zombie", "interval"));
 
             LoyalZombie zombie = spawnZombie(entity, (float) relic.getStatValue(stack, "zombie", "damage"), entity.position());
-            if (zombie != null) uuids.add( zombie.getUUID());
+            if (zombie != null) {
+                uuids.add(zombie.getUUID());
+            }
         }
         if (time > 0) time--;
         stack.set(DataComponentRegistry.ZOMBIE_TIME, time);
@@ -243,7 +250,10 @@ public class LichCrownAbilities {
             @Override
             public void aiStep() {
                 if (!this.hasEffect(MobEffects.DAMAGE_BOOST)) {
-                    if (!level.isClientSide) animateTargetShatter((ServerLevel) level, this);
+                    if (!level.isClientSide) {
+                        LifedrainScepterItem.animateTargetShatter((ServerLevel) level, this);
+                    }
+
                     this.hurt(TFDamageTypes.getDamageSource(this.level(), TFDamageTypes.EXPIRED), Float.MAX_VALUE);
                     this.discard();
                 }
@@ -273,7 +283,9 @@ public class LichCrownAbilities {
         @SubscribeEvent
         public static void swingEvent(PlayerInteractEvent.LeftClickEmpty e) {
             Player player = e.getEntity();
-            if (player.isSpectator()) return;
+            if (player.isSpectator()) {
+                return;
+            }
 
             double maxDistance = 64.0;
 
@@ -292,7 +304,11 @@ public class LichCrownAbilities {
             // Perform entity ray tracing
             return ProjectileUtil.getEntityHitResult(player, eyePosition, reachEnd,
                     player.getBoundingBox().expandTowards(lookVector.scale(maxDistance)).inflate(1.0),
-                    entity -> entity instanceof LivingEntity && entity.isAlive() && entity != player && !EntityUtils.isAlliedTo(player, entity),
+                    entity -> entity instanceof LivingEntity
+                            && entity.isAlive()
+                            && player.hasLineOfSight(entity)
+                            && entity != player
+                            && !EntityUtils.isAlliedTo(player, entity),
                     maxDistance * maxDistance);
         }
     }

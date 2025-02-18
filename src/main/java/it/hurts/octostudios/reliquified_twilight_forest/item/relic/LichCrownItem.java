@@ -5,7 +5,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWith
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.IGem;
+import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
@@ -18,7 +18,6 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -126,9 +125,10 @@ public class LichCrownItem extends RelicItem {
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         super.onUnequip(slotContext, newStack, stack);
-        if (newStack.getItem() instanceof LichCrownItem newRelic) {
-            if (newRelic.getAbilitiesComponent(newStack).equals(this.getAbilitiesComponent(stack))) return;
-        }
+        if ((newStack.getItem() instanceof LichCrownItem newRelic
+                && newRelic.getAbilitiesComponent(newStack).equals(this.getAbilitiesComponent(stack)))
+                || slotContext.entity().level().isClientSide
+        ) return;
 
         if (slotContext.entity().level().isClientSide) return;
         LichCrownAbilities.fortificationUnequip(slotContext, stack);
@@ -138,8 +138,11 @@ public class LichCrownItem extends RelicItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         super.inventoryTick(stack, level, entity, slotId, isSelected);
-        if (!(stack.getItem() instanceof LichCrownItem relic)) return;
-        if (!(entity instanceof Player player) || player.level().isClientSide) return;
+        if (!(stack.getItem() instanceof LichCrownItem relic)
+                || !(entity instanceof Player player)
+                || player.level().isClientSide
+        ) return;
+
         relic.dropExcessive(player, stack);
     }
 
@@ -153,7 +156,7 @@ public class LichCrownItem extends RelicItem {
 
         ItemStack heldStack = event.getHeldStack();
 
-        if (heldStack.getItem() instanceof IGem) {
+        if (heldStack.getItem() instanceof Gem) {
             if (relic.tryInsert(event.getEntity(), stack, heldStack))
                 event.getEntity().playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
 
@@ -251,11 +254,11 @@ public class LichCrownItem extends RelicItem {
         this.onGemsChanged(player, stack, oldGems);
     }
 
-    public int getGems(ItemStack stack, IGem gem) {
-        return this.getGems(stack, gem, getGemContents(stack));
+    public int getGems(ItemStack stack, Gem gem) {
+        return this.getGems(stack, gem, this.getGemContents(stack));
     }
 
-    public int getGems(ItemStack stack, IGem gem, List<ItemStack> gems) {
+    public int getGems(ItemStack stack, Gem gem, List<ItemStack> gems) {
         return (int) gems.stream().filter(itemStack -> itemStack.getItem() == gem).count();
     }
 
@@ -269,19 +272,19 @@ public class LichCrownItem extends RelicItem {
         int oldNecromancy = this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get(), oldGems);
         int shielding = this.getGems(stack, ItemRegistry.SHIELDING_GEM.get());
         int necromancy = this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
-        int maxShields = (int) Math.round(this.getStatValue(stack, "fortification", "max_shields"));
-        int maxZombies = (int) Math.round(this.getStatValue(stack, "zombie", "max_zombies"));
+        int maxShields = shielding < 1 ? 0 : (int) Math.round(this.getStatValue(stack, "fortification", "max_shields"));
+        int maxZombies = necromancy < 1 ? 0 : (int) Math.round(this.getStatValue(stack, "zombie", "max_zombies"));
 
         FortificationShieldAttachment attachment = player.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
         ArrayList<UUID> zombies = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
 
         if (shielding < oldShielding && attachment.permanentShieldsLeft() > maxShields) {
-            attachment.setShields(player, shielding < 1 ? 0 : maxShields, false);
+            attachment.setShields(player, maxShields, false);
         }
 
         if (necromancy < oldNecromancy && zombies.size() > maxZombies) {
-            List<UUID> toClear = necromancy < 1 || maxZombies < 1 ? zombies : zombies.subList(
-                    Math.max((int) Math.round(this.getStatValue(stack, "zombie", "max_zombies")), zombies.size())-1,
+            List<UUID> toClear = maxZombies < 1 ? zombies : zombies.subList(
+                    Math.max((int) Math.round(this.getStatValue(stack, "zombie", "max_zombies")), zombies.size()) - 1,
                     zombies.size()
             );
             toClear.forEach(uuid -> {
