@@ -45,6 +45,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.components.entity.FortificationShieldAttachment;
@@ -66,6 +67,8 @@ import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
 @EventBusSubscriber
 public class LichCrownItem extends RelicItem {
+    public static final Predicate<LivingEntity> HAS_CROWN = target -> !EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
+
     public LichCrownItem() {
         super((new Item.Properties()).rarity(Rarity.RARE).stacksTo(1).component(DataComponentRegistry.GEMS, List.of()));
     }
@@ -120,8 +123,6 @@ public class LichCrownItem extends RelicItem {
         if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
     }
 
-    // TODO: If the player has generated as many shields as the Shielding Gem allows,
-    //  shields will not disappear when gem is removed
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         super.onUnequip(slotContext, newStack, stack);
@@ -171,28 +172,38 @@ public class LichCrownItem extends RelicItem {
         }
     }
 
-    // TODO: If skeleton previously considered the player as its target, it must stop attacking them and, if possible, choose a different target
     @SubscribeEvent
     public static void onEntitySpawn(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide) return;
         if (!(event.getEntity() instanceof AbstractSkeleton skeleton)) return;
-
-        Predicate<LivingEntity> predicate = target -> EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
 
         skeleton.targetSelector.getAvailableGoals().removeIf(goal ->
                 goal.getGoal() instanceof NearestAttackableTargetGoal<?> g
                         && ((NearestAttackableTargetGoalAccessor) g).getTargetType().isAssignableFrom(Player.class));
         skeleton.targetSelector.getAvailableGoals().removeIf(goal -> goal.getGoal() instanceof HurtByTargetGoal);
 
-        skeleton.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(skeleton, Player.class, true, predicate));
+        skeleton.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(skeleton, Player.class, true, HAS_CROWN.negate()));
         skeleton.targetSelector.addGoal(1, new HurtByTargetGoalWithPredicate(
                 skeleton,
                 TargetingConditions
                         .forCombat()
                         .ignoreLineOfSight()
                         .ignoreInvisibilityTesting()
-                        .selector(predicate)
+                        .selector(HAS_CROWN.negate())
         ));
+    }
+
+    @SubscribeEvent
+    public static void onLivingEntityTick(EntityTickEvent.Post e) {
+        Entity entity = e.getEntity();
+        if (entity.level().isClientSide
+                || entity.tickCount % 10 != 0
+                || !(entity instanceof AbstractSkeleton skeleton)
+                || !(skeleton.getTarget() instanceof Player player)
+                || HAS_CROWN.negate().test(player)
+        ) return;
+
+        skeleton.setTarget(null);
     }
 
     public int getSize(ItemStack stack) {
