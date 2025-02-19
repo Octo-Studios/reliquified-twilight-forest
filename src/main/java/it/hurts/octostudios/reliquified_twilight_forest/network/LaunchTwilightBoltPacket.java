@@ -6,6 +6,9 @@ import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import lombok.Getter;
+import lombok.Setter;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -54,6 +57,32 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                 ) return;
 
                 TwilightWandBolt bolt = new TwilightWandBolt(entity.level(), entity) {
+                    @Getter
+                    @Setter
+                    int age;
+
+                    @Override
+                    public void tick() {
+                        super.tick();
+                        if (this.getAge() > 200) {
+                            this.discard();
+                        }
+
+                        this.setAge(this.getAge()+1);
+                    }
+
+                    @Override
+                    public void addAdditionalSaveData(CompoundTag compound) {
+                        super.addAdditionalSaveData(compound);
+                        compound.putInt("Age", this.getAge());
+                    }
+
+                    @Override
+                    public void readAdditionalSaveData(CompoundTag compound) {
+                        super.readAdditionalSaveData(compound);
+                        this.setAge(compound.getInt("Age"));
+                    }
+
                     @Override
                     protected void onHitEntity(EntityHitResult result) {
                         if (this.level().isClientSide()) {

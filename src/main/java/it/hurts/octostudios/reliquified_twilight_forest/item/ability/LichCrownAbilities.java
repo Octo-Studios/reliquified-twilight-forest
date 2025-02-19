@@ -11,6 +11,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -24,7 +25,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -41,6 +44,7 @@ import twilightforest.item.LifedrainScepterItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class LichCrownAbilities {
@@ -96,17 +100,17 @@ public class LichCrownAbilities {
 
     public static final AbilityData LIFEDRAIN = AbilityData.builder("lifedrain")
             .stat(StatData.builder("heal_percentage")
-                    .initialValue(0.01, 0.02)
-                    .upgradeModifier(UpgradeOperation.ADD, 0.005)
+                    .initialValue(0.0075, 0.015)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.0035)
                     .formatValue(value -> MathButCool.roundSingleDigit(value * 400))
                     .build())
             .stat(StatData.builder("radius")
-                    .initialValue(3, 6)
+                    .initialValue(2, 5)
                     .upgradeModifier(UpgradeOperation.ADD, 0.5)
                     .formatValue(MathButCool::roundSingleDigit)
                     .build())
             .stat(StatData.builder("interval")
-                    .initialValue(240, 200)
+                    .initialValue(300, 260)
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.1f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
@@ -213,7 +217,7 @@ public class LichCrownAbilities {
         if (time <= 0 && uuids.size() < maxZombies) {
             time = (int) Math.round(relic.getStatValue(stack, "zombie", "interval"));
 
-            LoyalZombie zombie = spawnZombie(entity, (float) relic.getStatValue(stack, "zombie", "damage"), entity.position());
+            LoyalZombie zombie = spawnZombie(entity, (float) relic.getStatValue(stack, "zombie", "damage"), entity.blockPosition());
             if (zombie != null) {
                 uuids.add(zombie.getUUID());
             }
@@ -231,7 +235,7 @@ public class LichCrownAbilities {
         stack.set(DataComponentRegistry.ZOMBIES, uuids);
     }
 
-    public static LoyalZombie spawnZombie(LivingEntity entity, float damage, Vec3 position) {
+    public static LoyalZombie spawnZombie(LivingEntity entity, float damage, BlockPos position) {
         Level level = entity.level();
         LoyalZombie zombie = new LoyalZombie(TFEntities.LOYAL_ZOMBIE.get(), level) {
             @Override
@@ -262,10 +266,11 @@ public class LichCrownAbilities {
             }
         };
 
-        zombie.moveTo(position);
+        zombie.moveTo(findSafeSpawn(position, (ServerLevel) level, 3).getBottomCenter());
         if (!level.noCollision(zombie, zombie.getBoundingBox())) {
             return null;
         }
+
         zombie.spawnAnim();
         zombie.setTame(true, false);
         zombie.setOwnerUUID(entity.getUUID());
@@ -277,6 +282,29 @@ public class LichCrownAbilities {
         zombie.playSound(TFSounds.ZOMBIE_SCEPTER_USE.get(), 1.0F, 1.0F);
         zombie.setSilent(true);
         return zombie;
+    }
+
+    public static BlockPos findSafeSpawn(BlockPos position, ServerLevel world, int radius) {
+        Random random = new Random();
+        for (int attempts = 0; attempts < 10; attempts++) { // Try 10 times to find a valid location
+            int xOffset = random.nextInt(radius * 2) - radius;
+            int zOffset = random.nextInt(radius * 2) - radius;
+            BlockPos potentialPos = position.offset(xOffset, 0, zOffset);
+
+            // Find the highest solid ground
+            BlockPos spawnPos = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, potentialPos);
+
+            if (isSafe(spawnPos, world)) {
+                return spawnPos;
+            }
+        }
+        return position; // Fallback: spawn at the player's position
+    }
+
+    private static boolean isSafe(BlockPos pos, ServerLevel world) {
+        return world.getBlockState(pos).isAir() && // Ensure the spawn spot is air
+                world.getBlockState(pos.below()).isSolid() && // Ensure there's solid ground
+                world.getBlockState(pos.below()).getBlock() != Blocks.LAVA; // Avoid lava pools
     }
 
     @EventBusSubscriber(Dist.CLIENT)
