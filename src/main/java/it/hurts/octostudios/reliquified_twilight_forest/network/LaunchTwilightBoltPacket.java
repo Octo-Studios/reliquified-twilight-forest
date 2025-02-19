@@ -64,6 +64,10 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                     @Override
                     public void tick() {
                         super.tick();
+                        if (!this.level().isClientSide()) {
+                            return;
+                        }
+
                         if (this.getAge() > 200) {
                             this.discard();
                         }

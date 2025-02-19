@@ -7,6 +7,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.client.gui.tooltip.Clien
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
+import it.hurts.sskirillss.relics.client.renderer.entities.NullRenderer;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.data.GUIScissors;
 import net.minecraft.client.Minecraft;
@@ -30,6 +31,8 @@ import twilightforest.TwilightForestMod;
 public class RemoteRegistry {
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(EntityRegistry.HYDRA_FIRE.get(), NullRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.HYDRA_FIRE_PUDDLE.get(), NullRenderer::new);
     }
 
     @SubscribeEvent
@@ -71,7 +74,6 @@ public class RemoteRegistry {
                             0,
                             12 * guiScale
                     ));
-
                     guiGraphics.pose().pushPose();
                     guiGraphics.pose().scale(scale, scale, 1f);
                     guiGraphics.pose().translate(0, 0, -150);

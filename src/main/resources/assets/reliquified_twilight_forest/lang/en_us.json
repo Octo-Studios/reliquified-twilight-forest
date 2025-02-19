@@ -12,6 +12,8 @@
   "tooltip.relics.hydra_heart.ability.regenerative_heads.description": "Adds up to %1$s new head slots. These slots are initially inactive and activate as the player's health drops to certain thresholds",
   "tooltip.relics.hydra_heart.leveling_source.regenerative_heads.title": "Regenerative Heads",
   "tooltip.relics.hydra_heart.leveling_source.regenerative_heads.description": "This relic receives 1 experience point for every relic equipped in the ability slots",
+  "tooltip.relics.hydra_heart.ability.hydra_fire": "Hydra's Fire",
+  "tooltip.relics.hydra_heart.ability.hydra_fire.description": "%1$s%% chance, %2$s damage, %3$ss lifetime",
 
   "item.reliquified_twilight_forest.absorption_gem": "Absorption Gem",
   "item.reliquified_twilight_forest.necromancy_gem": "Necromancy Gem",
