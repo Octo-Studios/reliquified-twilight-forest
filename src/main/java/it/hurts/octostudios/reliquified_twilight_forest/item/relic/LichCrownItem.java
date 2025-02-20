@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import com.google.common.collect.Lists;
+import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWithPredicate;
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
@@ -435,5 +436,10 @@ public class LichCrownItem extends RelicItem {
                 target.discard();
             }
         }
+    }
+
+    @Override
+    public String getConfigRoute() {
+        return ReliquifiedTwilightForest.MODID;
     }
 }
