@@ -109,6 +109,7 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                         this.discard();
                     }
                 };
+                bolt.getPersistentData().putBoolean("reliquified_twilight_forest:isCustom", true);
                 bolt.setNoGravity(true);
                 bolt.setDeltaMovement(entity.getViewVector(1f).scale(relic.getStatValue(stack, "twilight", "speed_scale")));
                 entity.level().addFreshEntity(bolt);

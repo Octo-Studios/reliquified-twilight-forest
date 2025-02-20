@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.ability;
 
 import com.google.common.collect.Lists;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.octostudios.reliquified_twilight_forest.network.LaunchTwilightBoltPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.network.LifedrainParticlePacket;
@@ -34,11 +35,13 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.entity.monster.LoyalZombie;
+import twilightforest.entity.projectile.TwilightWandBolt;
 import twilightforest.init.*;
 import twilightforest.item.LifedrainScepterItem;
 
@@ -130,6 +133,7 @@ public class LichCrownAbilities {
             if (time <= 0) {
                 attachment.addShields(entity, 1, false);
                 time = maxTime;
+                relic.spreadRelicExperience(entity, stack, 1);
             } else time--;
         }
 
@@ -184,11 +188,16 @@ public class LichCrownAbilities {
             entity.heal(healAmount);
             if (!toAbsorb.isEmpty()) {
                 entity.level().playSound(null, entity.blockPosition(), TFSounds.LIFE_SCEPTER_DRAIN.get(), SoundSource.PLAYERS);
+                if (entity.tickCount % 10 == 0) {
+                    relic.spreadRelicExperience(entity, stack, 1);
+                }
             }
         }
 
         if (time <= 0) {
-            if (entity.getHealth() / entity.getMaxHealth() <= 0.2f) time = maxTime;
+            if (entity.getHealth() / entity.getMaxHealth() <= 0.2f) {
+                time = maxTime;
+            }
         } else time--;
         stack.set(DataComponentRegistry.LIFEDRAIN_TIME, time);
     }
@@ -219,6 +228,7 @@ public class LichCrownAbilities {
 
             LoyalZombie zombie = spawnZombie(entity, (float) relic.getStatValue(stack, "zombie", "damage"), entity.blockPosition());
             if (zombie != null) {
+                relic.spreadRelicExperience(entity, stack, 1);
                 uuids.add(zombie.getUUID());
             }
         }
@@ -305,6 +315,22 @@ public class LichCrownAbilities {
         return world.getBlockState(pos).isAir() && // Ensure the spawn spot is air
                 world.getBlockState(pos.below()).isSolid() && // Ensure there's solid ground
                 world.getBlockState(pos.below()).getBlock() != Blocks.LAVA; // Avoid lava pools
+    }
+
+    @EventBusSubscriber
+    public static class CommonEvents {
+        @SubscribeEvent
+        public static void onTwilightBoltHit(LivingDamageEvent.Post e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getDirectEntity() instanceof TwilightWandBolt bolt)
+                    || !(e.getSource().getEntity() instanceof Player player)
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(bolt.getPersistentData().contains("reliquified_twilight_forest:isCustom"))
+            ) return;
+
+            relic.spreadRelicExperience(player, stack, 1);
+        }
     }
 
     @EventBusSubscriber(Dist.CLIENT)

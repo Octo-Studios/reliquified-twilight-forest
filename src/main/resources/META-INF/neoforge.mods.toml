@@ -17,7 +17,7 @@ description = '''Compatibility addon between Relics & The Twilight Forest'''
 [[dependencies.${mod_id}]]
 modId = "minecraft"
 type="required"
-versionRange = "[1.21, 1.22)"
+versionRange = "[1.21.1]"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
@@ -29,7 +29,7 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "curios"
 type="required"
-versionRange = "[9.0.5+1.21,)"
+versionRange = "[9.2.2+1.21.1,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
@@ -41,7 +41,7 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "relics"
 type="required"
-versionRange = "[0.10.3,)"
+versionRange = "[0.10.5.3,)"
 ordering = "AFTER"
 side = "BOTH"
 [[dependencies.${mod_id}]]

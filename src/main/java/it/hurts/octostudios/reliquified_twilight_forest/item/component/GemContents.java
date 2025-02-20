@@ -2,7 +2,6 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.component;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 
