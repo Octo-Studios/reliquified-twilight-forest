@@ -40,5 +40,8 @@
   "tooltip.relics.lich_crown.leveling_source.twilight.title": "Сумеречное касание",
   "tooltip.relics.lich_crown.leveling_source.twilight.description": "+%1$s единиц опыта за каждое попадание в цель снарядом от способности %2$s.",
   "tooltip.relics.lich_crown.leveling_source.zombie.title": "Восставшие слуги",
-  "tooltip.relics.lich_crown.leveling_source.zombie.description": "+%1$s единиц опыта за каждый порождённого мини-зомби способностью %2$s."
+  "tooltip.relics.lich_crown.leveling_source.zombie.description": "+%1$s единиц опыта за каждый порождённого мини-зомби способностью %2$s.",
+
+  "entity.reliquified_twilight_forest.hydra_fire": "Капля Крови",
+  "entity.reliquified_twilight_forest.hydra_fire_puddle": "Огненная Лужица"
 }

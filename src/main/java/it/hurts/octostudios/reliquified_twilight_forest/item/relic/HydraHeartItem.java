@@ -12,6 +12,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -57,9 +59,20 @@ public class HydraHeartItem extends RelicItem {
                                 .build())
                         .build())
                 .leveling(LevelingData.builder()
+                        .sources(LevelingSourcesData.builder()
+                                .source(LevelingSourceData.abilityBuilder("hydra_fire")
+                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .build())
+                                .build())
                         .initialCost(100)
                         .step(125)
                         .maxLevel(5)
+                        .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xff38f3fa)
+                                .endColor(0x00182566)
+                                .build())
                         .build())
                 .build();
     }

@@ -51,7 +51,7 @@ public class MinotaurHoofItem extends RelicItem {
                                 .stat(StatData.builder("damage")
                                         .initialValue(1, 2)
                                         .formatValue(value -> MathUtils.round(value, 1))
-                                        .upgradeModifier(UpgradeOperation.ADD, 0.5f)
+                                        .upgradeModifier(UpgradeOperation.ADD, 1f)
                                         .build())
                                 .build())
                         .build())
@@ -113,7 +113,9 @@ public class MinotaurHoofItem extends RelicItem {
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(0.025), target -> !target.getStringUUID().equals(player.getStringUUID()));
 
         for (LivingEntity entity : entities) {
-            entity.hurt(player.damageSources().playerAttack(player), (float) relic.getStatValue(stack, "momentum_rush", "damage"));
+            if (entity.hurt(player.damageSources().playerAttack(player), (float) relic.getStatValue(stack, "momentum_rush", "damage"))) {
+                relic.spreadRelicExperience(player, stack, 1);
+            }
         }
     }
 

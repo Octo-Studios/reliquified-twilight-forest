@@ -51,7 +51,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class LichCrownAbilities {
-    public static final int MAX_LIFEDRAIN_TIME = 120;
+    public static final int MAX_LIFEDRAIN_TIME = 100;
     public static final int MAX_TWILIGHT_TIME = 50;
 
     public static final AbilityData FORTIFICATION = AbilityData.builder("fortification")

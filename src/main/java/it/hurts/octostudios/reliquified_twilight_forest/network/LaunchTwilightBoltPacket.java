@@ -19,12 +19,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import twilightforest.entity.projectile.TwilightWandBolt;
 import twilightforest.init.TFDamageTypes;
+import twilightforest.init.TFEntities;
 import twilightforest.init.TFSounds;
 
 public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
@@ -57,22 +59,22 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                 ) return;
 
                 TwilightWandBolt bolt = new TwilightWandBolt(entity.level(), entity) {
-                    @Getter
                     @Setter
-                    int age;
+                    @Getter
+                    int age = 200;
 
                     @Override
                     public void tick() {
                         super.tick();
-                        if (!this.level().isClientSide()) {
+                        if (this.level().isClientSide()) {
                             return;
                         }
 
-                        if (this.getAge() > 200) {
+                        if (this.getAge() < 0) {
                             this.discard();
                         }
 
-                        this.setAge(this.getAge()+1);
+                        this.setAge(this.getAge()-1);
                     }
 
                     @Override
