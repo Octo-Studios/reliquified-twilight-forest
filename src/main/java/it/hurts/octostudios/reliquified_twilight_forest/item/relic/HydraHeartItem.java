@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
+import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.entity.projectile.HydraFireEntity;
 import it.hurts.octostudios.reliquified_twilight_forest.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
@@ -107,5 +108,10 @@ public class HydraHeartItem extends RelicItem {
         fire.setDeltaMovement(0,0.4f,0);
         fire.setOwner(e.getEntity());
         entity.level().addFreshEntity(fire);
+    }
+
+    @Override
+    public String getConfigRoute() {
+        return ReliquifiedTwilightForest.MODID;
     }
 }

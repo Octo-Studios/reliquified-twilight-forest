@@ -149,4 +149,9 @@ public class MinotaurHoofItem extends RelicItem {
         e.setAmount((float) reducedDamage);
 
     }
+
+    @Override
+    public String getConfigRoute() {
+        return ReliquifiedTwilightForest.MODID;
+    }
 }
