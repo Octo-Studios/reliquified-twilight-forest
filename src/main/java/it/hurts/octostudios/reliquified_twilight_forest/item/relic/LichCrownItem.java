@@ -163,22 +163,38 @@ public class LichCrownItem extends RelicItem {
         if (event.getAction() != ClickAction.SECONDARY) return;
 
         ItemStack stack = event.getSlotStack();
-        if (!(stack.getItem() instanceof LichCrownItem relic)) return;
+        //if (!(stack.getItem() instanceof LichCrownItem relic)) return;
 
         ItemStack heldStack = event.getHeldStack();
 
-        if (heldStack.getItem() instanceof Gem) {
-            if (relic.tryInsert(event.getEntity(), stack, heldStack))
-                event.getEntity().playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
+        if (stack.getItem() instanceof LichCrownItem relic) {
+            if (heldStack.getItem() instanceof Gem) {
+                if (relic.tryInsert(event.getEntity(), stack, heldStack))
+                    event.getEntity().playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
 
-            event.setCanceled(true);
-        } else if (heldStack.isEmpty()) {
-            event.setCanceled(true);
-            ItemStack gem = relic.pop(event.getEntity(), stack);
-            if (gem.isEmpty()) return;
+                event.setCanceled(true);
+            } else if (heldStack.isEmpty()) {
+                event.setCanceled(true);
+                ItemStack gem = relic.pop(event.getEntity(), stack);
+                if (gem.isEmpty()) return;
 
-            event.getEntity().playSound(SoundEvents.ITEM_PICKUP, 0.75f, 1.25f);
-            event.getEntity().containerMenu.setCarried(gem);
+                event.getEntity().playSound(SoundEvents.ITEM_PICKUP, 0.75f, 1.25f);
+                event.getEntity().containerMenu.setCarried(gem);
+            }
+        } else if (heldStack.getItem() instanceof LichCrownItem relic) {
+            if (stack.getItem() instanceof Gem) {
+                if (relic.tryInsert(event.getEntity(), heldStack, stack))
+                    event.getEntity().playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
+
+                event.setCanceled(true);
+            } else if (stack.isEmpty()) {
+                event.setCanceled(true);
+                ItemStack gem = relic.pop(event.getEntity(), heldStack);
+                if (gem.isEmpty()) return;
+
+                event.getEntity().playSound(SoundEvents.ITEM_PICKUP, 0.75f, 1.25f);
+                event.getSlot().set(gem);
+            }
         }
     }
 
