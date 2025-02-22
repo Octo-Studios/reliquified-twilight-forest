@@ -9,6 +9,7 @@
     "NearestAttackableTargetGoalAccessor"
   ],
   "client": [
+    "MovingCicadaSoundInstanceMixin"
   ],
   "injectors": {
     "defaultRequire": 1

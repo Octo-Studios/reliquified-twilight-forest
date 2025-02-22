@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
+import it.hurts.octostudios.reliquified_twilight_forest.item.relic.FireflyQueenItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.HydraHeartItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.MinotaurHoofItem;
@@ -20,9 +21,10 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, GemItem> NECROMANCY_GEM = ITEMS.register("necromancy_gem", () -> new GemItem());
     public static final DeferredHolder<Item, GemItem> SHIELDING_GEM  = ITEMS.register("shielding_gem",  () -> new GemItem());
 
+    public static final DeferredHolder<Item, LichCrownItem> LICH_CROWN = ITEMS.register("lich_crown", LichCrownItem::new);
     public static final DeferredHolder<Item, MinotaurHoofItem> MINOTAUR_HOOF = ITEMS.register("minotaur_hoof", MinotaurHoofItem::new);
     public static final DeferredHolder<Item, HydraHeartItem> HYDRA_HEART = ITEMS.register("hydra_heart", HydraHeartItem::new);
-    public static final DeferredHolder<Item, LichCrownItem> LICH_CROWN = ITEMS.register("lich_crown", LichCrownItem::new);
+    public static final DeferredHolder<Item, FireflyQueenItem> FIREFLY_QUEEN = ITEMS.register("firefly_queen", FireflyQueenItem::new);
 
 
     public static void register(IEventBus bus) {

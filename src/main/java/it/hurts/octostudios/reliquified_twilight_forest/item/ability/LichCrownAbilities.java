@@ -311,7 +311,7 @@ public class LichCrownAbilities {
         return position; // Fallback: spawn at the player's position
     }
 
-    private static boolean isSafe(BlockPos pos, ServerLevel world) {
+    public static boolean isSafe(BlockPos pos, ServerLevel world) {
         return world.getBlockState(pos).isAir() && // Ensure the spawn spot is air
                 world.getBlockState(pos.below()).isSolid() && // Ensure there's solid ground
                 world.getBlockState(pos.below()).getBlock() != Blocks.LAVA; // Avoid lava pools
