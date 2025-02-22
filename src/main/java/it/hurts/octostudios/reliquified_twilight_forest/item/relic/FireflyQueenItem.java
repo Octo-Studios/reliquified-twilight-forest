@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
@@ -11,6 +12,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -24,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.client.particle.FireflyParticle;
 import twilightforest.init.TFBlocks;
+import twilightforest.init.TFDimension;
 import twilightforest.init.TFParticleType;
 
 public class FireflyQueenItem extends RelicItem {
@@ -52,6 +56,9 @@ public class FireflyQueenItem extends RelicItem {
                                         .build())
                                 .build())
                         .maxLevel(5)
+                        .build())
+                .loot(LootData.builder()
+                        .entry(LootEntries.TWILIGHT)
                         .build())
                 .build();
     }

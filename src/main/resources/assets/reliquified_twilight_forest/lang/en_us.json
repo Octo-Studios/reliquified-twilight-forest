@@ -42,6 +42,13 @@
   "tooltip.relics.lich_crown.leveling_source.zombie.title": "Risen Servants",
   "tooltip.relics.lich_crown.leveling_source.zombie.description": "+%1$s experience points for each mini-zombie spawned by the %2$s ability.",
 
+  "item.reliquified_twilight_forest.cicada_bottle": "Cicada Bottle",
+  "tooltip.relics.cicada_bottle.description": "screeching fucker",
+  "tooltip.relics.cicada_bottle.ability.cicada_infestation": "Cicada Infestation",
+  "tooltip.relics.cicada_bottle.ability.cicada_infestation.description": "When the player hits another entity, there is a %1$s%% chance to make nearby mobs target the entity for %2$s seconds with priority over everything else.",
+
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
-  "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle"
+  "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
+
+  "effect.reliquified_twilight_forest.cicada_infestation": "Cicada Infestation"
 }
