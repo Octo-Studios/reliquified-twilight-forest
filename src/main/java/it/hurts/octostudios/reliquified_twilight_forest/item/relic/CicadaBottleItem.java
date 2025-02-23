@@ -1,7 +1,9 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.EffectRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
@@ -14,6 +16,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -132,8 +135,10 @@ public class CicadaBottleItem extends RelicItem {
 
             float bbWidth = e.getEntity().getBbWidth();
             float bbHeight = e.getEntity().getBbHeight();
+            float bbMin = Math.min(bbWidth, bbHeight);
+            float scale = Math.clamp(bbMin/1.5f, 0.25f, 1.5f);
 
-            int max = Mth.ceil(bbWidth*1.25f) + 1;
+            int max = (int) ((Mth.ceil(bbWidth*1.25f) + 1)/scale);
 
             for (int i = 0; i < max; i++) {
                 CicadaModel model = new CicadaModel(CicadaModel.create().bakeRoot());
@@ -145,15 +150,25 @@ public class CicadaBottleItem extends RelicItem {
 
                 poseStack.pushPose();
                 poseStack.mulPose(Axis.YP.rotationDegrees(time * 2 + 360f / (max) * i));
-                poseStack.translate(0, bbHeight / 2 + sine * (bbHeight / 20f) + 0.25, bbWidth / 2f + 0.5);
+                poseStack.translate(0, bbHeight / 2 + sine * (bbHeight / 20f) + 0.25, bbWidth / 2f + scale / 3f);
                 poseStack.mulPose(Axis.YP.rotationDegrees(180));
                 poseStack.mulPose(Axis.XP.rotationDegrees(-90 + cosine * -10f));
                 //poseStack.mulPose(Axis.XP.rotationDegrees(time * 8 + i * 10));
                 poseStack.translate(0, 0.5, 0);
-                poseStack.scale(1, -1, 1);
-                model.renderToBuffer(poseStack, e.getMultiBufferSource().getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), e.getPackedLight(), OverlayTexture.NO_OVERLAY);
+                poseStack.scale(scale, -scale, scale);
+                model.renderToBuffer(
+                        poseStack,
+                        e.getMultiBufferSource().getBuffer(RenderType.entityCutoutNoCull(TEXTURE)),
+                        LightTexture.FULL_BRIGHT,
+                        OverlayTexture.NO_OVERLAY
+                );
                 poseStack.popPose();
             }
         }
+    }
+
+    @Override
+    public String getConfigRoute() {
+        return ReliquifiedTwilightForest.MODID;
     }
 }

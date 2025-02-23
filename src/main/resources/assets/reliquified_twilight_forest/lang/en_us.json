@@ -47,6 +47,11 @@
   "tooltip.relics.cicada_bottle.ability.cicada_infestation": "Cicada Infestation",
   "tooltip.relics.cicada_bottle.ability.cicada_infestation.description": "When the player hits another entity, there is a %1$s%% chance to make nearby mobs target the entity for %2$s seconds with priority over everything else.",
 
+  "item.reliquified_twilight_forest.deer_antler": "Deer Antler",
+  "tooltip.relics.deer_antler.description": "a",
+  "tooltip.relics.deer_antler.ability.ride_along": "Ride Along!",
+  "tooltip.relics.deer_antler.ability.ride_along.description": "%1$s blocks",
+
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 
