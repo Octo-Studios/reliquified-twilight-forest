@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.network.ScaledCloakWallClimbPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
@@ -15,28 +16,20 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.SlotContext;
-import twilightforest.init.TFBlocks;
-import twilightforest.init.TFParticleType;
 
 @EventBusSubscriber
 public class ScaledCloakItem extends RelicItem {
@@ -45,10 +38,10 @@ public class ScaledCloakItem extends RelicItem {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("wall_crawler")
-                                .stat(StatData.builder("max_height")
-                                        .initialValue(2, 4)
-                                        .upgradeModifier(UpgradeOperation.ADD, 2)
-                                        .formatValue(Math::round)
+                                .stat(StatData.builder("max_time")
+                                        .initialValue(30, 50)
+                                        .upgradeModifier(UpgradeOperation.ADD, 50)
+                                        .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .build())
                                 .maxLevel(5)
                                 .build())
@@ -82,14 +75,26 @@ public class ScaledCloakItem extends RelicItem {
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity entity = slotContext.entity();
         Level level = entity.level();
-        if ((level.isClientSide && entity != Minecraft.getInstance().player)
+        int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        boolean isColliding = false;
+
+        if (!level.isClientSide
+                || entity != Minecraft.getInstance().player
                 || !(stack.getItem() instanceof IRelicItem relic)
         ) return;
 
+        // I was today years old when I discovered that collision are only detected on client, too bad!
+        //entity.sendSystemMessage(Component.literal(Thread.currentThread().getName()+", Collision: "+entity.horizontalCollision+", Minor: "+entity.minorHorizontalCollision));
+
         if (entity.horizontalCollision) {
-            Vec3 dt = entity.getDeltaMovement();
-            entity.setDeltaMovement(dt.x, 0.1f, dt.z);
+            isColliding = true;
+            Vec3 deltaMovement = entity.getDeltaMovement();
+            float deltaY = time > 0 ? 0.1f : -0.07f;
+
+            entity.setDeltaMovement(deltaMovement.x, deltaY, deltaMovement.z);
         }
+
+        PacketDistributor.sendToServer(new ScaledCloakWallClimbPacket(isColliding));
     }
 
     @SubscribeEvent
@@ -97,7 +102,7 @@ public class ScaledCloakItem extends RelicItem {
         LivingEntity entity = e.getEntity();
         Entity attacker = e.getSource().getEntity();
         EntityHitResult result = getEntityLookingAt(entity, 100);
-        ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.SCALED_CLOAD.get());
+        ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.SCALED_CLOAK.get());
 
         if (entity.level().isClientSide
                 || result == null

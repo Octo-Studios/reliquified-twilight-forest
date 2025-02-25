@@ -16,6 +16,7 @@ public class PacketRegistry {
         registrar.playToClient(EntityStartRidingPacket.TYPE, EntityStartRidingPacket.STREAM_CODEC, EntityStartRidingPacket::handle);
         registrar.playToClient(EntityStopRidingPacket.TYPE, EntityStopRidingPacket.STREAM_CODEC, EntityStopRidingPacket::handle);
         registrar.playToServer(CastRideAlongAbilityPacket.TYPE, CastRideAlongAbilityPacket.STREAM_CODEC, CastRideAlongAbilityPacket::handle);
+        registrar.playToServer(ScaledCloakWallClimbPacket.TYPE, ScaledCloakWallClimbPacket.STREAM_CODEC, ScaledCloakWallClimbPacket::handle);
         registrar.playBidirectional(LaunchTwilightBoltPacket.TYPE, LaunchTwilightBoltPacket.STREAM_CODEC, LaunchTwilightBoltPacket::handle);
     }
 }

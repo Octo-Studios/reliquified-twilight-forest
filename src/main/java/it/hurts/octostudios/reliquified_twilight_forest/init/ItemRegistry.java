@@ -3,10 +3,8 @@ package it.hurts.octostudios.reliquified_twilight_forest.init;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.*;
-import it.hurts.sskirillss.relics.items.ItemBase;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -24,7 +22,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, FireflyQueenItem> FIREFLY_QUEEN = ITEMS.register("firefly_queen", FireflyQueenItem::new);
     public static final DeferredHolder<Item, CicadaBottleItem> CICADA_BOTTLE = ITEMS.register("cicada_bottle", CicadaBottleItem::new);
     public static final DeferredHolder<Item, DeerAntlerItem> DEER_ANTLER = ITEMS.register("deer_antler", DeerAntlerItem::new);
-    public static final DeferredHolder<Item, ScaledCloakItem> SCALED_CLOAD = ITEMS.register("scaled_cloak", ScaledCloakItem::new);
+    public static final DeferredHolder<Item, ScaledCloakItem> SCALED_CLOAK = ITEMS.register("scaled_cloak", ScaledCloakItem::new);
 
 
     public static void register(IEventBus bus) {
