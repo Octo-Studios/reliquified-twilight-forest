@@ -1,6 +1,8 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWithPredicate;
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
@@ -10,14 +12,27 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
+import it.hurts.sskirillss.relics.client.models.items.CurioModel;
+import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -45,12 +60,15 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.client.ICurioRenderer;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.data.tags.EntityTagGenerator;
 import twilightforest.entity.monster.LoyalZombie;
@@ -69,7 +87,7 @@ import java.util.function.Predicate;
 import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
 @EventBusSubscriber
-public class LichCrownItem extends RelicItem {
+public class LichCrownItem extends RelicItem implements IRenderableCurio {
     public static final Predicate<LivingEntity> HAS_CROWN = target -> !EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
 
     public LichCrownItem() {
@@ -111,6 +129,13 @@ public class LichCrownItem extends RelicItem {
                                 .source(LevelingSourceData.abilityBuilder("fortification")
                                         .gem(GemShape.SQUARE, GemColor.YELLOW)
                                         .build())
+                                .build())
+                        .build())
+                .style(StyleData.builder()
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff4f4e52)
+                                .borderBottom(0xff45434c)
+                                .textured(true)
                                 .build())
                         .build())
                 .build();
@@ -459,5 +484,61 @@ public class LichCrownItem extends RelicItem {
     @Override
     public String getConfigRoute() {
         return ReliquifiedTwilightForest.MODID;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public List<String> headParts() {
+        return List.of("head");
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public LayerDefinition constructLayerDefinition() {
+        MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.4f), 0);
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        PartDefinition bone = partdefinition.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 22).addBox(-2.5F, -9.0F, -4.5F, 5.0F, 2.0F, 2.0F,
+                        new CubeDeformation(0.005F))
+                .texOffs(0, 33).addBox(-2.5F, -9.0F, 2.5F, 5.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(16, 29).addBox(-1.0F, -7.0F, -4.5F, 2.0F, 2.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(12, 26).addBox(-0.5F, -16.0F, -3.5F, 1.0F, 1.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(-4.5F, -7.0F, -4.5F, 2.0F, 2.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 6).addBox(2.5F, -7.0F, -4.5F, 2.0F, 2.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(-4.5F, -7.0F, 4.5F, 2.0F, 2.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(-4.499F, -7.0F, 2.501F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(-4.499F, -7.0F, -4.499F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(4.501F, -7.0F, -4.499F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(4.501F, -7.0F, 2.501F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(-4.5F, -7.0F, 4.5F, 2.0F, 2.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(16, 29).addBox(-1.0F, -7.0F, 4.5F, 2.0F, 2.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 6).addBox(2.5F, -7.0F, 4.5F, 2.0F, 2.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(14, 22).addBox(2.5F, -14.0F, -4.5F, 2.0F, 5.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(22, 20).addBox(-4.5F, -14.0F, -4.5F, 2.0F, 5.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(22, 4).addBox(-1.0F, -15.0F, -4.5F, 2.0F, 6.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(2.5F, -11.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(30, 4).addBox(-4.5F, -11.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(14, 22).addBox(2.5F, -14.0F, 2.5F, 2.0F, 5.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(22, 4).addBox(-1.0F, -15.0F, 2.5F, 2.0F, 6.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(22, 20).addBox(-4.5F, -14.0F, 2.5F, 2.0F, 5.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(12, 26).addBox(-0.5F, -16.0F, 3.5F, 1.0F, 1.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(0, 0).addBox(-4.5F, -9.0F, -4.5F, 2.0F, 2.0F, 9.0F, new CubeDeformation(0.0F))
+                .texOffs(0, 11).addBox(2.5F, -9.0F, -4.5F, 2.0F, 2.0F, 9.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        CurioModel model = this.getModel(stack);
+        matrixStack.pushPose();
+        LivingEntity entity = slotContext.entity();
+        ICurioRenderer.followBodyRotations(entity, model);
+        model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+        model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.entityCutout(this.getTexture(stack)), stack.hasFoil());
+        matrixStack.scale(1.0047f, 1.0047f, 1.0047f);
+        model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
+        matrixStack.popPose();
     }
 }

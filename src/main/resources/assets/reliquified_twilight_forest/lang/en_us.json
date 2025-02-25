@@ -52,6 +52,13 @@
   "tooltip.relics.deer_antler.ability.ride_along": "Ride Along!",
   "tooltip.relics.deer_antler.ability.ride_along.description": "%1$s blocks",
 
+  "item.reliquified_twilight_forest.scaled_cloak": "Scaled Cloak",
+  "tooltip.relics.scaled_cloak.description": "",
+  "tooltip.relics.scaled_cloak.ability.wall_crawler": "Wall Crawler",
+  "tooltip.relics.scaled_cloak.ability.wall_crawler.description": "Allows the player to smoothly climb walls if their height does not exceed %1$s blocks. If the wall is taller but the player continues trying to climb, they will gradually slide down",
+  "tooltip.relics.scaled_cloak.ability.elusive_stare": "Elusive Stare",
+  "tooltip.relics.scaled_cloak.ability.elusive_stare.description": "An enemy has an %1$s%% chance to miss the player if the player maintains eye contact with them",
+
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 

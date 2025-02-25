@@ -154,6 +154,7 @@ public class LichCrownAbilities {
         stack.set(DataComponentRegistry.ZOMBIES, List.of());
     }
 
+
     public static void lifedrainTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()
                 || !(stack.getItem() instanceof LichCrownItem relic)
