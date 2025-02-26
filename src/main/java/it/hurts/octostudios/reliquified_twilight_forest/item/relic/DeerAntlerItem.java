@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.network.CastRideAlongAbilityPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
@@ -16,6 +17,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.PartPose;
@@ -63,6 +65,9 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
                                         .type(CastType.INSTANTANEOUS)
                                         .build())
                                 .build())
+                        .build())
+                .loot(LootData.builder()
+                        .entry(LootEntries.TWILIGHT)
                         .build())
                 .build();
     }

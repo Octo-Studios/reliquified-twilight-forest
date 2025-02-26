@@ -83,9 +83,6 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
                                 .build())
                         .maxLevel(10)
                         .build())
-                .loot(LootData.builder()
-                        .entry(LootEntries.TWILIGHT)
-                        .build())
                 .build();
     }
 
