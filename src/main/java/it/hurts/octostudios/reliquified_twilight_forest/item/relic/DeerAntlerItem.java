@@ -73,7 +73,7 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
 
         LivingEntity entity = slotContext.entity();
         if (entity.level().isClientSide
-                || entity.tickCount % 20 != 0
+                || entity.tickCount % 60 != 0
                 || entity.getPassengers().isEmpty()
                 || !entity.getPassengers().getFirst().getPersistentData().getBoolean(ON_ANTLERS)
                 || !(stack.getItem() instanceof DeerAntlerItem relic)

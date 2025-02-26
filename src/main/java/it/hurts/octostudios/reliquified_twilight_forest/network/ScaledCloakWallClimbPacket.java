@@ -48,8 +48,13 @@ public record ScaledCloakWallClimbPacket(boolean isColliding) implements CustomP
 
         int maxTime = (int) Math.round(relic.getStatValue(stack, "wall_crawler", "max_time"));
 
-        if (packet.isColliding() && time > 0) {
-            stack.set(DataComponentRegistry.TIME, --time);
+        if (packet.isColliding()) {
+            if (time > 0) {
+                stack.set(DataComponentRegistry.TIME, --time);
+            }
+            if (player.tickCount % 20 == 0) {
+                relic.spreadRelicExperience(player, stack, 1);
+            }
         }
 
         if (player.onGround() && time != maxTime) {

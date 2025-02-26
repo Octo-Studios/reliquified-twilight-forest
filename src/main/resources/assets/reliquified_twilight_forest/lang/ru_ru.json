@@ -61,7 +61,7 @@
   "tooltip.relics.scaled_cloak.description": "Практически идеально повторяющий очертания огромной змеи плащ кроме всего прочего позволяет также перенимать и часть её способностей.",
   "tooltip.relics.scaled_cloak.ability.wall_crawler": "Цепкость",
   "tooltip.relics.scaled_cloak.ability.wall_crawler.description": "Позволяет игроку плавно карабкаться по стенам на протяжении %1$s секунд. По истечении времени игрок будет плавно сползать по стене вниз.",
-  "tooltip.relics.scaled_cloak.ability.elusive_stare": "Иллюзорный взор",
+  "tooltip.relics.scaled_cloak.ability.elusive_stare": "Неуловимый взор",
   "tooltip.relics.scaled_cloak.ability.elusive_stare.description": "При получении урона с шансом в %1$s%% вынуждает цель промахнуться по игроку, если он поддерживает с ней зрительный контакт.",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Капля Крови",

@@ -171,13 +171,13 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
         MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.4f), 0);
         PartDefinition partdefinition = meshdefinition.getRoot();
 
-        PartDefinition left_arm = partdefinition.addOrReplaceChild("left_arm", CubeListBuilder.create().texOffs(11, 37).mirror().addBox(-2.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)).mirror(false), PartPose.offset(6.0F, 2.0F, 0.0F));
+        PartDefinition left_arm = partdefinition.addOrReplaceChild("left_arm", CubeListBuilder.create().texOffs(11, 37).mirror().addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)).mirror(false), PartPose.offset(5.0F, 2.0F, 0.0F));
 
-        PartDefinition right_arm = partdefinition.addOrReplaceChild("right_arm", CubeListBuilder.create().texOffs(11, 37).addBox(-2.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)), PartPose.offset(-6.0F, 2.0F, 0.0F));
+        PartDefinition right_arm = partdefinition.addOrReplaceChild("right_arm", CubeListBuilder.create().texOffs(11, 37).addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)), PartPose.offset(-5.0F, 2.0F, 0.0F));
 
         PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(0.0F, -0.1913F, -0.0619F));
 
-        PartDefinition cube_r1 = head.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(34, 9).addBox(-4.5F, -1.0F, -3.0F, 9.0F, 4.0F, 6.0F, new CubeDeformation(0.05F)), PartPose.offsetAndRotation(0.0F, 1.0F, 4.0F, -0.7854F, 0.0F, 0.0F));
+        PartDefinition cube_r1 = head.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(34, 9).addBox(-4.5F, -1.0F, -3.0F, 9.0F, 4.0F, 6.0F, new CubeDeformation(0.05F)), PartPose.offsetAndRotation(0.0F, 1.0F, 3.0F, -0.7854F, 0.0F, 0.0F));
 
         PartDefinition body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-4.5F, 0.0F, 2.999F, 9.0F, 19.0F, 0.0F, new CubeDeformation(0.0F))
                 .texOffs(4, 0).addBox(-4.5F, 0.0F, -1.0F, 0.0F, 19.0F, 4.0F, new CubeDeformation(0.005F))
@@ -185,7 +185,6 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
                 .texOffs(0, 0).addBox(-4.5F, 0.0F, -3.0F, 9.0F, 2.0F, 0.0F, new CubeDeformation(0.005F))
                 .texOffs(34, 0).addBox(4.5F, 0.0F, -3.0F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.005F))
                 .texOffs(32, 0).addBox(-4.5F, 0.0F, -3.0F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.005F)), PartPose.offset(0.0F, 0.0F, 0.001F));
-
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
