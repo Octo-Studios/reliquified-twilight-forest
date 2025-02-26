@@ -42,25 +42,30 @@
   "tooltip.relics.lich_crown.leveling_source.zombie.title": "Risen Servants",
   "tooltip.relics.lich_crown.leveling_source.zombie.description": "+%1$s experience points for each mini-zombie spawned by the %2$s ability.",
 
-  "item.reliquified_twilight_forest.cicada_bottle": "Cicada Bottle",
-  "tooltip.relics.cicada_bottle.description": "screeching fucker",
-  "tooltip.relics.cicada_bottle.ability.cicada_infestation": "Cicada Infestation",
-  "tooltip.relics.cicada_bottle.ability.cicada_infestation.description": "When the player hits another entity, there is a %1$s%% chance to make nearby mobs target the entity for %2$s seconds with priority over everything else.",
+  "item.reliquified_twilight_forest.firefly_queen": "Firefly Queen",
+  "tooltip.relics.firefly_queen.description": "A fragile and slightly disgusting-looking insect capable of spawning a swarm of fireflies that will forever dispel any darkness.",
+  "tooltip.relics.firefly_queen.ability.glowkeeper": "Glowkeeper",
+  "tooltip.relics.firefly_queen.ability.glowkeeper.description": "Generates a firefly larva in the internal buffer every %1$s seconds, with a maximum of %2$s at a time. When the player is in complete darkness, it consumes 1 larva and places a firefly nearby to light the way.",
+
+  "item.reliquified_twilight_forest.cicada_bottle": "Cicada in a Bottle",
+  "tooltip.relics.cicada_bottle.description": "A jar filled with the energy of hatred. Though this spawn of evil looks like a small bug, do not let your eyes deceive you. Its devilish song can evoke true rage in anyone who hears it, making them willing to do anything to make it stop.",
+  "tooltip.relics.cicada_bottle.ability.cicada_infestation": "Cicada's Curse",
+  "tooltip.relics.cicada_bottle.ability.cicada_infestation.description": "Has a %1$s%% chance on hit to inflict the Cicada's Curse on the target for %2$s seconds, forcing all nearby mobs to attack that target, ignoring their other tasks.",
 
   "item.reliquified_twilight_forest.deer_antler": "Deer Antler",
-  "tooltip.relics.deer_antler.description": "a",
-  "tooltip.relics.deer_antler.ability.ride_along": "Ride Along!",
-  "tooltip.relics.deer_antler.ability.ride_along.description": "%1$s blocks",
+  "tooltip.relics.deer_antler.description": "A suspiciously large antler for an ordinary deer, which would look just as suspiciously fitting on some living creature.",
+  "tooltip.relics.deer_antler.ability.ride_along": "On the Horns!",
+  "tooltip.relics.deer_antler.ability.ride_along.description": "When used on a creature whose hitbox does not exceed %1$s blocks, places it on the player's antlers and prevents it from dealing damage to the player.",
 
   "item.reliquified_twilight_forest.scaled_cloak": "Scaled Cloak",
-  "tooltip.relics.scaled_cloak.description": "",
-  "tooltip.relics.scaled_cloak.ability.wall_crawler": "Wall Crawler",
-  "tooltip.relics.scaled_cloak.ability.wall_crawler.description": "Allows the player to smoothly climb walls if their height does not exceed %1$s blocks. If the wall is taller but the player continues trying to climb, they will gradually slide down",
-  "tooltip.relics.scaled_cloak.ability.elusive_stare": "Elusive Stare",
-  "tooltip.relics.scaled_cloak.ability.elusive_stare.description": "An enemy has an %1$s%% chance to miss the player if the player maintains eye contact with them",
+  "tooltip.relics.scaled_cloak.description": "A cloak that almost perfectly mimics the shape of a giant snake, granting the wearer some of its abilities.",
+  "tooltip.relics.scaled_cloak.ability.wall_crawler": "Grip",
+  "tooltip.relics.scaled_cloak.ability.wall_crawler.description": "Allows the player to smoothly climb walls for %1$s seconds. After the duration ends, the player will slowly slide down.",
+  "tooltip.relics.scaled_cloak.ability.elusive_stare": "Illusive Stare",
+  "tooltip.relics.scaled_cloak.ability.elusive_stare.description": "When taking damage, has a %1$s%% chance to make the attacker miss if the player maintains eye contact with them.",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 
-  "effect.reliquified_twilight_forest.cicada_infestation": "Cicada Infestation"
+  "effect.reliquified_twilight_forest.cicada_infestation": "Cicada Curse"
 }
