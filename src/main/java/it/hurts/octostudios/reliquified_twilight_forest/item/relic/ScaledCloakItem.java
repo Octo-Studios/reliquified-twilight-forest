@@ -1,12 +1,16 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.network.ScaledCloakWallClimbPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
+import it.hurts.sskirillss.relics.client.models.items.CurioModel;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
+import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -16,6 +20,15 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -25,14 +38,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.client.ICurioRenderer;
+
+import java.util.List;
 
 @EventBusSubscriber
-public class ScaledCloakItem extends RelicItem {
+public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
     @Override
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
@@ -133,5 +151,55 @@ public class ScaledCloakItem extends RelicItem {
     @Override
     public String getConfigRoute() {
         return ReliquifiedTwilightForest.MODID;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public List<String> headParts() {
+        return List.of("head");
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public List<String> bodyParts() {
+        return List.of("right_arm", "left_arm", "body");
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public LayerDefinition constructLayerDefinition() {
+        MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.4f), 0);
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        PartDefinition left_arm = partdefinition.addOrReplaceChild("left_arm", CubeListBuilder.create().texOffs(11, 37).mirror().addBox(-2.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)).mirror(false), PartPose.offset(6.0F, 2.0F, 0.0F));
+
+        PartDefinition right_arm = partdefinition.addOrReplaceChild("right_arm", CubeListBuilder.create().texOffs(11, 37).addBox(-2.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.3F)), PartPose.offset(-6.0F, 2.0F, 0.0F));
+
+        PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(0.0F, -0.1913F, -0.0619F));
+
+        PartDefinition cube_r1 = head.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(34, 9).addBox(-4.5F, -1.0F, -3.0F, 9.0F, 4.0F, 6.0F, new CubeDeformation(0.05F)), PartPose.offsetAndRotation(0.0F, 1.0F, 4.0F, -0.7854F, 0.0F, 0.0F));
+
+        PartDefinition body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-4.5F, 0.0F, 2.999F, 9.0F, 19.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(4, 0).addBox(-4.5F, 0.0F, -1.0F, 0.0F, 19.0F, 4.0F, new CubeDeformation(0.005F))
+                .texOffs(4, 0).mirror().addBox(4.5F, 0.0F, -1.0F, 0.0F, 19.0F, 4.0F, new CubeDeformation(0.005F)).mirror(false)
+                .texOffs(0, 0).addBox(-4.5F, 0.0F, -3.0F, 9.0F, 2.0F, 0.0F, new CubeDeformation(0.005F))
+                .texOffs(34, 0).addBox(4.5F, 0.0F, -3.0F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.005F))
+                .texOffs(32, 0).addBox(-4.5F, 0.0F, -3.0F, 0.0F, 2.0F, 2.0F, new CubeDeformation(0.005F)), PartPose.offset(0.0F, 0.0F, 0.001F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        CurioModel model = this.getModel(stack);
+        matrixStack.pushPose();
+        LivingEntity entity = slotContext.entity();
+        ICurioRenderer.followBodyRotations(entity, model);
+        model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+        model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.entityCutoutNoCull(this.getTexture(stack)), stack.hasFoil());
+        model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
+        matrixStack.popPose();
     }
 }
