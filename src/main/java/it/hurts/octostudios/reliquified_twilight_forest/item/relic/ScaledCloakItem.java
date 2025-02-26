@@ -18,6 +18,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
@@ -57,31 +59,38 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
                 .abilities(AbilitiesData.builder()
                         .ability(AbilityData.builder("wall_crawler")
                                 .stat(StatData.builder("max_time")
-                                        .initialValue(30, 50)
-                                        .upgradeModifier(UpgradeOperation.ADD, 50)
+                                        .initialValue(60, 100)
+                                        .upgradeModifier(UpgradeOperation.ADD, 40)
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .build())
-                                .maxLevel(5)
+                                .maxLevel(10)
                                 .build())
                         .ability(AbilityData.builder("elusive_stare")
+                                .requiredLevel(5)
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.1, 0.25)
                                         .upgradeModifier(UpgradeOperation.ADD, 0.1)
                                         .formatValue(MathButCool::percentage)
                                         .build())
-                                .maxLevel(5)
+                                .maxLevel(10)
                                 .build())
                         .build())
                 .leveling(LevelingData.builder()
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("wall_crawler")
-                                        .gem(GemShape.SQUARE, GemColor.GREEN)
+                                        .gem(GemShape.SQUARE, GemColor.YELLOW)
                                         .build())
                                 .source(LevelingSourceData.abilityBuilder("elusive_stare")
-                                        .gem(GemShape.SQUARE, GemColor.BLUE)
+                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
                                         .build())
                                 .build())
-                        .maxLevel(10)
+                        .maxLevel(15)
+                        .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xff0ada00)
+                                .endColor(0x00014f2b)
+                                .build())
                         .build())
                 .build();
     }

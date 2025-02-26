@@ -15,6 +15,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
@@ -53,7 +55,7 @@ public class CicadaBottleItem extends RelicItem {
                         .ability(AbilityData.builder("cicada_infestation")
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.1, 0.2)
-                                        .upgradeModifier(UpgradeOperation.ADD, 0.12)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.1)
                                         .formatValue(MathButCool::percentage)
                                         .build())
                                 .stat(StatData.builder("duration")
@@ -75,6 +77,12 @@ public class CicadaBottleItem extends RelicItem {
                 .loot(LootData.builder()
                         .entry(LootEntries.TWILIGHT)
                         .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xffa7e000)
+                                .endColor(0x00014f2b)
+                                .build())
+                        .build())
                 .build();
     }
 
@@ -87,17 +95,20 @@ public class CicadaBottleItem extends RelicItem {
     public static void onEntityHit(LivingDamageEvent.Post e) {
         Entity user = e.getSource().getEntity();
         LivingEntity target = e.getEntity();
-        ItemStack stack = EntityUtils.findEquippedCurio(user, ItemRegistry.CICADA_BOTTLE.get());
-
         if (target.level().isClientSide
                 || !(user instanceof LivingEntity source)
-                || !(stack.getItem() instanceof CicadaBottleItem relic)
-                || target.hasEffect(EffectRegistry.CICADA_INFESTATION)
-                || source.getRandom().nextFloat() > relic.getStatValue(stack, "cicada_infestation", "chance")
         ) return;
 
-        target.addEffect(new MobEffectInstance(EffectRegistry.CICADA_INFESTATION, (int) relic.getStatValue(stack, "cicada_infestation", "duration"), 0));
-        relic.spreadRelicExperience(source, stack, 1);
+        for (ItemStack stack : EntityUtils.findEquippedCurios(user, ItemRegistry.CICADA_BOTTLE.get())) {
+            float random = source.getRandom().nextFloat();
+            if (!(stack.getItem() instanceof CicadaBottleItem relic)
+                    || target.hasEffect(EffectRegistry.CICADA_INFESTATION)
+                    || random > relic.getStatValue(stack, "cicada_infestation", "chance")
+            ) continue;
+
+            target.addEffect(new MobEffectInstance(EffectRegistry.CICADA_INFESTATION, (int) relic.getStatValue(stack, "cicada_infestation", "duration"), 0));
+            relic.spreadRelicExperience(source, stack, 1);
+        }
     }
 
     @SubscribeEvent

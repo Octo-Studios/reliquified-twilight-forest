@@ -14,6 +14,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootEntry;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -60,6 +62,12 @@ public class FireflyQueenItem extends RelicItem {
                 .loot(LootData.builder()
                         .entry(LootEntries.TWILIGHT)
                         .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xffa7e000)
+                                .endColor(0x00014f2b)
+                                .build())
+                        .build())
                 .build();
     }
 
@@ -94,7 +102,7 @@ public class FireflyQueenItem extends RelicItem {
 
         if (charge > 0
                 && entity.onGround()
-                && !level.isDay()
+                && (!level.isDay() || level.getBrightness(LightLayer.SKY, pos) == 0)
                 && level.getBrightness(LightLayer.BLOCK, pos) == 0
                 && state.canSurvive(level, pos)
                 && posState.canBeReplaced()

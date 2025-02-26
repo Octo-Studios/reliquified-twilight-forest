@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.network.CastRideAlongAbilityPacket;
+import it.hurts.octostudios.reliquified_twilight_forest.network.EntityStopRidingPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
 import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
@@ -13,11 +14,13 @@ import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.CastData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastStage;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastType;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.PartPose;
@@ -66,8 +69,22 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
                                         .build())
                                 .build())
                         .build())
+                .leveling(LevelingData.builder()
+                        .sources(LevelingSourcesData.builder()
+                                .source(LevelingSourceData.abilityBuilder("ride_along")
+                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .build())
+                                .build())
+                        .maxLevel(5)
+                        .build())
                 .loot(LootData.builder()
                         .entry(LootEntries.TWILIGHT)
+                        .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xffe0400c)
+                                .endColor(0x0088410c)
+                                .build())
                         .build())
                 .build();
     }
@@ -119,6 +136,20 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
                         && !player.getPassengers().contains(entity)
                         && entity != player,
                 maxDistance * maxDistance);
+    }
+
+    @Override
+    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
+        super.onUnequip(slotContext, newStack, stack);
+        if (newStack.getItem() == stack.getItem() || slotContext.entity().level().isClientSide) {
+            return;
+        }
+
+        if (slotContext.entity().hasPassenger(e -> e.getPersistentData().getBoolean(ON_ANTLERS))) {
+            Entity passenger = slotContext.entity().getFirstPassenger();
+            passenger.stopRiding();
+            PacketDistributor.sendToAllPlayers(new EntityStopRidingPacket(passenger.getId()));
+        }
     }
 
     @SubscribeEvent

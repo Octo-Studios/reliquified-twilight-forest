@@ -14,6 +14,8 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.client.model.EntityModel;
@@ -79,6 +81,12 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
                                 .source(LevelingSourceData.abilityBuilder("momentum_rush")
                                         .gem(GemShape.SQUARE, GemColor.PURPLE)
                                         .build())
+                                .build())
+                        .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xffe0400c)
+                                .endColor(0x0088410c)
                                 .build())
                         .build())
                 .build();
