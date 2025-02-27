@@ -43,19 +43,25 @@
   "tooltip.relics.lich_crown.leveling_source.zombie.description": "+%1$s единиц опыта за каждый порождённого мини-зомби способностью %2$s.",
 
   "item.reliquified_twilight_forest.firefly_queen": "Королева светлячков",
-  "tooltip.relics.firefly_queen.description": "На вид хрупкое и слегка мерзкое насекомое, способное породить рой светлячков, что навеки рассеят любую тьму.",
+  "tooltip.relics.firefly_queen.description": "На вид хрупкое и слегка мерзкое насекомое, способное породить рой светлячков, что навеки рассеет любую тьму.",
   "tooltip.relics.firefly_queen.ability.glowkeeper": "Светлячок",
   "tooltip.relics.firefly_queen.ability.glowkeeper.description": "Каждые %1$s секунд генерирует во внутренний буфер личинку светлячка, которых не может быть больше чем %2$s одновременно. Когда игрок находится в полной темноте, расходует 1 личинку и размещает поблизости светлячка, освещающего путь.",
+  "tooltip.relics.firefly_queen.leveling_source.glowkeeper.title": "Светлячок",
+  "tooltip.relics.firefly_queen.leveling_source.glowkeeper.description": "+%1$s единиц опыта за каждого размещенного светлячка от способности %2$s.",
 
   "item.reliquified_twilight_forest.cicada_bottle": "Цикада в бутылке",
   "tooltip.relics.cicada_bottle.description": "Энергия ненависти, заточенная в банку. Хоть это порождение зла и выглядит как небольшой жучок, - не стоит давать глазам обмануть себя. Его дьявольская песня способна вызвать истинную ярость у любого, кому доведётся её услышать, отчего тот будет готов на всё, лишь бы прекратить это.",
   "tooltip.relics.cicada_bottle.ability.cicada_infestation": "Проклятье цикады",
   "tooltip.relics.cicada_bottle.ability.cicada_infestation.description": "При атаке с шансом в %1$s%% накладывает на цель проклятье цикады на %2$s секунд, вынуждая всех ближайших мобов атаковать эту цель, игнорируя свои другие задачи.",
+  "tooltip.relics.cicada_bottle.leveling_source.cicada_infestation.title": "Проклятье цикады",
+  "tooltip.relics.cicada_bottle.leveling_source.cicada_infestation.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
 
   "item.reliquified_twilight_forest.deer_antler": "Олений рог",
   "tooltip.relics.deer_antler.description": "Подозрительно большой рог для обычного оленя, на котором не менее подозрительно хорошо будет смотреться какое-нибудь живое существо.",
   "tooltip.relics.deer_antler.ability.ride_along": "На рога!",
   "tooltip.relics.deer_antler.ability.ride_along.description": "При использовании на существе, объем хитбокса которого не превышает %1$s блоков, размещает его на рогах и запрещает наносить игроку урон.",
+  "tooltip.relics.deer_antler.leveling_source.ride_along.title": "На рога!",
+  "tooltip.relics.deer_antler.leveling_source.ride_along.description": "+%1$s единиц опыта за каждые 3 секунды, проведённые с существом на рогах от способности %2$s.",
 
   "item.reliquified_twilight_forest.scaled_cloak": "Чешуйчатый плащ",
   "tooltip.relics.scaled_cloak.description": "Практически идеально повторяющий очертания огромной змеи плащ кроме всего прочего позволяет также перенимать и часть её способностей.",
@@ -63,6 +69,10 @@
   "tooltip.relics.scaled_cloak.ability.wall_crawler.description": "Позволяет игроку плавно карабкаться по стенам на протяжении %1$s секунд. По истечении времени игрок будет плавно сползать по стене вниз.",
   "tooltip.relics.scaled_cloak.ability.elusive_stare": "Неуловимый взор",
   "tooltip.relics.scaled_cloak.ability.elusive_stare.description": "При получении урона с шансом в %1$s%% вынуждает цель промахнуться по игроку, если он поддерживает с ней зрительный контакт.",
+  "tooltip.relics.scaled_cloak.leveling_source.wall_crawler.title": "Цепкость",
+  "tooltip.relics.scaled_cloak.leveling_source.wall_crawler.description": "+%1$s единиц опыта за каждую секунду карабканья от способности %2$s.",
+  "tooltip.relics.scaled_cloak.leveling_source.elusive_stare.title": "Неуловимый взор",
+  "tooltip.relics.scaled_cloak.leveling_source.elusive_stare.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Капля Крови",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Огненная Лужица",
