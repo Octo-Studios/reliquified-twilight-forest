@@ -47,21 +47,21 @@
   "tooltip.relics.firefly_queen.ability.glowkeeper": "Glowkeeper",
   "tooltip.relics.firefly_queen.ability.glowkeeper.description": "Generates a firefly larva in the internal buffer every %1$s seconds, with a maximum of %2$s at a time. When the player is in complete darkness, it consumes 1 larva and places a firefly nearby to light the way.",
   "tooltip.relics.firefly_queen.leveling_source.glowkeeper.title": "Glowkeeper",
-  "tooltip.relics.firefly_queen.leveling_source.glowkeeper.description": "+%1$s experience points for each firefly placed by the ability",
+  "tooltip.relics.firefly_queen.leveling_source.glowkeeper.description": "+%1$s experience points for each firefly placed by the %2$s ability.",
 
   "item.reliquified_twilight_forest.cicada_bottle": "Cicada in a Bottle",
   "tooltip.relics.cicada_bottle.description": "A jar filled with the energy of hatred. Though this spawn of evil looks like a small bug, do not let your eyes deceive you. Its devilish song can evoke true rage in anyone who hears it, making them willing to do anything to make it stop.",
   "tooltip.relics.cicada_bottle.ability.cicada_infestation": "Cicada's Curse",
   "tooltip.relics.cicada_bottle.ability.cicada_infestation.description": "Has a %1$s%% chance on hit to inflict the Cicada's Curse on the target for %2$s seconds, forcing all nearby mobs to attack that target, ignoring their other tasks.",
   "tooltip.relics.cicada_bottle.leveling_source.cicada_infestation.title": "Cicada's Curse",
-  "tooltip.relics.cicada_bottle.leveling_source.cicada_infestation.description": "+%1$s experience points for each target cursed by the ability",
+  "tooltip.relics.cicada_bottle.leveling_source.cicada_infestation.description": "+%1$s experience points for each activation of the %2$s ability.",
 
   "item.reliquified_twilight_forest.deer_antler": "Deer Antler",
   "tooltip.relics.deer_antler.description": "A suspiciously large antler for an ordinary deer, which would look just as suspiciously fitting on some living creature.",
   "tooltip.relics.deer_antler.ability.ride_along": "On the Horns!",
   "tooltip.relics.deer_antler.ability.ride_along.description": "When used on a creature whose hitbox volume does not exceed %1$s blocks, places it on the player's antlers and prevents it from dealing damage to the player.",
   "tooltip.relics.deer_antler.leveling_source.ride_along.title": "On the Horns!",
-  "tooltip.relics.deer_antler.leveling_source.ride_along.description": "+%1$s experience points every 3 seconds while a creature is on the player",
+  "tooltip.relics.deer_antler.leveling_source.ride_along.description": "+%1$s experience points for every 3 seconds spent with a creature on the antlers from the %2$s ability.",
 
   "item.reliquified_twilight_forest.scaled_cloak": "Scaled Cloak",
   "tooltip.relics.scaled_cloak.description": "A cloak that almost perfectly mimics the shape of a giant snake, granting the wearer some of its abilities.",
@@ -70,10 +70,9 @@
   "tooltip.relics.scaled_cloak.ability.elusive_stare": "Elusive Stare",
   "tooltip.relics.scaled_cloak.ability.elusive_stare.description": "When taking damage, has a %1$s%% chance to make the attacker miss if the player maintains eye contact with them.",
   "tooltip.relics.scaled_cloak.leveling_source.wall_crawler.title": "Grip",
-  "tooltip.relics.scaled_cloak.leveling_source.wall_crawler.description": "+%1$s experience points for every second spend climbing",
+  "tooltip.relics.scaled_cloak.leveling_source.wall_crawler.description": "+%1$s experience points for each second of climbing from the %2$s ability.",
   "tooltip.relics.scaled_cloak.leveling_source.elusive_stare.title": "Elusive Stare",
-  "tooltip.relics.scaled_cloak.leveling_source.elusive_stare.description": "+%1$s experience points for every miss",
-
+  "tooltip.relics.scaled_cloak.leveling_source.elusive_stare.description": "+%1$s experience points for each activation of the %2$s ability.",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
