@@ -67,6 +67,7 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
                                 .build())
                         .ability(AbilityData.builder("elusive_stare")
                                 .requiredLevel(5)
+                                .requiredPoints(2)
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.1, 0.25)
                                         .upgradeModifier(UpgradeOperation.ADD, 0.1)
