@@ -107,20 +107,23 @@ public class HydraHeartItem extends RelicItem {
     @SubscribeEvent
     public static void onLivingHurt(LivingDamageEvent.Post e) {
         LivingEntity entity = e.getEntity();
-        ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.HYDRA_HEART.get());
         if (entity.level().isClientSide
                 || !entity.isAlive()
-                || !(stack.getItem() instanceof HydraHeartItem relic)
-                || entity.getRandom().nextFloat() > relic.getStatValue(stack, "hydra_fire", "chance")
         ) return;
 
-        HydraFireEntity fire = new HydraFireEntity(EntityRegistry.HYDRA_FIRE.get(), entity.level());
-        fire.setAge((int) Math.round(relic.getStatValue(stack, "hydra_fire", "lifetime")));
-        fire.setPos(entity.getEyePosition());
-        fire.setRelicStack(stack);
-        fire.setDeltaMovement(0,0.4f,0);
-        fire.setOwner(e.getEntity());
-        entity.level().addFreshEntity(fire);
+        for (ItemStack stack : EntityUtils.findEquippedCurios(entity, ItemRegistry.HYDRA_HEART.get())) {
+            if (!(stack.getItem() instanceof HydraHeartItem relic)
+                    || entity.getRandom().nextFloat() > relic.getStatValue(stack, "hydra_fire", "chance")
+            ) continue;
+
+            HydraFireEntity fire = new HydraFireEntity(EntityRegistry.HYDRA_FIRE.get(), entity.level());
+            fire.setAge((int) Math.round(relic.getStatValue(stack, "hydra_fire", "lifetime")));
+            fire.setPos(entity.getEyePosition());
+            fire.setRelicStack(stack);
+            fire.setDeltaMovement((fire.getRandom().nextFloat()-0.5f)*0.1f, 0.4f, (fire.getRandom().nextFloat()-0.5f)*0.1f);
+            fire.setOwner(e.getEntity());
+            entity.level().addFreshEntity(fire);
+        }
     }
 
     @Override
