@@ -50,7 +50,7 @@ public record CastRideAlongAbilityPacket(int entityID, boolean isMounting) imple
         if (!packet.isMounting()) {
             if (passenger != null) {
                 passenger.stopRiding();
-                PacketDistributor.sendToAllPlayers(new EntityStopRidingPacket(passenger.getId()));
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(passenger, new EntityStopRidingPacket(passenger.getId()));
             }
         }
 
@@ -62,7 +62,7 @@ public record CastRideAlongAbilityPacket(int entityID, boolean isMounting) imple
 
             entity.getPersistentData().putBoolean(DeerAntlerItem.ON_ANTLERS, true);
             entity.startRiding(vehicle, true);
-            PacketDistributor.sendToAllPlayers(new EntityStartRidingPacket(packet.entityID, vehicle.getId()));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(vehicle, new EntityStartRidingPacket(packet.entityID, vehicle.getId()));
         }
     }
 }

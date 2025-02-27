@@ -148,7 +148,7 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
         if (slotContext.entity().hasPassenger(e -> e.getPersistentData().getBoolean(ON_ANTLERS))) {
             Entity passenger = slotContext.entity().getFirstPassenger();
             passenger.stopRiding();
-            PacketDistributor.sendToAllPlayers(new EntityStopRidingPacket(passenger.getId()));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(passenger, new EntityStopRidingPacket(passenger.getId()));
         }
     }
 
@@ -156,6 +156,7 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
     public static void riding(EntityMountEvent e) {
         if (!e.getLevel().isClientSide && e.isDismounting()) {
             e.getEntityMounting().getPersistentData().remove(ON_ANTLERS);
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(e.getEntityMounting(), new EntityStopRidingPacket(e.getEntityMounting().getId()));
         }
     }
 
