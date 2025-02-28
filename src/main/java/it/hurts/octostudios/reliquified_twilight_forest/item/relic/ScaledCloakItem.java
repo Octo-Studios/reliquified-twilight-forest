@@ -20,6 +20,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
@@ -91,6 +92,11 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
                         .beams(BeamsData.builder()
                                 .startColor(0xff0ada00)
                                 .endColor(0x00014f2b)
+                                .build())
+                        .tooltip(TooltipData.builder()
+                                .borderTop(0xff46444d)
+                                .borderBottom(0xff393544)
+                                .textured(true)
                                 .build())
                         .build())
                 .build();
