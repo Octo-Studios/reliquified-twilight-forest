@@ -43,6 +43,7 @@ public class TwilightFeatherItem extends RelicItem {
             TinyBirdVariants.GOLD, new Color(255, 202, 73, 255),
             TinyBirdVariants.BROWN, new Color(79, 50, 34, 255)
     );
+    private static final Object[] keys = VARIANTS.keySet().toArray();
 
     @Override
     public RelicData constructDefaultRelicData() {
@@ -65,14 +66,13 @@ public class TwilightFeatherItem extends RelicItem {
 
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Pre e) {
-        LivingEntity target = e.getEntity();
+        LivingEntity victim = e.getEntity();
         Entity entity = e.getSource().getEntity();
-        Object[] keys = VARIANTS.keySet().toArray();
 
-        if (target.level().isClientSide
+        if (victim.level().isClientSide
                 || Objects.equals(e.getSource().typeHolder().getKey(), DamageTypeRegistry.EXECUTION)
                 || !(entity instanceof LivingEntity source)
-                || target.getHealth() > source.getHealth()
+                || victim.getHealth() > source.getHealth()
         ) return;
 
         for (ItemStack stack : EntityUtils.findEquippedCurios(source, ItemRegistry.TWILIGHT_FEATHER.get())) {
@@ -82,30 +82,32 @@ public class TwilightFeatherItem extends RelicItem {
             ) continue;
 
             e.setNewDamage(0);
-            target.hurt(new DamageSource(target.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), Float.MAX_VALUE);
-            target.deathTime = 30;
-            if (target instanceof TinyBird) {
-                break;
-            }
-
-            TinyBird birb = new TinyBird(TFEntities.TINY_BIRD.get(), target.level());
-            ResourceKey<TinyBirdVariant> variant = (ResourceKey<TinyBirdVariant>) keys[birb.getRandom().nextInt(keys.length)];
-            Color color = VARIANTS.get(variant);
-            birb.setVariant(target.level().registryAccess().holderOrThrow(variant));
-            birb.setPos(target.getEyePosition());
-            birb.setDeltaMovement(target.getDeltaMovement());
-            target.level().addFreshEntity(birb);
-            target.level().playSound(null, birb, SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1f, 0.8f);
-            target.level().addParticle(new DustParticleOptions(new Vector3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f), 1),
-                    birb.position().x,
-                    birb.position().y+3,
-                    birb.position().z,
-                    0, 0, 0
-            );
-            break;
+            performExecution(source, victim);
         }
     }
 
+    public static void performExecution(LivingEntity source, LivingEntity victim) {
+        victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), Float.MAX_VALUE);
+        victim.deathTime = 30;
+        if (victim instanceof TinyBird) {
+            return;
+        }
+
+        TinyBird birb = new TinyBird(TFEntities.TINY_BIRD.get(), victim.level());
+        ResourceKey<TinyBirdVariant> variant = (ResourceKey<TinyBirdVariant>) keys[birb.getRandom().nextInt(keys.length)];
+        Color color = VARIANTS.get(variant);
+        birb.setVariant(victim.level().registryAccess().holderOrThrow(variant));
+        birb.setPos(victim.getEyePosition());
+        birb.setDeltaMovement(victim.getDeltaMovement());
+        victim.level().addFreshEntity(birb);
+        victim.level().playSound(null, birb, SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1f, 0.8f);
+        victim.level().addParticle(new DustParticleOptions(new Vector3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f), 1),
+                birb.position().x,
+                birb.position().y+3,
+                birb.position().z,
+                0, 0, 0
+        );
+    }
 
     @Override
     public String getConfigRoute() {
