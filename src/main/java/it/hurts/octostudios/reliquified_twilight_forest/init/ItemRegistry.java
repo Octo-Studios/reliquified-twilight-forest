@@ -23,6 +23,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, CicadaBottleItem> CICADA_BOTTLE = ITEMS.register("cicada_bottle", CicadaBottleItem::new);
     public static final DeferredHolder<Item, DeerAntlerItem> DEER_ANTLER = ITEMS.register("deer_antler", DeerAntlerItem::new);
     public static final DeferredHolder<Item, ScaledCloakItem> SCALED_CLOAK = ITEMS.register("scaled_cloak", ScaledCloakItem::new);
+    public static final DeferredHolder<Item, TwilightFeatherItem> TWILIGHT_FEATHER = ITEMS.register("twilight_feather", TwilightFeatherItem::new);
 
 
     public static void register(IEventBus bus) {
