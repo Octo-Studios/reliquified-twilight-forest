@@ -43,26 +43,28 @@ public record CastRideAlongAbilityPacket(int entityID, boolean isMounting) imple
             return;
         }
 
-        Entity vehicle = ctx.player();
-        Entity entity = vehicle.level().getEntity(packet.entityID);
-        Entity passenger = vehicle.getFirstPassenger();
+        ctx.enqueueWork(() -> {
+            Entity vehicle = ctx.player();
+            Entity entity = vehicle.level().getEntity(packet.entityID);
+            Entity passenger = vehicle.getFirstPassenger();
 
-        if (!packet.isMounting()) {
-            if (passenger != null) {
-                passenger.stopRiding();
-                PacketDistributor.sendToPlayersTrackingEntityAndSelf(passenger, new EntityStopRidingPacket(passenger.getId()));
-            }
-        }
-
-        if (entity != null) {
-            if (passenger != null) {
-                passenger.setPos(entity.position());
-                passenger.setOldPosAndRot();
+            if (!packet.isMounting()) {
+                if (passenger != null) {
+                    passenger.stopRiding();
+                    PacketDistributor.sendToPlayersTrackingEntityAndSelf(passenger, new EntityStopRidingPacket(passenger.getId()));
+                }
             }
 
-            entity.getPersistentData().putBoolean(DeerAntlerItem.ON_ANTLERS, true);
-            entity.startRiding(vehicle, true);
-            PacketDistributor.sendToPlayersTrackingEntityAndSelf(vehicle, new EntityStartRidingPacket(packet.entityID, vehicle.getId()));
-        }
+            if (entity != null) {
+                if (passenger != null) {
+                    passenger.setPos(entity.position());
+                    passenger.setOldPosAndRot();
+                }
+
+                entity.getPersistentData().putBoolean(DeerAntlerItem.ON_ANTLERS, true);
+                entity.startRiding(vehicle, true);
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(vehicle, new EntityStartRidingPacket(packet.entityID, vehicle.getId()));
+            }
+        });
     }
 }

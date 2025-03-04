@@ -32,13 +32,15 @@ public record EntityStopRidingPacket(int entityID) implements CustomPacketPayloa
         if (ctx.flow().isServerbound()) {
             return;
         }
+        ctx.enqueueWork(() -> {
 
-        Entity entity = ctx.player().level().getEntity(packet.entityID);
+            Entity entity = ctx.player().level().getEntity(packet.entityID);
 
-        if (entity == null) {
-            return;
-        }
+            if (entity == null) {
+                return;
+            }
 
-        entity.stopRiding();
+            entity.stopRiding();
+        });
     }
 }

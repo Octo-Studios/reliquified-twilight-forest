@@ -50,14 +50,15 @@ public record EntityStartRidingPacket(int entityID, int vehicleID) implements Cu
         if (ctx.flow().isServerbound()) {
             return;
         }
+        ctx.enqueueWork(() -> {
+            Entity entity = ctx.player().level().getEntity(packet.entityID);
+            Entity vehicle = ctx.player().level().getEntity(packet.vehicleID);
 
-        Entity entity = ctx.player().level().getEntity(packet.entityID);
-        Entity vehicle = ctx.player().level().getEntity(packet.vehicleID);
+            if (entity == null || vehicle == null) {
+                return;
+            }
 
-        if (entity == null || vehicle == null) {
-            return;
-        }
-
-        entity.startRiding(vehicle, true);
+            entity.startRiding(vehicle, true);
+        });
     }
 }
