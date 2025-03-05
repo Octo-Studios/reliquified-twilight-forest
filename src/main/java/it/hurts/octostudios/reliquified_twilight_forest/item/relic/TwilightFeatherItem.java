@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DamageTypeRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.network.ExecutionEffectPacket;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
 import twilightforest.entity.passive.TinyBird;
 import twilightforest.entity.passive.TinyBirdVariant;
@@ -81,16 +83,19 @@ public class TwilightFeatherItem extends RelicItem {
                     || source.getRandom().nextDouble() > relic.getStatValue(stack, "execution", "chance")
             ) continue;
 
-            e.setNewDamage(0);
-            performExecution(source, victim);
+            if (performExecution(source, victim)) {
+                e.setNewDamage(0);
+            }
         }
     }
 
-    public static void performExecution(LivingEntity source, LivingEntity victim) {
-        victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), Float.MAX_VALUE);
-        victim.deathTime = 30;
+    public static boolean performExecution(LivingEntity source, LivingEntity victim) {
+        if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), Float.MAX_VALUE)) {
+            return false;
+        };
+        victim.deathTime = 19;
         if (victim instanceof TinyBird) {
-            return;
+            return false;
         }
 
         TinyBird birb = new TinyBird(TFEntities.TINY_BIRD.get(), victim.level());
@@ -101,12 +106,8 @@ public class TwilightFeatherItem extends RelicItem {
         birb.setDeltaMovement(victim.getDeltaMovement());
         victim.level().addFreshEntity(birb);
         victim.level().playSound(null, birb, SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1f, 0.8f);
-        victim.level().addParticle(new DustParticleOptions(new Vector3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f), 1),
-                birb.position().x,
-                birb.position().y+3,
-                birb.position().z,
-                0, 0, 0
-        );
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(victim, new ExecutionEffectPacket(victim.getId(), color));
+        return true;
     }
 
     @Override
