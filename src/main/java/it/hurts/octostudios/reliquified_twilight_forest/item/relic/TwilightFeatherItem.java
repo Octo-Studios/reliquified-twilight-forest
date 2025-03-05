@@ -6,10 +6,9 @@ import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.network.ExecutionEffectPacket;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.LevelingData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
@@ -62,6 +61,11 @@ public class TwilightFeatherItem extends RelicItem {
                         .build())
                 .leveling(LevelingData.builder()
                         .maxLevel(10)
+                        .sources(LevelingSourcesData.builder()
+                                .source(LevelingSourceData.abilityBuilder("execution")
+                                        .gem(GemShape.SQUARE, GemColor.PURPLE)
+                                        .build())
+                                .build())
                         .build())
                 .build();
     }
@@ -85,6 +89,8 @@ public class TwilightFeatherItem extends RelicItem {
 
             if (performExecution(source, victim)) {
                 e.setNewDamage(0);
+                relic.spreadRelicExperience(source, stack, 1);
+                break;
             }
         }
     }
