@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharm;
 import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.*;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -8,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import twilightforest.init.TFItems;
 
 public class ItemRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ReliquifiedTwilightForest.MODID);
@@ -25,6 +27,17 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, ScaledCloakItem> SCALED_CLOAK = ITEMS.register("scaled_cloak", ScaledCloakItem::new);
     public static final DeferredHolder<Item, TwilightFeatherItem> TWILIGHT_FEATHER = ITEMS.register("twilight_feather", TwilightFeatherItem::new);
     public static final DeferredHolder<Item, ThornCrown> THORN_CROWN = ITEMS.register("thorn_crown", ThornCrown::new);
+
+    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_LIFE_1 =
+            ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharm(TFItems.CHARM_OF_LIFE_1.get(), 1));
+    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_LIFE_2 =
+            ITEMS.register("broken_charm_of_life_2", () -> new BrokenCharm(TFItems.CHARM_OF_LIFE_2.get(), 2));
+    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_KEEPING_1 =
+            ITEMS.register("broken_charm_of_keeping_1", () -> new BrokenCharm(TFItems.CHARM_OF_KEEPING_1.get(), 1));
+    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_KEEPING_2 =
+            ITEMS.register("broken_charm_of_keeping_2", () -> new BrokenCharm(TFItems.CHARM_OF_KEEPING_2.get(), 2));
+    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_KEEPING_3 =
+            ITEMS.register("broken_charm_of_keeping_3", () -> new BrokenCharm(TFItems.CHARM_OF_KEEPING_3.get(), 3));
 
 
     public static void register(IEventBus bus) {
