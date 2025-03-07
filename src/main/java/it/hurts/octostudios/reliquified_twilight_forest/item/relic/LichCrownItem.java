@@ -9,11 +9,10 @@ import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.BundleLikeTo
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLike;
+import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
-import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
-import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
 import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
@@ -38,7 +37,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -47,10 +45,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -87,12 +83,8 @@ import java.util.function.Predicate;
 import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
 @EventBusSubscriber
-public class LichCrownItem extends RelicItem implements IRenderableCurio, BundleLike<Gem> {
+public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCurio {
     public static final Predicate<LivingEntity> HAS_CROWN = target -> !EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
-
-    public LichCrownItem() {
-        super((new Item.Properties()).rarity(Rarity.RARE).stacksTo(1).component(DataComponentRegistry.BUNDLE_LIKE_CONTENS, List.of()));
-    }
 
     @Override
     public RelicData constructDefaultRelicData() {
@@ -139,13 +131,6 @@ public class LichCrownItem extends RelicItem implements IRenderableCurio, Bundle
                                 .build())
                         .build())
                 .build();
-    }
-
-    @Override
-    public @NotNull Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-        return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)
-                ? Optional.ofNullable(stack.get(DataComponentRegistry.BUNDLE_LIKE_CONTENS)).map(list -> new BundleLikeTooltip(list, this.getSize(stack)))
-                : Optional.empty();
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class GemItem extends Item implements Gem, ICreativeTabContent {
     public GemItem() {
-        super(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1));
+        super(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(16));
     }
 
     public GemItem(Properties properties) {

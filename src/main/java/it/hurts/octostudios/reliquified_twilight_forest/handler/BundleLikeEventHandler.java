@@ -18,15 +18,15 @@ public class BundleLikeEventHandler {
         ItemStack heldStack = event.getHeldStack();
         Player player = event.getEntity();
 
-        if (slotStack.getItem() instanceof BundleLike<?> relicInSlot) {
+        if (slotStack.getItem() instanceof BundleLike relicInSlot) {
             handleRelicInteraction(event, player, relicInSlot, slotStack, heldStack, true);
-        } else if (heldStack.getItem() instanceof BundleLike<?> relicInHeld) {
+        } else if (heldStack.getItem() instanceof BundleLike relicInHeld) {
             handleRelicInteraction(event, player, relicInHeld, heldStack, slotStack, false);
         }
     }
 
     private static void handleRelicInteraction(ContainerSlotClickEvent event, Player player,
-                                               BundleLike<?> relic, ItemStack primaryStack,
+                                               BundleLike relic, ItemStack primaryStack,
                                                ItemStack secondaryStack, boolean primaryIsSlot) {
 
         if (relic.isAcceptable(secondaryStack)) {

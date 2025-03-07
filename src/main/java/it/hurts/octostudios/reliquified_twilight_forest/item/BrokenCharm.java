@@ -1,5 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item;
 
+import it.hurts.octostudios.reliquified_twilight_forest.item.relic.CharmBackpackItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,8 +19,11 @@ public class BrokenCharm extends Item {
     }
 
     public void backpackTick(LivingEntity entity, ItemStack backpackStack, ItemStack stack) {
-        if (entity.tickCount % 20 == 0 && stack.getDamageValue() > 0) {
-            stack.setDamageValue(stack.getDamageValue() - 1);
-        }
+        if (!(backpackStack.getItem() instanceof CharmBackpackItem relic)
+                || entity.tickCount % Math.round(relic.getStatValue(backpackStack, "charm_storage", "repair_time")) != 0
+                || stack.getDamageValue() <= 0
+        ) return;
+
+        stack.setDamageValue(stack.getDamageValue() - 1);
     }
 }
