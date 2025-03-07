@@ -90,6 +90,12 @@
   "tooltip.relics.thorn_crown.leveling_source.poking.title": "Poking",
   "tooltip.relics.thorn_crown.leveling_source.poking.description": "+%1$s experience points for each paralyzed entity.",
 
+  "item.reliquified_twilight_forest.broken_charm_of_life_1":    "Broken Charm of Life I",
+  "item.reliquified_twilight_forest.broken_charm_of_life_2":    "Broken Charm of Life II",
+  "item.reliquified_twilight_forest.broken_charm_of_keeping_1": "Broken Charm of Keeping I",
+  "item.reliquified_twilight_forest.broken_charm_of_keeping_2": "Broken Charm of Keeping II",
+  "item.reliquified_twilight_forest.broken_charm_of_keeping_3": "Broken Charm of Keeping III",
+
 
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",

@@ -5,10 +5,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWithPredicate;
-import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.GemTooltip;
+import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.BundleLikeTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLike;
 import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
+import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
@@ -34,7 +36,6 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -54,7 +55,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -87,11 +87,11 @@ import java.util.function.Predicate;
 import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
 @EventBusSubscriber
-public class LichCrownItem extends RelicItem implements IRenderableCurio {
+public class LichCrownItem extends RelicItem implements IRenderableCurio, BundleLike<Gem> {
     public static final Predicate<LivingEntity> HAS_CROWN = target -> !EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
 
     public LichCrownItem() {
-        super((new Item.Properties()).rarity(Rarity.RARE).stacksTo(1).component(DataComponentRegistry.GEMS, List.of()));
+        super((new Item.Properties()).rarity(Rarity.RARE).stacksTo(1).component(DataComponentRegistry.BUNDLE_LIKE_CONTENS, List.of()));
     }
 
     @Override
@@ -144,7 +144,7 @@ public class LichCrownItem extends RelicItem implements IRenderableCurio {
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
         return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)
-                ? Optional.ofNullable(stack.get(DataComponentRegistry.GEMS)).map(list -> new GemTooltip(list, this.getSize(stack)))
+                ? Optional.ofNullable(stack.get(DataComponentRegistry.BUNDLE_LIKE_CONTENS)).map(list -> new BundleLikeTooltip(list, this.getSize(stack)))
                 : Optional.empty();
     }
 
@@ -184,47 +184,6 @@ public class LichCrownItem extends RelicItem implements IRenderableCurio {
         relic.dropExcessive(player, stack);
     }
 
-
-    @SubscribeEvent
-    public static void onSlotClick(ContainerSlotClickEvent event) {
-        if (event.getAction() != ClickAction.SECONDARY) return;
-
-        ItemStack stack = event.getSlotStack();
-        //if (!(stack.getItem() instanceof LichCrownItem relic)) return;
-
-        ItemStack heldStack = event.getHeldStack();
-
-        if (stack.getItem() instanceof LichCrownItem relic) {
-            if (heldStack.getItem() instanceof Gem) {
-                if (relic.tryInsert(event.getEntity(), stack, heldStack))
-                    event.getEntity().playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
-
-                event.setCanceled(true);
-            } else if (heldStack.isEmpty()) {
-                event.setCanceled(true);
-                ItemStack gem = relic.pop(event.getEntity(), stack);
-                if (gem.isEmpty()) return;
-
-                event.getEntity().playSound(SoundEvents.ITEM_PICKUP, 0.75f, 1.25f);
-                event.getEntity().containerMenu.setCarried(gem);
-            }
-        } else if (heldStack.getItem() instanceof LichCrownItem relic) {
-            if (stack.getItem() instanceof Gem) {
-                if (relic.tryInsert(event.getEntity(), heldStack, stack))
-                    event.getEntity().playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
-
-                event.setCanceled(true);
-            } else if (stack.isEmpty()) {
-                event.setCanceled(true);
-                ItemStack gem = relic.pop(event.getEntity(), heldStack);
-                if (gem.isEmpty()) return;
-
-                event.getEntity().playSound(SoundEvents.ITEM_PICKUP, 0.75f, 1.25f);
-                event.getSlot().set(gem);
-            }
-        }
-    }
-
     @SubscribeEvent
     public static void onEntitySpawn(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide) return;
@@ -259,83 +218,22 @@ public class LichCrownItem extends RelicItem implements IRenderableCurio {
         skeleton.setTarget(null);
     }
 
+    @Override
     public int getSize(ItemStack stack) {
         return (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
     }
 
-    public boolean tryInsert(Player player, ItemStack stack, ItemStack toInsert) {
-        List<ItemStack> notMutable = stack.get(DataComponentRegistry.GEMS);
-        if (notMutable == null) return false;
-
-        ArrayList<ItemStack> gems = Lists.newArrayList(notMutable);
-        int size = this.getSize(stack);
-
-        if (gems.size() >= size) return false;
-        gems.add(toInsert.copyAndClear());
-        gems.removeIf(ItemStack::isEmpty);
-        this.setGemsContent(player, stack, gems);
-        return true;
-    }
-
-    public ItemStack pop(Player player, ItemStack stack) {
-        List<ItemStack> notMutable = getGemContents(stack);
-        if (notMutable.isEmpty()) return ItemStack.EMPTY;
-
-        ArrayList<ItemStack> gems = Lists.newArrayList(notMutable);
-
-        ItemStack toReturn = gems.removeLast();
-        gems.removeIf(ItemStack::isEmpty);
-        this.setGemsContent(player, stack, gems);
-        return toReturn;
-    }
-
-    public void dropExcessive(Player player, ItemStack stack) {
-        List<ItemStack> notMutable = getGemContents(stack);
-
-        ArrayList<ItemStack> gems = Lists.newArrayList(notMutable);
-        int size = this.getSize(stack);
-
-        if (gems.size() <= size) return;
-        List<ItemStack> toDrop = gems.subList(size - 1, gems.size() - 1);
-
-        for (ItemStack drop : toDrop) {
-            ItemEntity entity = player.drop(drop, false, true);
-            if (entity != null) entity.setNoPickUpDelay();
-        }
-
-        toDrop.clear();
-        gems.removeIf(ItemStack::isEmpty);
-        this.setGemsContent(player, stack, gems);
-    }
-
-    public @NotNull List<ItemStack> getGemContents(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.GEMS, List.of());
-    }
-
-    public void setGemsContent(Player player, ItemStack stack, List<ItemStack> gems) {
-        List<ItemStack> oldGems = getGemContents(stack);
-        stack.set(DataComponentRegistry.GEMS, gems);
-        this.onGemsChanged(player, stack, oldGems);
-    }
-
-    public int getGems(ItemStack stack, Gem gem) {
-        return this.getGems(stack, gem, this.getGemContents(stack));
-    }
-
-    public int getGems(ItemStack stack, Gem gem, List<ItemStack> gems) {
-        return (int) gems.stream().filter(itemStack -> itemStack.getItem() == gem).count();
-    }
-
-    public void onGemsChanged(Player player, ItemStack stack, List<ItemStack> oldGems) {
+    @Override
+    public void onContentsChanged(Player player, ItemStack stack, List<ItemStack> oldContents) {
         if (player.level().isClientSide) {
             return;
         }
         ServerLevel level = (ServerLevel) player.level();
 
-        int oldShielding = this.getGems(stack, ItemRegistry.SHIELDING_GEM.get(), oldGems);
-        int oldNecromancy = this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get(), oldGems);
-        int shielding = this.getGems(stack, ItemRegistry.SHIELDING_GEM.get());
-        int necromancy = this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
+        int oldShielding = this.getItemCount(stack, ItemRegistry.SHIELDING_GEM.get(), oldContents);
+        int oldNecromancy = this.getItemCount(stack, ItemRegistry.NECROMANCY_GEM.get(), oldContents);
+        int shielding = this.getItemCount(stack, ItemRegistry.SHIELDING_GEM.get());
+        int necromancy = this.getItemCount(stack, ItemRegistry.NECROMANCY_GEM.get());
         int maxShields = shielding < 1 ? 0 : (int) Math.round(this.getStatValue(stack, "fortification", "max_shields"));
         int maxZombies = necromancy < 1 ? 0 : (int) Math.round(this.getStatValue(stack, "zombie", "max_zombies"));
 
@@ -362,12 +260,17 @@ public class LichCrownItem extends RelicItem implements IRenderableCurio {
     }
 
     @Override
+    public Predicate<ItemStack> getPredicate() {
+        return stack -> stack.getItem() instanceof Gem;
+    }
+
+    @Override
     public int getAbilityLevel(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification" -> this.getGems(stack, ItemRegistry.SHIELDING_GEM.get());
-            case "zombie" -> this.getGems(stack, ItemRegistry.NECROMANCY_GEM.get());
-            case "twilight" -> this.getGems(stack, ItemRegistry.TWILIGHT_GEM.get());
-            case "lifedrain" -> this.getGems(stack, ItemRegistry.ABSORPTION_GEM.get());
+            case "fortification" -> this.getItemCount(stack, ItemRegistry.SHIELDING_GEM.get());
+            case "zombie" -> this.getItemCount(stack, ItemRegistry.NECROMANCY_GEM.get());
+            case "twilight" -> this.getItemCount(stack, ItemRegistry.TWILIGHT_GEM.get());
+            case "lifedrain" -> this.getItemCount(stack, ItemRegistry.ABSORPTION_GEM.get());
             default -> super.getAbilityLevel(stack, ability);
         };
     }
@@ -424,7 +327,7 @@ public class LichCrownItem extends RelicItem implements IRenderableCurio {
     public boolean isRelicFlawless(ItemStack stack) {
         return (this.isAbilityFlawless(stack, "soulbound_gems")
                 && this.isAbilityMaxLevel(stack, "soulbound_gems")
-                && this.getGemContents(stack).size() >= this.getSize(stack)
+                && this.getContents(stack).size() >= this.getSize(stack)
         );
     }
 
