@@ -1,7 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
-import com.google.common.collect.Lists;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharm;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
@@ -13,25 +12,15 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.SlotContext;
-import twilightforest.init.TFItems;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class CharmBackpackItem extends BundleLikeRelicItem {
-    private static final List<Item> CHARMS = List.of(
-            TFItems.CHARM_OF_LIFE_1.get(),
-            TFItems.CHARM_OF_LIFE_2.get(),
-            TFItems.CHARM_OF_KEEPING_1.get(),
-            TFItems.CHARM_OF_KEEPING_2.get(),
-            TFItems.CHARM_OF_KEEPING_3.get()
-    );
-
     @Override
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
@@ -96,6 +85,6 @@ public class CharmBackpackItem extends BundleLikeRelicItem {
 
     @Override
     public Predicate<ItemStack> getPredicate() {
-        return stack -> stack.getItem() instanceof BrokenCharm || CHARMS.contains(stack.getItem());
+        return stack -> stack.getItem() instanceof BrokenCharm || ItemRegistry.CHARMS.apply(stack.getItem()) != Items.AIR;
     }
 }

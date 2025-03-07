@@ -6,10 +6,16 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.init.TFItems;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 public class ItemRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ReliquifiedTwilightForest.MODID);
@@ -41,6 +47,14 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_KEEPING_3 =
             ITEMS.register("broken_charm_of_keeping_3", () -> new BrokenCharm(TFItems.CHARM_OF_KEEPING_3.get(), 3));
 
+    public static final Function<Item, Item> CHARMS = item -> {
+        if (item == TFItems.CHARM_OF_LIFE_1.get()) return ItemRegistry.BROKEN_CHARM_OF_LIFE_1.get();
+        if (item == TFItems.CHARM_OF_LIFE_2.get()) return ItemRegistry.BROKEN_CHARM_OF_LIFE_2.get();
+        if (item == TFItems.CHARM_OF_KEEPING_1.get()) return ItemRegistry.BROKEN_CHARM_OF_KEEPING_1.get();
+        if (item == TFItems.CHARM_OF_KEEPING_2.get()) return ItemRegistry.BROKEN_CHARM_OF_KEEPING_2.get();
+        if (item == TFItems.CHARM_OF_KEEPING_3.get()) return ItemRegistry.BROKEN_CHARM_OF_KEEPING_3.get();
+        return Items.AIR;
+    };
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
