@@ -5,9 +5,10 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "reliquified_twilight_forest.refmap.json",
   "mixins": [
-    "TFItemStackUtilsMixin",
+    "ChainBlockMixin",
     "HurtByTargetGoalAccessor",
-    "NearestAttackableTargetGoalAccessor"
+    "NearestAttackableTargetGoalAccessor",
+    "TFItemStackUtilsMixin"
   ],
   "client": [
     "MovingCicadaSoundInstanceMixin"

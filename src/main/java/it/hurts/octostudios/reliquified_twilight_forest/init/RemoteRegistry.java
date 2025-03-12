@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer.VignetteLayer;
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.tooltip.ClientBundleLikeTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.BundleLikeTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
@@ -36,6 +37,7 @@ public class RemoteRegistry {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerBelowAll(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "goblin_vignette"), new VignetteLayer());
         event.registerAbove(
                 VanillaGuiLayers.CROSSHAIR,
                 ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "twilight_indicator"),

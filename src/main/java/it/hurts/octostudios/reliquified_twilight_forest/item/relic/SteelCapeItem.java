@@ -55,7 +55,7 @@ public class SteelCapeItem extends RelicItem {
                         .build())
                 .style(StyleData.builder()
                         .beams(BeamsData.builder()
-                                .startColor(0xff606060)
+                                .startColor(0xffC0C0C0)
                                 .endColor(0)
                                 .build())
                         .build())
@@ -84,7 +84,7 @@ public class SteelCapeItem extends RelicItem {
         if (entity instanceof LivingEntity source) {
             ChainBlock chain = new ChainBlock(TFEntities.CHAIN_BLOCK.get(), victim.level(), victim, null, stack);
             chain.setPos(victim.position().add(0, victim.getBbHeight() / 2f, 0));
-            Vec3 direction = source.getEyePosition().subtract(chain.position()).normalize();
+            Vec3 direction = source.position().add(0, source.getBbHeight()/2f, 0).subtract(chain.position()).normalize();
             chain.shoot(direction.x, direction.y, direction.z, 1.5f, 1f);
             victim.level().addFreshEntity(chain);
         }

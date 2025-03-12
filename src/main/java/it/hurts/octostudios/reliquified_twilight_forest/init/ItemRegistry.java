@@ -32,7 +32,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, ThornCrown> THORN_CROWN = ITEMS.register("thorn_crown", ThornCrown::new);
     public static final DeferredHolder<Item, CharmBackpackItem> CHARM_BACKPACK = ITEMS.register("charm_backpack", CharmBackpackItem::new);
     public static final DeferredHolder<Item, SteelCapeItem> STEEL_CAPE = ITEMS.register("steel_cape", SteelCapeItem::new);
-
+    public static final DeferredHolder<Item, GoblinNoseItem> GOBLIN_NOSE = ITEMS.register("goblin_nose", GoblinNoseItem::new);
 
     public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_LIFE_1 =
             ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharm(TFItems.CHARM_OF_LIFE_1.get(), 1));
