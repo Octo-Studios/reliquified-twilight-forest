@@ -1,24 +1,17 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.DeerAntlerItem;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
-import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record CastRideAlongAbilityPacket(int entityID, boolean isMounting) implements CustomPacketPayload {
-    public static final Type<CastRideAlongAbilityPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "cast_ride_along_ability"));
+    public static final Type<CastRideAlongAbilityPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "cast_ride_along_ability"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CastRideAlongAbilityPacket> STREAM_CODEC = CustomPacketPayload.codec(
             CastRideAlongAbilityPacket::write, CastRideAlongAbilityPacket::new

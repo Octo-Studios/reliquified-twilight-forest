@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record EntityStopRidingPacket(int entityID) implements CustomPacketPayload {
-    public static final Type<EntityStopRidingPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "entity_stop_riding"));
+    public static final Type<EntityStopRidingPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "entity_stop_riding"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, EntityStopRidingPacket> STREAM_CODEC = CustomPacketPayload.codec(
             EntityStopRidingPacket::write, EntityStopRidingPacket::new

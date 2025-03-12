@@ -9,16 +9,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.init.TFItems;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 public class ItemRegistry {
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ReliquifiedTwilightForest.MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ReliquifiedTwilightForest.MOD_ID);
     public static final DeferredHolder<Item, GemItem> TWILIGHT_GEM   = ITEMS.register("twilight_gem",   () -> new GemItem());
     public static final DeferredHolder<Item, GemItem> ABSORPTION_GEM = ITEMS.register("absorption_gem", () -> new GemItem());
     public static final DeferredHolder<Item, GemItem> NECROMANCY_GEM = ITEMS.register("necromancy_gem", () -> new GemItem());
@@ -34,6 +31,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, TwilightFeatherItem> TWILIGHT_FEATHER = ITEMS.register("twilight_feather", TwilightFeatherItem::new);
     public static final DeferredHolder<Item, ThornCrown> THORN_CROWN = ITEMS.register("thorn_crown", ThornCrown::new);
     public static final DeferredHolder<Item, CharmBackpackItem> CHARM_BACKPACK = ITEMS.register("charm_backpack", CharmBackpackItem::new);
+    public static final DeferredHolder<Item, SteelCapeItem> STEEL_CAPE = ITEMS.register("steel_cape", SteelCapeItem::new);
 
 
     public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_LIFE_1 =

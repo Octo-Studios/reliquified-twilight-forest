@@ -21,7 +21,7 @@ import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactori
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-@EventBusSubscriber(modid = ReliquifiedTwilightForest.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class RemoteRegistry {
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -38,7 +38,7 @@ public class RemoteRegistry {
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(
                 VanillaGuiLayers.CROSSHAIR,
-                ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "twilight_indicator"),
+                ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "twilight_indicator"),
                 ((guiGraphics, deltaTracker) -> {
                     Minecraft mc = Minecraft.getInstance();
                     ItemStack stack = EntityUtils.findEquippedCurio(mc.player, ItemRegistry.LICH_CROWN.get());

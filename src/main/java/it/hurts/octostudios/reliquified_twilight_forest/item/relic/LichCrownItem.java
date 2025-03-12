@@ -5,17 +5,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWithPredicate;
-import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.BundleLikeTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLike;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
 import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
-import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -34,7 +31,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -47,10 +43,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -62,7 +55,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 import twilightforest.components.entity.FortificationShieldAttachment;
@@ -76,7 +68,6 @@ import twilightforest.util.entities.EntityUtil;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -371,7 +362,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 
     @Override

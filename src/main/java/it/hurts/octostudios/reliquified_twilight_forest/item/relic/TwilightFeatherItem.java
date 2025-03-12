@@ -10,10 +10,10 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
-import net.minecraft.core.Holder;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -25,14 +25,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.joml.Vector3f;
 import twilightforest.entity.passive.TinyBird;
 import twilightforest.entity.passive.TinyBirdVariant;
 import twilightforest.init.TFEntities;
 import twilightforest.init.custom.TinyBirdVariants;
 
 import java.awt.*;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -67,6 +65,12 @@ public class TwilightFeatherItem extends RelicItem {
                                         .build())
                                 .build())
                         .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xff44ff71)
+                                .endColor(0x000f1c13)
+                                .build())
+                        .build())
                 .build();
     }
 
@@ -78,7 +82,7 @@ public class TwilightFeatherItem extends RelicItem {
         if (victim.level().isClientSide
                 || Objects.equals(e.getSource().typeHolder().getKey(), DamageTypeRegistry.EXECUTION)
                 || !(entity instanceof LivingEntity source)
-                || victim.getHealth() > source.getHealth()
+                || victim.getHealth() > source.getMaxHealth()
         ) return;
 
         for (ItemStack stack : EntityUtils.findEquippedCurios(source, ItemRegistry.TWILIGHT_FEATHER.get())) {
@@ -118,6 +122,6 @@ public class TwilightFeatherItem extends RelicItem {
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 }

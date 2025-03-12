@@ -1,6 +1,5 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
@@ -42,9 +41,6 @@ import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.TwilightForestMod;
 import twilightforest.client.model.entity.CicadaModel;
 import twilightforest.network.CreateMovingCicadaSoundPacket;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @EventBusSubscriber
 public class CicadaBottleItem extends RelicItem {
@@ -180,6 +176,6 @@ public class CicadaBottleItem extends RelicItem {
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 }

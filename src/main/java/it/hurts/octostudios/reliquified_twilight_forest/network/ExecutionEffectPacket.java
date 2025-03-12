@@ -1,17 +1,14 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.awt.*;
@@ -19,7 +16,7 @@ import java.util.Random;
 
 public record ExecutionEffectPacket(int entityId, Color color) implements CustomPacketPayload {
     public static final Type<ExecutionEffectPacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "execution_effect"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "execution_effect"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ExecutionEffectPacket> STREAM_CODEC =
             CustomPacketPayload.codec(ExecutionEffectPacket::write, ExecutionEffectPacket::new);

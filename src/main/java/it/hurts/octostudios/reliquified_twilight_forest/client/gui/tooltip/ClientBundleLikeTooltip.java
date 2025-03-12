@@ -13,7 +13,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientBundleLikeTooltip implements ClientTooltipComponent {
-    public static final ResourceLocation EMPTY_SLOT = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "textures/gui/tooltip/bundle_like/empty_slot.png");
+    public static final ResourceLocation EMPTY_SLOT = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "textures/gui/tooltip/bundle_like/empty_slot.png");
     public BundleLikeContents contents;
 
     public ClientBundleLikeTooltip(BundleLikeTooltip tooltip) {

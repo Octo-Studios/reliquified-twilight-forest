@@ -13,7 +13,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record LifedrainParticlePacket(int entityID, Vec3 victimPos) implements CustomPacketPayload {
     public static final Type<LifedrainParticlePacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "lifedrain_particles"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "lifedrain_particles"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, LifedrainParticlePacket> STREAM_CODEC =
             CustomPacketPayload.codec(LifedrainParticlePacket::write, LifedrainParticlePacket::new);

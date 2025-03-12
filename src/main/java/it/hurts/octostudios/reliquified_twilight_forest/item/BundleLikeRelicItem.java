@@ -30,6 +30,6 @@ public abstract class BundleLikeRelicItem extends BundleLikeItem implements ICur
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 }

@@ -10,9 +10,10 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -22,7 +23,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import top.theillusivec4.curios.api.SlotContext;
-import twilightforest.init.TFDamageTypes;
 
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +59,12 @@ public class ThornCrown extends RelicItem {
                                 .source(LevelingSourceData.abilityBuilder("poking")
                                         .gem(GemShape.SQUARE, GemColor.GREEN)
                                         .build())
+                                .build())
+                        .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xff66da00)
+                                .endColor(0x00014f2b)
                                 .build())
                         .build())
                 .build();
@@ -104,6 +110,6 @@ public class ThornCrown extends RelicItem {
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 }

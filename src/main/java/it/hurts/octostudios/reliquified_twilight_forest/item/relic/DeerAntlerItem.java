@@ -177,7 +177,7 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 
     @Override

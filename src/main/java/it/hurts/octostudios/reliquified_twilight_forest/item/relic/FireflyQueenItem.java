@@ -124,6 +124,6 @@ public class FireflyQueenItem extends RelicItem {
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 }
