@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class DataComponentRegistry {
-    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ReliquifiedTwilightForest.MODID);
+    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ReliquifiedTwilightForest.MOD_ID);
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> GEMS = DATA_COMPONENTS.register("gems",
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> BUNDLE_LIKE_CONTENTS = DATA_COMPONENTS.register("gems",
             () -> DataComponentType.<List<ItemStack>>builder()
                     .persistent(ItemStack.CODEC.listOf())
                     .build()

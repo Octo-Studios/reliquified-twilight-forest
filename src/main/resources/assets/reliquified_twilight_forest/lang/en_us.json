@@ -74,6 +74,42 @@
   "tooltip.relics.scaled_cloak.leveling_source.elusive_stare.title": "Elusive Stare",
   "tooltip.relics.scaled_cloak.leveling_source.elusive_stare.description": "+%1$s experience points for each activation of the %2$s ability.",
 
+  "item.reliquified_twilight_forest.twilight_feather": "Twilight Feather",
+  "tooltip.relics.twilight_feather.description": "feather",
+  "tooltip.relics.twilight_feather.ability.execution": "Execution",
+  "tooltip.relics.twilight_feather.ability.execution.description": "Chance to execute: %1$s%%",
+  "tooltip.relics.twilight_feather.leveling_source.execution.title": "Execution",
+  "tooltip.relics.twilight_feather.leveling_source.execution.description": "+%1$s exp for every executed mob",
+
+  "item.reliquified_twilight_forest.thorn_crown": "Thorn Crown",
+  "tooltip.relics.thorn_crown.description": "thron",
+  "tooltip.relics.thorn_crown.ability.poking": "Poking",
+  "tooltip.relics.thorn_crown.ability.poking.description": "%1$s%% paralysis chance, %2$s seconds paralysis duration, %3$s damg",
+  "tooltip.relics.thorn_crown.ability.thorn_shield": "Thron shield",
+  "tooltip.relics.thorn_crown.ability.thorn_shield.description": "invulmenrablitiy",
+  "tooltip.relics.thorn_crown.leveling_source.poking.title": "Poking",
+  "tooltip.relics.thorn_crown.leveling_source.poking.description": "+%1$s experience points for each paralyzed entity.",
+
+  "item.reliquified_twilight_forest.steel_cape": "Steel Cape",
+  "tooltip.relics.steel_cape.description": "cape",
+  "tooltip.relics.steel_cape.ability.iron_guard": "Iron Guard",
+  "tooltip.relics.steel_cape.ability.iron_guard.description": "%1$s flat armor, %2$s%% chance, %3$s damg, %4$s seconds paralysis duration",
+  "tooltip.relics.steel_cape.leveling_source.iron_guard.title": "Iron Guard",
+  "tooltip.relics.steel_cape.leveling_source.iron_guard.description": "+%1$s experience points for each time damage has been absorbed",
+
+  "item.reliquified_twilight_forest.broken_charm_of_life_1":    "Broken Charm of Life I",
+  "item.reliquified_twilight_forest.broken_charm_of_life_2":    "Broken Charm of Life II",
+  "item.reliquified_twilight_forest.broken_charm_of_keeping_1": "Broken Charm of Keeping I",
+  "item.reliquified_twilight_forest.broken_charm_of_keeping_2": "Broken Charm of Keeping II",
+  "item.reliquified_twilight_forest.broken_charm_of_keeping_3": "Broken Charm of Keeping III",
+
+  "item.reliquified_twilight_forest.charm_backpack": "Charm Backpack",
+  "tooltip.relics.charm_backpack.description": "backpack",
+  "tooltip.relics.charm_backpack.ability.charm_storage": "Charm Storage",
+  "tooltip.relics.charm_backpack.ability.charm_storage.description": "%1$s slots, %2$s minutes * tier repair time",
+  "tooltip.relics.charm_backpack.leveling_source.charm_storage.title": "Charm Storage",
+  "tooltip.relics.charm_backpack.leveling_source.charm_storage.description": "+%1$s experience points for each charm activated",
+
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 

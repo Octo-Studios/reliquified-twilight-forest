@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class GemContents implements TooltipComponent {
+public class BundleLikeContents implements TooltipComponent {
     private List<ItemStack> stacks;
     private int size;
 

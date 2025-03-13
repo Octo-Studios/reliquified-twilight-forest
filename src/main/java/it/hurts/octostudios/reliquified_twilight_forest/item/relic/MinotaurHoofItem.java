@@ -48,7 +48,7 @@ import java.util.List;
 
 @EventBusSubscriber
 public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
-    private static final ResourceLocation MOVEMENT_MODIFIER = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "momentum_rush");
+    private static final ResourceLocation MOVEMENT_MODIFIER = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "momentum_rush");
 
     private static final int MAX_TIME = 60;
 
@@ -179,7 +179,7 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 
     @Override

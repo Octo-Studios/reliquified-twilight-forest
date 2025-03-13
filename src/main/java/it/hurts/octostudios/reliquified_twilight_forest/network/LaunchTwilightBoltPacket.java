@@ -15,23 +15,18 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import twilightforest.entity.projectile.TwilightWandBolt;
 import twilightforest.init.TFDamageTypes;
-import twilightforest.init.TFEntities;
 import twilightforest.init.TFSounds;
 
 public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
     public static final Type<LaunchTwilightBoltPacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MODID, "launch_twilight_bolt"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "launch_twilight_bolt"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, LaunchTwilightBoltPacket> STREAM_CODEC =
             CustomPacketPayload.codec(LaunchTwilightBoltPacket::write, LaunchTwilightBoltPacket::new);

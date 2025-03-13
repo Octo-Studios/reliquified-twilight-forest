@@ -3,17 +3,17 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DamageTypeRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.network.ExecutionEffectPacket;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.LevelingData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
-import net.minecraft.core.Holder;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -24,14 +24,13 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import org.joml.Vector3f;
+import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.entity.passive.TinyBird;
 import twilightforest.entity.passive.TinyBirdVariant;
 import twilightforest.init.TFEntities;
 import twilightforest.init.custom.TinyBirdVariants;
 
 import java.awt.*;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -60,6 +59,17 @@ public class TwilightFeatherItem extends RelicItem {
                         .build())
                 .leveling(LevelingData.builder()
                         .maxLevel(10)
+                        .sources(LevelingSourcesData.builder()
+                                .source(LevelingSourceData.abilityBuilder("execution")
+                                        .gem(GemShape.SQUARE, GemColor.PURPLE)
+                                        .build())
+                                .build())
+                        .build())
+                .style(StyleData.builder()
+                        .beams(BeamsData.builder()
+                                .startColor(0xff44ff71)
+                                .endColor(0x000f1c13)
+                                .build())
                         .build())
                 .build();
     }
@@ -72,7 +82,7 @@ public class TwilightFeatherItem extends RelicItem {
         if (victim.level().isClientSide
                 || Objects.equals(e.getSource().typeHolder().getKey(), DamageTypeRegistry.EXECUTION)
                 || !(entity instanceof LivingEntity source)
-                || victim.getHealth() > source.getHealth()
+                || victim.getHealth() > source.getMaxHealth()
         ) return;
 
         for (ItemStack stack : EntityUtils.findEquippedCurios(source, ItemRegistry.TWILIGHT_FEATHER.get())) {
@@ -81,16 +91,21 @@ public class TwilightFeatherItem extends RelicItem {
                     || source.getRandom().nextDouble() > relic.getStatValue(stack, "execution", "chance")
             ) continue;
 
-            e.setNewDamage(0);
-            performExecution(source, victim);
+            if (performExecution(source, victim)) {
+                e.setNewDamage(0);
+                relic.spreadRelicExperience(source, stack, 1);
+                break;
+            }
         }
     }
 
-    public static void performExecution(LivingEntity source, LivingEntity victim) {
-        victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), Float.MAX_VALUE);
-        victim.deathTime = 30;
+    public static boolean performExecution(LivingEntity source, LivingEntity victim) {
+        if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), Float.MAX_VALUE)) {
+            return false;
+        };
+        victim.deathTime = 19;
         if (victim instanceof TinyBird) {
-            return;
+            return false;
         }
 
         TinyBird birb = new TinyBird(TFEntities.TINY_BIRD.get(), victim.level());
@@ -101,16 +116,12 @@ public class TwilightFeatherItem extends RelicItem {
         birb.setDeltaMovement(victim.getDeltaMovement());
         victim.level().addFreshEntity(birb);
         victim.level().playSound(null, birb, SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1f, 0.8f);
-        victim.level().addParticle(new DustParticleOptions(new Vector3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f), 1),
-                birb.position().x,
-                birb.position().y+3,
-                birb.position().z,
-                0, 0, 0
-        );
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(victim, new ExecutionEffectPacket(victim.getId(), color));
+        return true;
     }
 
     @Override
     public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MODID;
+        return ReliquifiedTwilightForest.MOD_ID;
     }
 }
