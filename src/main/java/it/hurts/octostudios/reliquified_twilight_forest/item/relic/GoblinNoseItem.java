@@ -1,14 +1,12 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import com.mojang.blaze3d.shaders.FogShape;
-import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.OreCache;
 import it.hurts.octostudios.reliquified_twilight_forest.network.UpdateChunkPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.client.particles.BasicColoredParticle;
-import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.CastData;
 import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastType;
@@ -30,25 +28,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.SlotContext;
 
-import javax.swing.text.html.HTML;
 import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 
-
-@EventBusSubscriber
 public class GoblinNoseItem extends BundleLikeRelicItem {
     @Override
     public RelicData constructDefaultRelicData() {
@@ -89,21 +83,25 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
                 || !relic.isAbilityTicking(stack, "vein_seeker")
         ) return;
 
-        if (livingEntity.level().isClientSide && livingEntity == Minecraft.getInstance().player) {
-            // Cached list of found ore positions.
-            List<BlockPos> ORES = OreCache.getNearbyOres(livingEntity.level(), livingEntity.blockPosition(), (float) relic.getStatValue(stack, "vein_seeker", "radius"));
-            ORES.forEach(bp -> {
-                BlockState state = livingEntity.level().getBlockState(bp);
-                if (livingEntity.getRandom().nextFloat() < 0.66f
-                        || !state.is(Tags.Blocks.ORES)
-                        || (!relic.getContents(stack).isEmpty() && relic.getItemCount(stack, state.getBlock().asItem()) < 1)
-                ) return;
-
-                GoblinNoseItem.spawnOreParticles(livingEntity, bp);
-            });
-        } else if (!livingEntity.level().isClientSide) {
+        if (!livingEntity.level().isClientSide) {
             livingEntity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 30, 0, true, false, false));
         }
+
+        if (!livingEntity.level().isClientSide || livingEntity != Minecraft.getInstance().player) {
+            return;
+        }
+
+        // Cached list of found ore positions.
+        List<BlockPos> ORES = OreCache.getNearbyOres(livingEntity.level(), livingEntity.blockPosition(), (float) relic.getStatValue(stack, "vein_seeker", "radius"));
+        ORES.forEach(bp -> {
+            BlockState state = livingEntity.level().getBlockState(bp);
+            if (livingEntity.getRandom().nextFloat() < 0.66f
+                    || !state.is(Tags.Blocks.ORES)
+                    || (!relic.getContents(stack).isEmpty() && relic.getItemCount(stack, state.getBlock().asItem()) < 1)
+            ) return;
+
+            GoblinNoseItem.spawnOreParticles(livingEntity, bp);
+        });
     }
 
     @Override
@@ -115,59 +113,65 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
         return (int) Math.round(relic.getStatValue(stack, "vein_seeker", "filter_slots"));
     }
 
-    @SubscribeEvent
-    public static void changeFog(ViewportEvent.RenderFog event) {
-        ItemStack stack = EntityUtils.findEquippedCurio(Minecraft.getInstance().player, ItemRegistry.GOBLIN_NOSE.get());
-        if (!(stack.getItem() instanceof GoblinNoseItem relic)
-                || !relic.isAbilityTicking(stack, "vein_seeker")
-                || !(Minecraft.getInstance().player.getEffect(MobEffects.DARKNESS) instanceof MobEffectInstance inst && inst.getDuration() <= 30)
-        ) return;
+    @EventBusSubscriber
+    public static class CommonEvents {
+        @SubscribeEvent
+        public static void onChunkLoad(ChunkEvent.Load event) {
+            if (!event.getLevel().isClientSide()) return;
 
-        float newDistance = (float) relic.getStatValue(stack, "vein_seeker", "radius");
-        event.scaleNearPlaneDistance(newDistance/15f);
-        event.scaleFarPlaneDistance(newDistance/15f);
-        event.setFogShape(FogShape.SPHERE);
-        event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public static void onChunkLoad(ChunkEvent.Load event) {
-        if (!event.getLevel().isClientSide()) return;
-
-        ChunkAccess chunk = event.getChunk();
-        OreCache.scanChunkAsync(event.getLevel(), chunk);
-    }
-
-    @SubscribeEvent
-    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-        if (event.getLevel().isClientSide()) return;
-
-        ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
-        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
-    }
-
-    @SubscribeEvent
-    public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        ItemStack stack = EntityUtils.findEquippedCurio(event.getPlayer(), ItemRegistry.GOBLIN_NOSE.get());
-        if (event.getLevel().isClientSide()) return;
-
-        ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
-        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
-
-        if (stack.getItem() instanceof GoblinNoseItem relic
-                && relic.isAbilityTicking(stack, "vein_seeker")
-                && event.getState().is(Tags.Blocks.ORES)
-        ) relic.spreadRelicExperience(event.getPlayer(), stack, 1);
-    }
-
-    @SubscribeEvent
-    public static void onChunkUnload(ChunkEvent.Unload event) {
-        if (!event.getLevel().isClientSide()) {
-            return;
+            ChunkAccess chunk = event.getChunk();
+            OreCache.scanChunkAsync(event.getLevel(), chunk);
         }
 
-        ChunkAccess chunk = event.getChunk();
-        OreCache.removeChunk(chunk.getPos());
+        @SubscribeEvent
+        public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+            if (event.getLevel().isClientSide()) return;
+
+            ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
+            PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+        }
+
+        @SubscribeEvent
+        public static void onBlockBreak(BlockEvent.BreakEvent event) {
+            ItemStack stack = EntityUtils.findEquippedCurio(event.getPlayer(), ItemRegistry.GOBLIN_NOSE.get());
+            if (event.getLevel().isClientSide()) return;
+
+            ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
+            PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+
+            if (stack.getItem() instanceof GoblinNoseItem relic
+                    && relic.isAbilityTicking(stack, "vein_seeker")
+                    && event.getState().is(Tags.Blocks.ORES)
+            ) relic.spreadRelicExperience(event.getPlayer(), stack, 1);
+        }
+
+        @SubscribeEvent
+        public static void onChunkUnload(ChunkEvent.Unload event) {
+            if (!event.getLevel().isClientSide()) {
+                return;
+            }
+
+            ChunkAccess chunk = event.getChunk();
+            OreCache.removeChunk(chunk.getPos());
+        }
+    }
+
+    @EventBusSubscriber(Dist.CLIENT)
+    public static class ClientEvents {
+        @SubscribeEvent
+        public static void changeFog(ViewportEvent.RenderFog event) {
+            ItemStack stack = EntityUtils.findEquippedCurio(Minecraft.getInstance().player, ItemRegistry.GOBLIN_NOSE.get());
+            if (!(stack.getItem() instanceof GoblinNoseItem relic)
+                    || !relic.isAbilityTicking(stack, "vein_seeker")
+                    || !(Minecraft.getInstance().player.getEffect(MobEffects.DARKNESS) instanceof MobEffectInstance inst && inst.getDuration() <= 30)
+            ) return;
+
+            float newDistance = (float) relic.getStatValue(stack, "vein_seeker", "radius");
+            event.scaleNearPlaneDistance(newDistance / 15f);
+            event.scaleFarPlaneDistance(newDistance / 15f);
+            event.setFogShape(FogShape.SPHERE);
+            event.setCanceled(true);
+        }
     }
 
     public static void spawnOreParticles(LivingEntity livingEntity, BlockPos pos) {
@@ -195,7 +199,7 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
 
         if (random.nextFloat() < 0.1f && livingEntity.tickCount % 4 == 0) {
             ORE_PARTICLE = new BasicColoredParticle.Options(BasicColoredParticle.Constructor.builder()
-                    .color(new Color(255,255,255,255).getRGB())
+                    .color(new Color(255, 255, 255, 255).getRGB())
                     .diameter(0.4f)
                     .lifetime(60)
                     .scaleModifier(0.95f)

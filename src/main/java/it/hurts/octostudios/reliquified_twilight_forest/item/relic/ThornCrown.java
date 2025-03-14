@@ -84,7 +84,7 @@ public class ThornCrown extends RelicItem {
         );
 
         toHurt.forEach(living -> {
-            if (living.hurt(entity.level().damageSources().thorns(entity), 2)
+            if (living.hurt(entity.level().damageSources().thorns(entity), (float) relic.getStatValue(stack, "poking", "damage"))
             && living.getRandom().nextDouble() < relic.getStatValue(stack, "poking", "paralyze_chance")) {
                 living.addEffect(new MobEffectInstance(EffectRegistry.PARALYSIS, (int) Math.round(relic.getStatValue(stack, "poking", "paralyze_duration")),
                         0, false, false)

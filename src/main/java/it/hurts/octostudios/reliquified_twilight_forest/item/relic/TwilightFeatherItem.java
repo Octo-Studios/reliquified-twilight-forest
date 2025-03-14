@@ -82,6 +82,7 @@ public class TwilightFeatherItem extends RelicItem {
         if (victim.level().isClientSide
                 || Objects.equals(e.getSource().typeHolder().getKey(), DamageTypeRegistry.EXECUTION)
                 || !(entity instanceof LivingEntity source)
+                || source == victim
                 || victim.getHealth() > source.getMaxHealth()
         ) return;
 
