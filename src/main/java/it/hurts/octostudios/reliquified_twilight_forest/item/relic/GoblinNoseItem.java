@@ -103,9 +103,6 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
             });
         } else if (!livingEntity.level().isClientSide) {
             livingEntity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 30, 0, true, false, false));
-            if (livingEntity.tickCount % 20 == 0) {
-                relic.spreadRelicExperience(livingEntity, stack, 1);
-            }
         }
     }
 
@@ -151,10 +148,16 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
 
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        ItemStack stack = EntityUtils.findEquippedCurio(event.getPlayer(), ItemRegistry.GOBLIN_NOSE.get());
         if (event.getLevel().isClientSide()) return;
 
         ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
         PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+
+        if (stack.getItem() instanceof GoblinNoseItem relic
+                && relic.isAbilityTicking(stack, "vein_seeker")
+                && event.getState().is(Tags.Blocks.ORES)
+        ) relic.spreadRelicExperience(event.getPlayer(), stack, 1);
     }
 
     @SubscribeEvent
