@@ -1,14 +1,16 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
+import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharm;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -37,6 +39,16 @@ public class CharmBackpackItem extends BundleLikeRelicItem {
                                         .formatValue(value -> MathButCool.roundSingleDigit(300 * value / 1200f))
                                         .build())
                                 .build())
+                        .build())
+                .leveling(LevelingData.builder()
+                        .sources(LevelingSourcesData.builder()
+                                .source(LevelingSourceData.abilityBuilder("charm_storage")
+                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .build())
+                                .build())
+                        .build())
+                .loot(LootData.builder()
+                        .entry(LootEntries.LABYRINTH)
                         .build())
                 .build();
     }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "twilightforest:item/charm_of_keeping_2"
+    "layer0": "reliquified_twilight_forest:item/broken_charm_of_keeping_2"
   }
 }

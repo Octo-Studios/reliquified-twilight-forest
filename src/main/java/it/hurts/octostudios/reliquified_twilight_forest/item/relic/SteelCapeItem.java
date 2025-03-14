@@ -1,14 +1,16 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
@@ -38,26 +40,36 @@ public class SteelCapeItem extends RelicItem {
                                         .build())
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.1, 0.25)
-                                        .upgradeModifier(UpgradeOperation.ADD, 0.05)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.025)
                                         .formatValue(MathButCool::percentage)
                                         .build())
                                 .stat(StatData.builder("damage")
                                         .initialValue(4, 6)
-                                        .upgradeModifier(UpgradeOperation.ADD, 1)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.6)
                                         .formatValue(MathButCool::roundSingleDigit)
                                         .build())
                                 .stat(StatData.builder("stun_duration")
                                         .initialValue(10, 20)
-                                        .upgradeModifier(UpgradeOperation.ADD, 18)
+                                        .upgradeModifier(UpgradeOperation.ADD, 8)
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .build())
                                 .build())
                         .build())
                 .style(StyleData.builder()
                         .beams(BeamsData.builder()
-                                .startColor(0xffC0C0C0)
+                                .startColor(0xffD0D0D0)
                                 .endColor(0)
                                 .build())
+                        .build())
+                .leveling(LevelingData.builder()
+                        .sources(LevelingSourcesData.builder()
+                                .source(LevelingSourceData.abilityBuilder("iron_guard")
+                                        .gem(GemShape.SQUARE, GemColor.CYAN)
+                                        .build())
+                                .build())
+                        .build())
+                .loot(LootData.builder()
+                        .entry(LootEntries.STRONGHOLD)
                         .build())
                 .build();
     }
