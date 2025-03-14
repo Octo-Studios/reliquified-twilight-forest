@@ -26,7 +26,7 @@ public class ClientBundleLikeTooltip implements ClientTooltipComponent {
 
     @Override
     public int getHeight() {
-        return 16 * ((contents.getSize() - 1) / getRowCount() + 1) + 4;
+        return contents.getSize() == 0 ? 0 : 16 * ((contents.getSize() - 1) / getRowCount() + 1) + 4;
     }
 
     @Override

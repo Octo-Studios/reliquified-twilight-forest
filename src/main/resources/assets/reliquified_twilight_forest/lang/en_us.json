@@ -110,6 +110,13 @@
   "tooltip.relics.charm_backpack.leveling_source.charm_storage.title": "Charm Storage",
   "tooltip.relics.charm_backpack.leveling_source.charm_storage.description": "+%1$s experience points for each charm activated",
 
+  "item.reliquified_twilight_forest.goblin_nose": "Goblin Nose",
+  "tooltip.relics.goblin_nose.description": "nose",
+  "tooltip.relics.goblin_nose.ability.vein_seeker": "Vein Seeker",
+  "tooltip.relics.goblin_nose.ability.vein_seeker.description": "%1$s blocks radius, %2$s filter slots",
+  "tooltip.relics.goblin_nose.leveling_source.vein_seeker.title": "Vein Seeker",
+  "tooltip.relics.goblin_nose.leveling_source.vein_seeker.description": "+%1$s experience points for each second spent with Vein Seeker ability active",
+
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 
