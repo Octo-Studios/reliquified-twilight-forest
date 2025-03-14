@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import com.mojang.blaze3d.shaders.FogShape;
+import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.OreCache;
@@ -14,6 +15,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -72,6 +74,9 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
                                         .build())
                                 .build())
                         .maxLevel(5)
+                        .build())
+                .loot(LootData.builder()
+                        .entry(LootEntries.TROLL)
                         .build())
                 .build();
     }
