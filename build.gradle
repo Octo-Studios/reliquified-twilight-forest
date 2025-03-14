@@ -113,6 +113,10 @@ repositories {
         name = "OctoStudios"
         url = uri("https://maven.octo-studios.com/releases")
     }
+    maven {
+        name = "Illusive Soulworks maven"
+        url = "https://maven.theillusivec4.top/"
+    }
     maven { url "https://maven.architectury.dev/" }
     maven { url = "https://maven.tamaized.com/releases" }
     exclusiveContent {
