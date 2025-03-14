@@ -93,7 +93,7 @@
   "item.reliquified_twilight_forest.steel_cape": "Steel Cape",
   "tooltip.relics.steel_cape.description": "A remarkably flexible yet durable material forms the basis of this cape, providing not only protection for its wearer but also retaliation when their safety is threatened.",
   "tooltip.relics.steel_cape.ability.iron_guard": "Invulnerability",
-  "tooltip.relics.steel_cape.ability.iron_guard.description": "When taking damage blocked by armor, reduces it by %1$s points. If the player still takes damage after reduction, there is a %2$s%% chance to launch a steel orb toward the attacker, dealing %3$s damage to all in its path and stunning them for %4$s seconds.",
+  "tooltip.relics.steel_cape.ability.iron_guard.description": "When taking damage that could potentially be mitigated by armor (even if none is equipped), reduces it by %1$s points. If the damage is not fully blocked, there is a %2$s%% chance to launch a steel orb toward the attacker, dealing %3$s damage to all in its path and stunning them for %4$s seconds.",
   "tooltip.relics.steel_cape.leveling_source.iron_guard.title": "Invulnerability",
   "tooltip.relics.steel_cape.leveling_source.iron_guard.description": "+%1$s experience points for each steel orb released by the %2$s ability.",
 

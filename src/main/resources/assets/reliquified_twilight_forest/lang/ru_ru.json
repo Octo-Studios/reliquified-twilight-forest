@@ -93,7 +93,7 @@
   "item.reliquified_twilight_forest.steel_cape": "Стальной плащ",
   "tooltip.relics.steel_cape.description": "Невероятно податливый и прочный материал, что лёг в основу этого плаща, не только хорош в защите своего носителя, но и может дать отпор, если вдруг что помешает его безопасности.",
   "tooltip.relics.steel_cape.ability.iron_guard": "Неприкосновенность",
-  "tooltip.relics.steel_cape.ability.iron_guard.description": "При получении урона, блокируемого бронёй, снижает его на %1$s единиц. Если после снижения игрок всё же получает урон, с шансом в %2$s%% в направлении атаковавшего выпускается стальной шар, наносящий всем на своём пути %3$s единиц урона и оглушающий на %4$s секунд.",
+  "tooltip.relics.steel_cape.ability.iron_guard.description": "При получении урона, от которого потенциально может защитить броня (даже при её отсутствии), снижает его на %1$s единиц. Если урон не был полностью заблокирован, с шансом в %2$s%% в направлении атаковавшего выпускается стальной шар, наносящий всем на своём пути %3$s единиц урона и оглушающий на %4$s секунд.",
   "tooltip.relics.steel_cape.leveling_source.iron_guard.title": "Неприкосновенность",
   "tooltip.relics.steel_cape.leveling_source.iron_guard.description": "+%1$s единиц опыта за каждый выпущенный стальной шар от способности %2$s.",
 
@@ -111,7 +111,7 @@
   "tooltip.relics.charm_backpack.leveling_source.charm_storage.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
 
   "item.reliquified_twilight_forest.goblin_nose": "Гоблинский нос",
-  "tooltip.relics.goblin_nose.description": "Варварски отобранный у гоблина нос. Никто и не подозревал что гоблины способны линять подобно ящерицам...",
+  "tooltip.relics.goblin_nose.description": "Варварски отобранный у гоблина нос. Никто и не подозревал, что гоблины способны линять подобно ящерицам...",
   "tooltip.relics.goblin_nose.ability.vein_seeker": "Гоблинское чутьё",
   "tooltip.relics.goblin_nose.ability.vein_seeker.description": "При активации способности ухудшает зрение, но обостряет нюх, позволяя находить в радиусе %1$s блоков любые ценные руды. Также позволяет поместить внутрь носа до %2$s блоков руды, чтобы чутьё распознавало только их. Для помещения руды в нос необходимо нажать ею ПКМ по носу в инвентаре, для извлечения - предмета в курсоре быть не должно.",
   "tooltip.relics.goblin_nose.leveling_source.vein_seeker.title": "Гоблинское чутьё",
@@ -120,5 +120,9 @@
   "entity.reliquified_twilight_forest.hydra_fire": "Капля Крови",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Огненная Лужица",
 
-  "effect.reliquified_twilight_forest.cicada_infestation": "Проклятье цикады"
+  "effect.reliquified_twilight_forest.cicada_infestation": "Проклятье цикады",
+
+  "death.attack.reliquified_twilight_forest.execution": "%1$s был казнён",
+  "death.attack.reliquified_twilight_forest.execution.item": "%1$s был казнён игроком %2$s при помощи %3$s",
+  "death.attack.reliquified_twilight_forest.execution.player": "%1$s был казнён игроком %2$s"
 }
