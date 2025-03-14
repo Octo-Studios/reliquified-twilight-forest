@@ -75,7 +75,6 @@ public class SteelCapeItem extends RelicItem {
 
         float newDamage = e.getNewDamage() - (float) relic.getStatValue(stack, "iron_guard", "flat_armor");
         e.setNewDamage(Math.max(newDamage, 0.001f));
-        relic.spreadRelicExperience(victim, stack, 1);
 
         if (newDamage <= 0
             || victim.getRandom().nextDouble() > relic.getStatValue(stack, "iron_guard", "chance")
@@ -87,6 +86,7 @@ public class SteelCapeItem extends RelicItem {
             Vec3 direction = source.position().add(0, source.getBbHeight()/2f, 0).subtract(chain.position()).normalize();
             chain.shoot(direction.x, direction.y, direction.z, 1.5f, 1f);
             victim.level().addFreshEntity(chain);
+            relic.spreadRelicExperience(victim, stack, 1);
         }
     }
 
