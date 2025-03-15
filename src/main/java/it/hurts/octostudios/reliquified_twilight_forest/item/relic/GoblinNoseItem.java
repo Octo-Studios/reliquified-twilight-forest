@@ -92,21 +92,20 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
             livingEntity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 30, 0, true, false, false));
         }
 
-        if (!livingEntity.level().isClientSide || livingEntity != Minecraft.getInstance().player) {
-            return;
+        if (livingEntity.level().isClientSide && livingEntity == Minecraft.getInstance().player) {
+            // Cached list of found ore positions.
+            List<BlockPos> ORES = OreCache.getNearbyOres(livingEntity.level(), livingEntity.blockPosition(), (float) relic.getStatValue(stack, "vein_seeker", "radius"));
+            ORES.forEach(bp -> {
+                BlockState state = livingEntity.level().getBlockState(bp);
+                if (livingEntity.getRandom().nextFloat() < 0.66f
+                        || !state.is(Tags.Blocks.ORES)
+                        || (!relic.getContents(stack).isEmpty() && relic.getItemCount(stack, state.getBlock().asItem()) < 1)
+                ) return;
+
+                GoblinNoseItem.spawnOreParticles(livingEntity, bp);
+            });
         }
 
-        // Cached list of found ore positions.
-        List<BlockPos> ORES = OreCache.getNearbyOres(livingEntity.level(), livingEntity.blockPosition(), (float) relic.getStatValue(stack, "vein_seeker", "radius"));
-        ORES.forEach(bp -> {
-            BlockState state = livingEntity.level().getBlockState(bp);
-            if (livingEntity.getRandom().nextFloat() < 0.66f
-                    || !state.is(Tags.Blocks.ORES)
-                    || (!relic.getContents(stack).isEmpty() && relic.getItemCount(stack, state.getBlock().asItem()) < 1)
-            ) return;
-
-            GoblinNoseItem.spawnOreParticles(livingEntity, bp);
-        });
     }
 
     @Override
