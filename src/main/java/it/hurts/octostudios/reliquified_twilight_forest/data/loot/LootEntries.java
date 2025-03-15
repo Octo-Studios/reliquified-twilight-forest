@@ -7,7 +7,10 @@ public class LootEntries {
     public static final LootEntry TWILIGHT = LootEntry.builder()
             .dimension(TFDimension.DIMENSION.toString())
             .biome(".*")
-            .table("twilightforest:hedge_maze", "twilightforest:hedge_cloth", "twilightforest:tree_cache", "[\\w]+:chests\\/[\\w_\\/]*[\\w]+[\\w_\\/]*")
+            .table("twilightforest:troll_vault_with_lamp", "twilightforest:troll_vault", "twilightforest:troll_garden", "twilightforest:stronghold_cache",
+                    "twilightforest:stronghold_room", "twilightforest:labyrinth_vault_jackpot", "twilightforest:labyrinth_vault", "twilightforest:labyrinth_room",
+                    "twilightforest:labyrinth_dead_end", "twilightforest:hedge_maze", "twilightforest:hedge_cloth", "twilightforest:tree_cache",
+                    "[\\w]+:chests\\/[\\w_\\/]*[\\w]+[\\w_\\/]*")
             .weight(500)
             .build();
 
