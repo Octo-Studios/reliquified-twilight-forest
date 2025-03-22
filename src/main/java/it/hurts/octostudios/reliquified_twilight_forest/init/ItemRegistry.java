@@ -1,7 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharm;
+import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharmItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.*;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,29 +21,37 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, GemItem> NECROMANCY_GEM = ITEMS.register("necromancy_gem", () -> new GemItem());
     public static final DeferredHolder<Item, GemItem> SHIELDING_GEM  = ITEMS.register("shielding_gem",  () -> new GemItem());
 
+    // 0.1
     public static final DeferredHolder<Item, LichCrownItem> LICH_CROWN = ITEMS.register("lich_crown", LichCrownItem::new);
     public static final DeferredHolder<Item, MinotaurHoofItem> MINOTAUR_HOOF = ITEMS.register("minotaur_hoof", MinotaurHoofItem::new);
     public static final DeferredHolder<Item, HydraHeartItem> HYDRA_HEART = ITEMS.register("hydra_heart", HydraHeartItem::new);
+
+    // 0.2
     public static final DeferredHolder<Item, FireflyQueenItem> FIREFLY_QUEEN = ITEMS.register("firefly_queen", FireflyQueenItem::new);
     public static final DeferredHolder<Item, CicadaBottleItem> CICADA_BOTTLE = ITEMS.register("cicada_bottle", CicadaBottleItem::new);
     public static final DeferredHolder<Item, DeerAntlerItem> DEER_ANTLER = ITEMS.register("deer_antler", DeerAntlerItem::new);
     public static final DeferredHolder<Item, ScaledCloakItem> SCALED_CLOAK = ITEMS.register("scaled_cloak", ScaledCloakItem::new);
+
+    // 0.3
     public static final DeferredHolder<Item, TwilightFeatherItem> TWILIGHT_FEATHER = ITEMS.register("twilight_feather", TwilightFeatherItem::new);
-    public static final DeferredHolder<Item, ThornCrown> THORN_CROWN = ITEMS.register("thorn_crown", ThornCrown::new);
+    public static final DeferredHolder<Item, ThornCrownItem> THORN_CROWN = ITEMS.register("thorn_crown", ThornCrownItem::new);
     public static final DeferredHolder<Item, CharmBackpackItem> CHARM_BACKPACK = ITEMS.register("charm_backpack", CharmBackpackItem::new);
     public static final DeferredHolder<Item, SteelCapeItem> STEEL_CAPE = ITEMS.register("steel_cape", SteelCapeItem::new);
     public static final DeferredHolder<Item, GoblinNoseItem> GOBLIN_NOSE = ITEMS.register("goblin_nose", GoblinNoseItem::new);
 
-    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_LIFE_1 =
-            ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharm(TFItems.CHARM_OF_LIFE_1.get(), 1));
-    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_LIFE_2 =
-            ITEMS.register("broken_charm_of_life_2", () -> new BrokenCharm(TFItems.CHARM_OF_LIFE_2.get(), 2));
-    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_KEEPING_1 =
-            ITEMS.register("broken_charm_of_keeping_1", () -> new BrokenCharm(TFItems.CHARM_OF_KEEPING_1.get(), 1));
-    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_KEEPING_2 =
-            ITEMS.register("broken_charm_of_keeping_2", () -> new BrokenCharm(TFItems.CHARM_OF_KEEPING_2.get(), 2));
-    public static final DeferredHolder<Item, BrokenCharm> BROKEN_CHARM_OF_KEEPING_3 =
-            ITEMS.register("broken_charm_of_keeping_3", () -> new BrokenCharm(TFItems.CHARM_OF_KEEPING_3.get(), 3));
+    // 0.4
+    public static final DeferredHolder<Item, GiantGloveItem> GIANT_GLOVE = ITEMS.register("giant_glove", GiantGloveItem::new);
+
+    public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_LIFE_1 =
+            ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharmItem(TFItems.CHARM_OF_LIFE_1.get(), 1));
+    public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_LIFE_2 =
+            ITEMS.register("broken_charm_of_life_2", () -> new BrokenCharmItem(TFItems.CHARM_OF_LIFE_2.get(), 2));
+    public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_KEEPING_1 =
+            ITEMS.register("broken_charm_of_keeping_1", () -> new BrokenCharmItem(TFItems.CHARM_OF_KEEPING_1.get(), 1));
+    public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_KEEPING_2 =
+            ITEMS.register("broken_charm_of_keeping_2", () -> new BrokenCharmItem(TFItems.CHARM_OF_KEEPING_2.get(), 2));
+    public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_KEEPING_3 =
+            ITEMS.register("broken_charm_of_keeping_3", () -> new BrokenCharmItem(TFItems.CHARM_OF_KEEPING_3.get(), 3));
 
     public static final Function<Item, Item> CHARMS = item -> {
         if (item == TFItems.CHARM_OF_LIFE_1.get()) return ItemRegistry.BROKEN_CHARM_OF_LIFE_1.get();

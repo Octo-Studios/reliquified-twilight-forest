@@ -11,6 +11,7 @@
     "TFItemStackUtilsMixin"
   ],
   "client": [
+    "ItemInHandRendererMixin",
     "MovingCicadaSoundInstanceMixin"
   ],
   "injectors": {

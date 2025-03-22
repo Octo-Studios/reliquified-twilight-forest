@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 
 @EventBusSubscriber
-public class ThornCrown extends RelicItem {
+public class ThornCrownItem extends RelicItem {
     @Override
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
@@ -79,7 +79,7 @@ public class ThornCrown extends RelicItem {
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity entity = slotContext.entity();
         if (entity.level().isClientSide
-                || !(stack.getItem() instanceof ThornCrown relic)
+                || !(stack.getItem() instanceof ThornCrownItem relic)
         ) return;
 
         List<LivingEntity> toHurt = entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(0.1), living ->
@@ -104,7 +104,7 @@ public class ThornCrown extends RelicItem {
         LivingEntity entity = e.getEntity();
         ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.THORN_CROWN.get());
         ResourceKey<DamageType> type = e.getSource().typeHolder().getKey();
-        if (!(stack.getItem() instanceof ThornCrown relic)
+        if (!(stack.getItem() instanceof ThornCrownItem relic)
                 || !(Objects.equals(type, DamageTypes.CACTUS)
                 || Objects.equals(type, DamageTypes.SWEET_BERRY_BUSH)
                 || (type != null && type.location().getPath().contains("thorn")))

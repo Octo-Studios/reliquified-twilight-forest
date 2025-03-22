@@ -2,7 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharm;
+import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharmItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -60,7 +60,7 @@ public class CharmBackpackItem extends BundleLikeRelicItem {
         ) return;
 
         List<ItemStack> charms = this.getContents(stack).stream().map(itemStack -> {
-            if (!(itemStack.getItem() instanceof BrokenCharm charm)) {
+            if (!(itemStack.getItem() instanceof BrokenCharmItem charm)) {
                 return itemStack;
             }
 
@@ -97,6 +97,6 @@ public class CharmBackpackItem extends BundleLikeRelicItem {
 
     @Override
     public Predicate<ItemStack> getPredicate() {
-        return stack -> stack.getItem() instanceof BrokenCharm || ItemRegistry.CHARMS.apply(stack.getItem()) != Items.AIR;
+        return stack -> stack.getItem() instanceof BrokenCharmItem || ItemRegistry.CHARMS.apply(stack.getItem()) != Items.AIR;
     }
 }

@@ -5,11 +5,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class BrokenCharm extends Item {
+public class BrokenCharmItem extends Item {
     public final Item original;
     public final int tier;
 
-    public BrokenCharm(Item original, int tier) {
+    public BrokenCharmItem(Item original, int tier) {
         super(new Properties()
                 .durability(300 * tier)
         );

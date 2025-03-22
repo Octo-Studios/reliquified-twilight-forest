@@ -4,7 +4,7 @@ import com.mojang.blaze3d.shaders.FogShape;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
-import it.hurts.octostudios.reliquified_twilight_forest.item.OreCache;
+import it.hurts.octostudios.reliquified_twilight_forest.api.OreCache;
 import it.hurts.octostudios.reliquified_twilight_forest.network.UpdateChunkPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.client.particles.BasicColoredParticle;
