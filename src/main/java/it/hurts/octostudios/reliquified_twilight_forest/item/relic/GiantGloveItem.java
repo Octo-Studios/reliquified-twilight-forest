@@ -13,11 +13,10 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
-import mezz.jei.core.collect.MultiMap;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -26,11 +25,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.jetbrains.annotations.Nullable;
-import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
-import top.theillusivec4.curios.common.CuriosHelper;
 
 import java.util.List;
 
@@ -82,9 +78,26 @@ public class GiantGloveItem extends RelicItem {
 
                 ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "giant_glove_"+slotResult.slotContext().identifier());
 
+                BuiltInRegistries.ATTRIBUTE.asHolderIdMap().iterator().forEachRemaining(holder -> {
+                    if (!living.getAttributes().hasAttribute(holder)) {
+                        return;
+                    }
+
+                    living.getAttributes().getInstance(holder).removeModifier(rl);
+                });
+
                 float multiplier = (float) relic.getStatValue(stack, "oversized_grip", "multiplier");
                 living.getMainHandItem().getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attributeHolder, attributeModifier) -> {
                     if (!(living.getAttribute(attributeHolder) instanceof AttributeInstance instance)) {
+                        return;
+                    }
+
+                    if (instance.getBaseValue() < 0) {
+                        instance.addOrUpdateTransientModifier(new AttributeModifier(
+                                rl,
+                                Math.abs(instance.getValue() * multiplier),
+                                AttributeModifier.Operation.ADD_VALUE
+                        ));;
                         return;
                     }
 
