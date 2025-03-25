@@ -195,7 +195,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     }
 
     @Override
-    public int getSize(ItemStack stack) {
+    public int getMaxSlots(ItemStack stack) {
         return (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
     }
 
@@ -303,7 +303,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     public boolean isRelicFlawless(ItemStack stack) {
         return (this.isAbilityFlawless(stack, "soulbound_gems")
                 && this.isAbilityMaxLevel(stack, "soulbound_gems")
-                && this.getContents(stack).size() >= this.getSize(stack)
+                && this.getContents(stack).size() >= this.getMaxSlots(stack)
         );
     }
 

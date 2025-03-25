@@ -24,7 +24,7 @@ public abstract class BundleLikeItem extends Item implements BundleLike {
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
         return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)
-                ? Optional.ofNullable(stack.get(DataComponentRegistry.BUNDLE_LIKE_CONTENTS)).map(list -> new BundleLikeTooltip(list, this.getSize(stack)))
+                ? Optional.ofNullable(stack.get(DataComponentRegistry.BUNDLE_LIKE_CONTENTS)).map(list -> new BundleLikeTooltip(list, this.getMaxSlots(stack)))
                 : Optional.empty();
     }
 

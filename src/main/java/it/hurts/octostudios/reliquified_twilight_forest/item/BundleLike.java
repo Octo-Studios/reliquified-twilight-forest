@@ -12,13 +12,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public interface BundleLike {
-    default int getSize(ItemStack stack) {
+    default int getMaxSlots(ItemStack stack) {
         return 1;
     }
 
-    default int getMaxStackSize() {
+    default int getMaxSlotStackSize(ItemStack stack) {
         return 1;
     }
 
@@ -27,8 +28,8 @@ public interface BundleLike {
         if (notMutable == null) return false;
 
         ArrayList<ItemStack> contents = Lists.newArrayList(notMutable);
-        int maxSlots = this.getSize(bundleStack);
-        int maxStackSize = this.getMaxStackSize();
+        int maxSlots = this.getMaxSlots(bundleStack);
+        int maxStackSize = this.getMaxSlotStackSize(bundleStack);
 
         // Try merging with an existing stack if the items match.
         for (ItemStack contained : contents) {
@@ -77,15 +78,33 @@ public interface BundleLike {
     default void dropExcessive(Player player, ItemStack stack) {
         List<ItemStack> notMutable = getContents(stack);
         ArrayList<ItemStack> contents = Lists.newArrayList(notMutable);
-        int maxStacks = this.getSize(stack);
-        if (contents.size() <= maxStacks) return;
-
-        List<ItemStack> toDrop = contents.subList(maxStacks - 1, contents.size() - 1);
-        for (ItemStack drop : toDrop) {
-            ItemEntity entity = player.drop(drop, false, true);
-            if (entity != null) entity.setNoPickUpDelay();
+        int maxStacks = this.getMaxSlots(stack);
+        int maxStackSize = this.getMaxSlotStackSize(stack);
+        if (contents.size() > maxStacks) {
+            List<ItemStack> toDrop = contents.subList(maxStacks - 1, contents.size() - 1);
+            for (ItemStack drop : toDrop) {
+                ItemEntity entity = player.drop(drop, false, true);
+                if (entity != null) entity.setNoPickUpDelay();
+            }
+            toDrop.clear();
         }
-        toDrop.clear();
+
+        contents.removeIf(ItemStack::isEmpty);
+
+        int maxStackSizeFound = contents.stream().mapToInt(ItemStack::getCount).max().orElse(0);
+        if (maxStackSizeFound > maxStackSize) {
+            contents = Lists.newArrayList(contents.stream().map(itemStack -> {
+                if (itemStack.getCount() < maxStackSize) return itemStack;
+
+                int excess = itemStack.getCount() - maxStackSize;
+                ItemEntity entity = player.drop(itemStack.copyWithCount(excess), false, true);
+                if (entity != null) entity.setNoPickUpDelay();
+                itemStack.shrink(excess);
+
+                return itemStack;
+            }).toList());
+        }
+
         contents.removeIf(ItemStack::isEmpty);
         this.setContents(player, stack, contents);
     }
@@ -123,11 +142,11 @@ public interface BundleLike {
     default void onContentsChanged(Player player, ItemStack stack, List<ItemStack> oldContents) {
     }
 
-    default void playInsertSound(Player player) {
+    default void playInsertSound(Player player, ItemStack toInsert) {
         player.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1f, 1.25f);
     }
 
-    default void playPopSound(Player player) {
+    default void playPopSound(Player player, ItemStack toPop) {
         player.playSound(SoundEvents.ITEM_PICKUP, 0.75f, 1.25f);
     }
 

@@ -21,9 +21,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -109,7 +111,7 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
     }
 
     @Override
-    public int getSize(ItemStack stack) {
+    public int getMaxSlots(ItemStack stack) {
         if (!(stack.getItem() instanceof GoblinNoseItem relic)) {
             return 0;
         }
@@ -219,6 +221,11 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
                     0, 0, 0
             );
         }
+    }
+
+    @Override
+    public void playInsertSound(Player player, ItemStack toInsert) {
+        player.playSound(SoundEvents.AMETHYST_BLOCK_PLACE, 0.8f, 1.25f);
     }
 
     @Override

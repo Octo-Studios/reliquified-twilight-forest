@@ -31,14 +31,14 @@ public class BundleLikeEventHandler {
 
         if (relic.isAcceptable(secondaryStack)) {
             if (relic.tryInsert(player, primaryStack, secondaryStack)) {
-                relic.playInsertSound(player);
+                relic.playInsertSound(player, secondaryStack);
             }
             event.setCanceled(true);
         } else if (secondaryStack.isEmpty()) {
             event.setCanceled(true);
             ItemStack poppedItem = relic.pop(player, primaryStack);
             if (!poppedItem.isEmpty()) {
-                relic.playPopSound(player);
+                relic.playPopSound(player, poppedItem);
                 if (primaryIsSlot) {
                     player.containerMenu.setCarried(poppedItem);
                 } else {

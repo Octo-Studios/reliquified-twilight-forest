@@ -5,6 +5,8 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharmItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.*;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
@@ -12,6 +14,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.init.TFItems;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public class ItemRegistry {
@@ -41,6 +45,7 @@ public class ItemRegistry {
 
     // 0.4
     public static final DeferredHolder<Item, GiantGloveItem> GIANT_GLOVE = ITEMS.register("giant_glove", GiantGloveItem::new);
+    public static final DeferredHolder<Item, ChromaticCloakItem> CHROMATIC_CLOAK = ITEMS.register("chromatic_cloak", ChromaticCloakItem::new);
 
     public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_LIFE_1 =
             ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharmItem(TFItems.CHARM_OF_LIFE_1.get(), 1));
@@ -61,6 +66,12 @@ public class ItemRegistry {
         if (item == TFItems.CHARM_OF_KEEPING_3.get()) return ItemRegistry.BROKEN_CHARM_OF_KEEPING_3.get();
         return Items.AIR;
     };
+
+    public static final Map<Item, MobEffect> CHROMATIC_EFFECTS = new HashMap<>();
+    static {
+        CHROMATIC_EFFECTS.put(Items.RED_WOOL.asItem(), MobEffects.REGENERATION.value());
+        CHROMATIC_EFFECTS.put(Items.YELLOW_WOOL.asItem(), MobEffects.DAMAGE_BOOST.value());
+    }
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
