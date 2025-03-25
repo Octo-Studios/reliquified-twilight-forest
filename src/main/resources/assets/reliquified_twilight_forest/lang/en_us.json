@@ -117,6 +117,22 @@
   "tooltip.relics.goblin_nose.leveling_source.vein_seeker.title": "Goblin Sense",
   "tooltip.relics.goblin_nose.leveling_source.vein_seeker.description": "+%1$s experience points for each ore mined under the effect of the %2$s ability.",
 
+  "item.reliquified_twilight_forest.giant_glove": "Giant Glove",
+  "tooltip.relics.giant_glove.description": "glove",
+  "tooltip.relics.giant_glove.ability.oversized_grip": "Oversized Grip",
+  "tooltip.relics.giant_glove.ability.oversized_grip.description": "+%1$s%% to held item attributes, +2.5 to interaction range",
+  "tooltip.relics.giant_glove.leveling_source.vein_seeker.title": "Oversized Grip",
+  "tooltip.relics.giant_glove.leveling_source.vein_seeker.description": "+%1$s idk",
+
+  "item.reliquified_twilight_forest.chromatic_cloak": "Chromatic Cloak",
+  "tooltip.relics.chromatic_cloak.description": "beee",
+  "tooltip.relics.chromatic_cloak.ability.wool_storage": "wool ability",
+  "tooltip.relics.chromatic_cloak.ability.wool_storage.description": "%1$s slots, %2$s max stack",
+  "tooltip.relics.chromatic_cloak.ability.effect_stacking": "effect stacking ability",
+  "tooltip.relics.chromatic_cloak.ability.effect_stacking.description": "can apply up to %1$s effect levels at once, considering you have multiple slots filled with non-unique wool",
+  "tooltip.relics.chromatic_cloak.leveling_source.wool_storage.title": "wool ability",
+  "tooltip.relics.chromatic_cloak.leveling_source.wool_storage.description": "+%1$s for each effect level applied. (ex. Strength V would give +5 exp)",
+
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 

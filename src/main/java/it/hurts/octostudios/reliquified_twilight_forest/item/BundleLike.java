@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public interface BundleLike {
     default int getMaxSlots(ItemStack stack) {
@@ -127,7 +126,11 @@ public interface BundleLike {
 
     default void setContents(Player player, ItemStack stack, List<ItemStack> contents) {
         List<ItemStack> oldContents = getContents(stack);
-        stack.set(DataComponentRegistry.BUNDLE_LIKE_CONTENTS, contents);
+        if (oldContents.equals(contents)) {
+            return;
+        }
+
+        stack.set(DataComponentRegistry.BUNDLE_LIKE_CONTENTS, contents.stream().filter(itemStack -> !itemStack.isEmpty()).toList());
         this.onContentsChanged(player, stack, oldContents);
     }
 
@@ -137,6 +140,14 @@ public interface BundleLike {
 
     default int getItemCount(ItemStack stack, Item item, List<ItemStack> contents) {
         return (int) contents.stream().filter(itemStack -> itemStack.getItem() == item).count();
+    }
+
+    default int getTotalItemCount(ItemStack stack, Item item) {
+        return this.getTotalItemCount(stack, item, this.getContents(stack));
+    }
+
+    default int getTotalItemCount(ItemStack stack, Item item, List<ItemStack> contents) {
+        return contents.stream().filter(itemStack -> itemStack.getItem() == item).mapToInt(ItemStack::getCount).sum();
     }
 
     default void onContentsChanged(Player player, ItemStack stack, List<ItemStack> oldContents) {

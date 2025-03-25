@@ -4,7 +4,9 @@ import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightFores
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer.TwilightIndicatorLayer;
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer.VignetteLayer;
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.tooltip.ClientBundleLikeTooltip;
+import it.hurts.octostudios.reliquified_twilight_forest.client.gui.tooltip.ClientChromaticCloakTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.BundleLikeTooltip;
+import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.ChromaticCloakTooltip;
 import it.hurts.sskirillss.relics.client.renderer.entities.NullRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -26,6 +28,7 @@ public class RemoteRegistry {
     @SubscribeEvent
     public static void onTooltipRegistry(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(BundleLikeTooltip.class, ClientBundleLikeTooltip::new);
+        event.register(ChromaticCloakTooltip.class, ClientChromaticCloakTooltip::new);
     }
 
     @SubscribeEvent

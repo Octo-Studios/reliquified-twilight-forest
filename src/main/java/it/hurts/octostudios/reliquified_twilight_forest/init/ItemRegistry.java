@@ -4,9 +4,11 @@ import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightFores
 import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharmItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.*;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
@@ -67,10 +69,24 @@ public class ItemRegistry {
         return Items.AIR;
     };
 
-    public static final Map<Item, MobEffect> CHROMATIC_EFFECTS = new HashMap<>();
+    public static final Map<Item, Holder<MobEffect>> CHROMATIC_EFFECTS = new HashMap<>();
     static {
-        CHROMATIC_EFFECTS.put(Items.RED_WOOL.asItem(), MobEffects.REGENERATION.value());
-        CHROMATIC_EFFECTS.put(Items.YELLOW_WOOL.asItem(), MobEffects.DAMAGE_BOOST.value());
+        CHROMATIC_EFFECTS.put(Items.RED_WOOL.asItem(), MobEffects.HEALTH_BOOST);
+        CHROMATIC_EFFECTS.put(Items.ORANGE_WOOL.asItem(), MobEffects.FIRE_RESISTANCE);
+        CHROMATIC_EFFECTS.put(Items.YELLOW_WOOL.asItem(), MobEffects.DAMAGE_BOOST);
+        CHROMATIC_EFFECTS.put(Items.LIME_WOOL.asItem(), MobEffects.JUMP);
+        CHROMATIC_EFFECTS.put(Items.CYAN_WOOL.asItem(), MobEffects.WATER_BREATHING);
+        CHROMATIC_EFFECTS.put(Items.LIGHT_BLUE_WOOL.asItem(), MobEffects.MOVEMENT_SPEED);
+        CHROMATIC_EFFECTS.put(Items.BLUE_WOOL.asItem(), MobEffects.NIGHT_VISION);
+        CHROMATIC_EFFECTS.put(Items.GREEN_WOOL.asItem(), MobEffects.LUCK);
+        CHROMATIC_EFFECTS.put(Items.PURPLE_WOOL.asItem(), MobEffects.DAMAGE_RESISTANCE);
+        CHROMATIC_EFFECTS.put(Items.LIGHT_GRAY_WOOL.asItem(), MobEffects.INVISIBILITY);
+        CHROMATIC_EFFECTS.put(Items.PINK_WOOL.asItem(), MobEffects.SLOW_FALLING);
+        CHROMATIC_EFFECTS.put(Items.BROWN_WOOL.asItem(), MobEffects.DIG_SPEED);
+        CHROMATIC_EFFECTS.put(Items.GRAY_WOOL.asItem(), MobEffects.LEVITATION);
+        CHROMATIC_EFFECTS.put(Items.WHITE_WOOL.asItem(), MobEffects.GLOWING);
+        CHROMATIC_EFFECTS.put(Items.BLACK_WOOL.asItem(), MobEffects.BAD_OMEN);
+        CHROMATIC_EFFECTS.put(Items.MAGENTA_WOOL.asItem(), MobEffects.REGENERATION);
     }
 
     public static void register(IEventBus bus) {
