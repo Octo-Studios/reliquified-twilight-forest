@@ -13,6 +13,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -65,7 +66,6 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.125f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
-            .maxLevel(5)
             .build();
 
     public static final AbilityData ZOMBIE = AbilityData.builder("zombie")
@@ -84,7 +84,6 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.075f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
-            .maxLevel(5)
             .build();
 
     public static final AbilityData TWILIGHT = AbilityData.builder("twilight")
@@ -98,7 +97,6 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.ADD, 0.1)
                     .formatValue(MathButCool::roundSingleDigit)
                     .build())
-            .maxLevel(5)
             .build();
 
     public static final AbilityData LIFEDRAIN = AbilityData.builder("lifedrain")
@@ -117,7 +115,14 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.1f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
-            .maxLevel(5)
+            .build();
+
+    public static final AbilityData FROSTBITE = AbilityData.builder("frostbite")
+            .stat(StatData.builder("duration")
+                    .initialValue(80, 100)
+                    .upgradeModifier(UpgradeOperation.ADD, 5)
+                    .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
+                    .build())
             .build();
 
     public static void fortificationTick(LivingEntity entity, ItemStack stack) {
@@ -320,6 +325,21 @@ public class LichCrownAbilities {
 
     @EventBusSubscriber
     public static class CommonEvents {
+        @SubscribeEvent
+        public static void applyFrostbite(LivingDamageEvent.Post e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getEntity() instanceof Player player)
+                    || player.level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "frostbite"))
+            ) return;
+
+            e.getEntity().setTicksFrozen(e.getEntity().getTicksFrozen() + (int) Math.round(relic.getStatValue(stack, "frostbite", "duration")));
+            player.displayClientMessage(Component.literal(String.valueOf(e.getEntity().getTicksFrozen())), true);
+            relic.spreadRelicExperience(player, stack, 1);
+        }
+
         @SubscribeEvent
         public static void onTwilightBoltHit(LivingDamageEvent.Post e) {
             ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());

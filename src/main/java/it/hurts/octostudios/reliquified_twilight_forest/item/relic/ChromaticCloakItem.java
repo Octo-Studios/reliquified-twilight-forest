@@ -73,9 +73,6 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
                                         .build())
                                 .build())
                         .build())
-                .loot(LootData.builder()
-                        .entry(LootEntries.LABYRINTH)
-                        .build())
                 .build();
     }
 

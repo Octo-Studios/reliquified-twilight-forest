@@ -106,7 +106,7 @@ public class TwilightFeatherItem extends RelicItem {
     }
 
     public static boolean performExecution(LivingEntity source, LivingEntity victim) {
-        if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), Float.MAX_VALUE)) {
+        if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), 2147483647)) {
             return false;
         };
         victim.deathTime = 19;

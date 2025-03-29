@@ -94,6 +94,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                         .ability(LichCrownAbilities.TWILIGHT)
                         .ability(LichCrownAbilities.LIFEDRAIN)
                         .ability(LichCrownAbilities.FORTIFICATION)
+                        .ability(LichCrownAbilities.FROSTBITE)
                         .build())
                 .leveling(LevelingData.builder()
                         .initialCost(250)
@@ -111,6 +112,9 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                                         .build())
                                 .source(LevelingSourceData.abilityBuilder("fortification")
                                         .gem(GemShape.SQUARE, GemColor.YELLOW)
+                                        .build())
+                                .source(LevelingSourceData.abilityBuilder("frostbite")
+                                        .gem(GemShape.SQUARE, GemColor.CYAN)
                                         .build())
                                 .build())
                         .build())
@@ -247,6 +251,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
             case "zombie" -> this.getItemCount(stack, ItemRegistry.NECROMANCY_GEM.get());
             case "twilight" -> this.getItemCount(stack, ItemRegistry.TWILIGHT_GEM.get());
             case "lifedrain" -> this.getItemCount(stack, ItemRegistry.ABSORPTION_GEM.get());
+            case "frostbite" -> this.getItemCount(stack, ItemRegistry.FROST_GEM.get());
             default -> super.getAbilityLevel(stack, ability);
         };
     }
@@ -254,7 +259,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     @Override
     public int getAbilityMaxLevel(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain" -> (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
+            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
             default -> super.getAbilityMaxLevel(stack, ability);
         };
     }
@@ -262,7 +267,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     @Override
     public boolean mayUpgrade(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
             default -> super.mayUpgrade(stack, ability);
         };
     }
@@ -270,7 +275,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     @Override
     public boolean mayReset(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
             default -> super.mayReset(stack, ability);
         };
     }
@@ -278,7 +283,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     @Override
     public boolean isAbilityEnabled(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain" -> this.getAbilityLevel(stack, ability) > 0;
+            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> this.getAbilityLevel(stack, ability) > 0;
             default -> super.isAbilityEnabled(stack, ability);
         };
     }
@@ -286,7 +291,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     @Override
     public boolean isAbilityUpgradeEnabled(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
             default -> super.isAbilityUpgradeEnabled(stack, ability);
         };
     }
@@ -294,7 +299,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     @Override
     public boolean isAbilityResetEnabled(ItemStack stack, String ability) {
         return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain" -> false;
+            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
             default -> super.isAbilityResetEnabled(stack, ability);
         };
     }
