@@ -1,0 +1,15 @@
+{
+  "type": "reliquified_twilight_forest:modify_items",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "twilightforest:entities/lich"
+    }
+  ],
+  "item_modifiers": {
+    "twilightforest:twilight_scepter": "reliquified_twilight_forest:twilight_gem",
+    "twilightforest:lifedrain_scepter": "reliquified_twilight_forest:absorption_gem",
+    "twilightforest:zombie_scepter": "reliquified_twilight_forest:necromancy_gem",
+    "twilightforest:fortification_scepter": "reliquified_twilight_forest:shielding_gem"
+  }
+}

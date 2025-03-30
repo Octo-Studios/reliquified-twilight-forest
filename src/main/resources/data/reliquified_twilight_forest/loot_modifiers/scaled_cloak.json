@@ -1,0 +1,12 @@
+{
+  "type": "reliquified_twilight_forest:add_items",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "twilightforest:entities/naga"
+    }
+  ],
+  "item_modifiers": {
+    "reliquified_twilight_forest:scaled_cloak": 0.33
+  }
+}

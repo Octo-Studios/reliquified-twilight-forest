@@ -1,0 +1,12 @@
+{
+  "type": "reliquified_twilight_forest:add_items",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "twilightforest:entities/minoshroom"
+    }
+  ],
+  "item_modifiers": {
+    "reliquified_twilight_forest:minotaur_hoof": 0.33
+  }
+}
