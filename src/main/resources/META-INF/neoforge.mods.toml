@@ -47,6 +47,6 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "twilightforest"
 type="required"
-versionRange = "[4.6.3003,)"
+versionRange = "[4.7.3032,)"
 ordering = "AFTER"
 side = "BOTH"
