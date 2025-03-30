@@ -17,6 +17,7 @@ public class ReliquifiedTwilightForest {
         EntityRegistry.register(bus);
         ParticleRegistry.register(bus);
         DataComponentRegistry.register(bus);
+        GlobalLootModifierSerializerCodecRegistry.register(bus);
     }
 
     private void setupCommon(final FMLCommonSetupEvent event) {
