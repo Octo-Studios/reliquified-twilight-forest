@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,10 +21,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Mixin(TFItemStackUtils.class)
 public class TFItemStackUtilsMixin {
-    @Inject(method = "consumeInventoryItem(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/Item;Lnet/minecraft/nbt/CompoundTag;Z)Z", at = @At("HEAD"), cancellable = true)
-    private static void injected(Player player, Item item, CompoundTag persistentTag, boolean saveItemToTag, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "consumeInventoryItem(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/ItemLike;Lnet/minecraft/nbt/CompoundTag;Z)Z", at = @At("HEAD"), cancellable = true)
+    private static void injected(Player player, ItemLike item, CompoundTag persistentTag, boolean saveItemToTag, CallbackInfoReturnable<Boolean> cir) {
         ItemStack backpack = EntityUtils.findEquippedCurio(player, ItemRegistry.CHARM_BACKPACK.get());
-        Item brokenCharm = ItemRegistry.CHARMS.apply(item);
+        Item brokenCharm = ItemRegistry.CHARMS.apply(item.asItem());
         if (!(backpack.getItem() instanceof CharmBackpackItem relic)
                 || brokenCharm == Items.AIR
         ) return;
@@ -32,7 +33,7 @@ public class TFItemStackUtilsMixin {
 
         List<ItemStack> contents = relic.getContents(backpack).stream().map(stack -> {
             if (isDone.get()
-                    || stack.getItem() != item
+                    || stack.getItem() != item.asItem()
             ) return stack;
 
             isDone.set(true);
