@@ -49,6 +49,7 @@ public class ItemRegistry {
     // 0.4
     public static final DeferredHolder<Item, GiantGloveItem> GIANT_GLOVE = ITEMS.register("giant_glove", GiantGloveItem::new);
     public static final DeferredHolder<Item, ChromaticCloakItem> CHROMATIC_CLOAK = ITEMS.register("chromatic_cloak", ChromaticCloakItem::new);
+    public static final DeferredHolder<Item, MapleSyrupBottleItem> MAPLE_SYRUP_BOTTLE = ITEMS.register("maple_syrup_bottle", MapleSyrupBottleItem::new);
 
     public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_LIFE_1 =
             ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharmItem(TFItems.CHARM_OF_LIFE_1.get(), 1));
