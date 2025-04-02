@@ -22,34 +22,35 @@ import java.util.function.Function;
 
 public class ItemRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ReliquifiedTwilightForest.MOD_ID);
-    public static final DeferredHolder<Item, GemItem> TWILIGHT_GEM   = ITEMS.register("twilight_gem",   () -> new GemItem());
-    public static final DeferredHolder<Item, GemItem> ABSORPTION_GEM = ITEMS.register("absorption_gem", () -> new GemItem());
-    public static final DeferredHolder<Item, GemItem> NECROMANCY_GEM = ITEMS.register("necromancy_gem", () -> new GemItem());
-    public static final DeferredHolder<Item, GemItem> SHIELDING_GEM  = ITEMS.register("shielding_gem",  () -> new GemItem());
-    public static final DeferredHolder<Item, GemItem> FROST_GEM      = ITEMS.register("frost_gem",      () -> new GemItem());
+    public static final DeferredHolder<Item, GemItem> ABSORPTION_GEM = ITEMS.register("absorption_gem", () -> new GemItem()); // 0.1
+    public static final DeferredHolder<Item, GemItem> NECROMANCY_GEM = ITEMS.register("necromancy_gem", () -> new GemItem()); // 0.1
+    public static final DeferredHolder<Item, GemItem> SHIELDING_GEM  = ITEMS.register("shielding_gem",  () -> new GemItem()); // 0.1
+    public static final DeferredHolder<Item, GemItem> TWILIGHT_GEM   = ITEMS.register("twilight_gem",   () -> new GemItem()); // 0.1
+    public static final DeferredHolder<Item, GemItem> FROST_GEM      = ITEMS.register("frost_gem",      () -> new GemItem()); // 0.4
 
     // 0.1
-    public static final DeferredHolder<Item, LichCrownItem> LICH_CROWN = ITEMS.register("lich_crown", LichCrownItem::new);
-    public static final DeferredHolder<Item, MinotaurHoofItem> MINOTAUR_HOOF = ITEMS.register("minotaur_hoof", MinotaurHoofItem::new);
-    public static final DeferredHolder<Item, HydraHeartItem> HYDRA_HEART = ITEMS.register("hydra_heart", HydraHeartItem::new);
+    public static final DeferredHolder<Item, LichCrownItem> LICH_CROWN                 = ITEMS.register("lich_crown", LichCrownItem::new);
+    public static final DeferredHolder<Item, HydraHeartItem> HYDRA_HEART               = ITEMS.register("hydra_heart", HydraHeartItem::new);
+    public static final DeferredHolder<Item, MinotaurHoofItem> MINOTAUR_HOOF           = ITEMS.register("minotaur_hoof", MinotaurHoofItem::new);
 
     // 0.2
-    public static final DeferredHolder<Item, FireflyQueenItem> FIREFLY_QUEEN = ITEMS.register("firefly_queen", FireflyQueenItem::new);
-    public static final DeferredHolder<Item, CicadaBottleItem> CICADA_BOTTLE = ITEMS.register("cicada_bottle", CicadaBottleItem::new);
-    public static final DeferredHolder<Item, DeerAntlerItem> DEER_ANTLER = ITEMS.register("deer_antler", DeerAntlerItem::new);
-    public static final DeferredHolder<Item, ScaledCloakItem> SCALED_CLOAK = ITEMS.register("scaled_cloak", ScaledCloakItem::new);
+    public static final DeferredHolder<Item, DeerAntlerItem> DEER_ANTLER               = ITEMS.register("deer_antler", DeerAntlerItem::new);
+    public static final DeferredHolder<Item, ScaledCloakItem> SCALED_CLOAK             = ITEMS.register("scaled_cloak", ScaledCloakItem::new);
+    public static final DeferredHolder<Item, CicadaBottleItem> CICADA_BOTTLE           = ITEMS.register("cicada_bottle", CicadaBottleItem::new);
+    public static final DeferredHolder<Item, FireflyQueenItem> FIREFLY_QUEEN           = ITEMS.register("firefly_queen", FireflyQueenItem::new);
 
     // 0.3
-    public static final DeferredHolder<Item, TwilightFeatherItem> TWILIGHT_FEATHER = ITEMS.register("twilight_feather", TwilightFeatherItem::new);
-    public static final DeferredHolder<Item, ThornCrownItem> THORN_CROWN = ITEMS.register("thorn_crown", ThornCrownItem::new);
-    public static final DeferredHolder<Item, CharmBackpackItem> CHARM_BACKPACK = ITEMS.register("charm_backpack", CharmBackpackItem::new);
-    public static final DeferredHolder<Item, SteelCapeItem> STEEL_CAPE = ITEMS.register("steel_cape", SteelCapeItem::new);
-    public static final DeferredHolder<Item, GoblinNoseItem> GOBLIN_NOSE = ITEMS.register("goblin_nose", GoblinNoseItem::new);
+    public static final DeferredHolder<Item, SteelCapeItem> STEEL_CAPE                 = ITEMS.register("steel_cape", SteelCapeItem::new);
+    public static final DeferredHolder<Item, ThornCrownItem> THORN_CROWN               = ITEMS.register("thorn_crown", ThornCrownItem::new);
+    public static final DeferredHolder<Item, GoblinNoseItem> GOBLIN_NOSE               = ITEMS.register("goblin_nose", GoblinNoseItem::new);
+    public static final DeferredHolder<Item, CharmBackpackItem> CHARM_BACKPACK         = ITEMS.register("charm_backpack", CharmBackpackItem::new);
+    public static final DeferredHolder<Item, TwilightFeatherItem> TWILIGHT_FEATHER     = ITEMS.register("twilight_feather", TwilightFeatherItem::new);
 
     // 0.4
-    public static final DeferredHolder<Item, GiantGloveItem> GIANT_GLOVE = ITEMS.register("giant_glove", GiantGloveItem::new);
-    public static final DeferredHolder<Item, ChromaticCloakItem> CHROMATIC_CLOAK = ITEMS.register("chromatic_cloak", ChromaticCloakItem::new);
-    public static final DeferredHolder<Item, MapleSyrupBottleItem> MAPLE_SYRUP_BOTTLE = ITEMS.register("maple_syrup_bottle", MapleSyrupBottleItem::new);
+    public static final DeferredHolder<Item, GiantGloveItem> GIANT_GLOVE               = ITEMS.register("giant_glove", GiantGloveItem::new);
+    public static final DeferredHolder<Item, ChromaticCloakItem> CHROMATIC_CLOAK       = ITEMS.register("chromatic_cloak", ChromaticCloakItem::new);
+    public static final DeferredHolder<Item, MapleSyrupBottleItem> MAPLE_SYRUP_BOTTLE  = ITEMS.register("maple_syrup_bottle", MapleSyrupBottleItem::new);
+    public static final DeferredHolder<Item, InvisibilityCloakItem> INVISIBILITY_CLOAK = ITEMS.register("invisibility_cloak", InvisibilityCloakItem::new);
 
     public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_LIFE_1 =
             ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharmItem(TFItems.CHARM_OF_LIFE_1.get(), 1));
