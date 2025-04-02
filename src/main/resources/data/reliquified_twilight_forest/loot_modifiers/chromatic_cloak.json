@@ -3,7 +3,7 @@
   "conditions": [
     {
       "condition": "neoforge:loot_table_id",
-      "loot_table_id": "twilightforest:entities/questing_ram_reward_blocks"
+      "loot_table_id": "twilightforest:entities/questing_ram_rewards"
     }
   ],
   "item_modifiers": {

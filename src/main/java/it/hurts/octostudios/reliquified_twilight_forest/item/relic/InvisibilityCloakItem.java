@@ -77,6 +77,9 @@ public class InvisibilityCloakItem extends RelicItem {
             if (idleTicks < maxIdleTicks) {
                 idleTicks++;
             } else {
+                if (!entity.hasEffect(EffectRegistry.VANISHING)) {
+                    this.spreadRelicExperience(entity, stack, 1);
+                }
                 entity.addEffect(new MobEffectInstance(EffectRegistry.VANISHING, 24, 0, true, false));
             }
         } else {

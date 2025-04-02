@@ -26,6 +26,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotResult;
@@ -67,6 +70,30 @@ public class GiantGloveItem extends RelicItem {
 
     @EventBusSubscriber
     public static class CommonEvents {
+        @SubscribeEvent
+        public static void entityHit(LivingDamageEvent.Post e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getDirectEntity(), ItemRegistry.GIANT_GLOVE.get());
+            if (e.getEntity().level().isClientSide
+                    || !(stack.getItem() instanceof GiantGloveItem relic)
+                    || !(e.getSource().getDirectEntity() instanceof LivingEntity source)
+                    || source.getMainHandItem().isEmpty()
+            ) return;
+
+            relic.spreadRelicExperience(source, stack, 1);
+        }
+
+        @SubscribeEvent
+        public static void blockBreak(BlockEvent.BreakEvent e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getPlayer(), ItemRegistry.GIANT_GLOVE.get());
+            if (e.getPlayer().level().isClientSide
+                    || !(stack.getItem() instanceof GiantGloveItem relic)
+                    || e.getState().getDestroySpeed(e.getLevel(), e.getPos()) <= 0
+                    || e.getPlayer().getMainHandItem().isEmpty()
+            ) return;
+
+            relic.spreadRelicExperience(e.getPlayer(), stack, 1);
+        }
+
         @SubscribeEvent
         public static void playerTick(EntityTickEvent.Post e) {
             List<SlotResult> slots = EntitiesButCool.findEquippedSlots(e.getEntity(), ItemRegistry.GIANT_GLOVE.get());

@@ -76,6 +76,7 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
                 .build();
     }
 
+
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
         return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)

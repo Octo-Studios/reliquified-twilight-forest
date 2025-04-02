@@ -122,7 +122,7 @@
   "tooltip.relics.giant_glove.ability.oversized_grip": "Oversized Grip",
   "tooltip.relics.giant_glove.ability.oversized_grip.description": "+%1$s%% to held item attributes, +2.5 to interaction range",
   "tooltip.relics.giant_glove.leveling_source.oversized_grip.title": "Oversized Grip",
-  "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s idk",
+  "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s exp for each block mined or entity hit directly with any item in hand.",
 
   "item.reliquified_twilight_forest.chromatic_cloak": "Chromatic Cloak",
   "tooltip.relics.chromatic_cloak.description": "beee",
@@ -150,7 +150,9 @@
   "tooltip.relics.invisibility_cloak.ability.invisibility": "Disappearing",
   "tooltip.relics.invisibility_cloak.ability.invisibility.description": "disappear after %1$s seconds of standing still or crouching",
   "tooltip.relics.invisibility_cloak.leveling_source.invisibility.title": "Disappearing",
-  "tooltip.relics.invisibility_cloak.leveling_source.invisibility.description": "+%1$s exp for each seconds spent invisible",
+  "tooltip.relics.invisibility_cloak.leveling_source.invisibility.description": "+%1$s exp for each time the player disappears",
+
+  "item.reliquified_twilight_forest.frost_gem": "Frost Gem",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
