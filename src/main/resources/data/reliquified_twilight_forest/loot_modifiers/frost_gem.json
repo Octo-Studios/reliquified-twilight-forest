@@ -1,0 +1,12 @@
+{
+  "type": "reliquified_twilight_forest:add_items",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "twilightforest:entities/snow_queen"
+    }
+  ],
+  "item_modifiers": {
+    "reliquified_twilight_forest:frost_gem": 0.33
+  }
+}

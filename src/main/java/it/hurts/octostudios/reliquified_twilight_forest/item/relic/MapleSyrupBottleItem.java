@@ -58,7 +58,8 @@ public class MapleSyrupBottleItem extends RelicItem {
                                 .build())
                         .build())
                 .loot(LootData.builder()
-                        .entry(LootEntries.TREE_CACHE)
+                        .entry(LootEntries.LABYRINTH)
+                        .entry(LootEntries.STRONGHOLD)
                         .build())
                 .build();
     }

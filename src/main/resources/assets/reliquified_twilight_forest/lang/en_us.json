@@ -121,8 +121,8 @@
   "tooltip.relics.giant_glove.description": "glove",
   "tooltip.relics.giant_glove.ability.oversized_grip": "Oversized Grip",
   "tooltip.relics.giant_glove.ability.oversized_grip.description": "+%1$s%% to held item attributes, +2.5 to interaction range",
-  "tooltip.relics.giant_glove.leveling_source.vein_seeker.title": "Oversized Grip",
-  "tooltip.relics.giant_glove.leveling_source.vein_seeker.description": "+%1$s idk",
+  "tooltip.relics.giant_glove.leveling_source.oversized_grip.title": "Oversized Grip",
+  "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s idk",
 
   "item.reliquified_twilight_forest.chromatic_cloak": "Chromatic Cloak",
   "tooltip.relics.chromatic_cloak.description": "beee",
@@ -132,6 +132,25 @@
   "tooltip.relics.chromatic_cloak.ability.effect_stacking.description": "can apply up to %1$s effect levels at once, considering you have multiple slots filled with non-unique wool",
   "tooltip.relics.chromatic_cloak.leveling_source.wool_storage.title": "wool ability",
   "tooltip.relics.chromatic_cloak.leveling_source.wool_storage.description": "+%1$s for each effect level applied. (ex. Strength V would give +5 exp)",
+
+  "tooltip.relics.lich_crown.ability.frostbite": "Frostbite",
+  "tooltip.relics.lich_crown.ability.frostbite.description": "duration to apply %1$s seconds",
+
+  "item.reliquified_twilight_forest.maple_syrup_bottle": "Bottle of Maple Syrup",
+  "tooltip.relics.maple_syrup_bottle.description": "beee",
+  "tooltip.relics.maple_syrup_bottle.ability.sugar_rush": "Sugar Rush",
+  "tooltip.relics.maple_syrup_bottle.ability.sugar_rush.description": "%1$s%% chance not to consume wafers, %2$s%% regen enhancement, %3$s seconds of regen time",
+  "tooltip.relics.maple_syrup_bottle.leveling_source.sugar_rush.title": "Sugar Rush",
+  "tooltip.relics.maple_syrup_bottle.leveling_source.sugar_rush.description": "+%1$s exp for each wafer consumed.",
+
+  "item.reliquified_twilight_forest.invisibility_cloak": "Invisibility Cloak",
+  "tooltip.relics.invisibility_cloak.description": "beee",
+  "tooltip.relics.invisibility_cloak.ability.cosmetic_armor": "Emperor's Cloth",
+  "tooltip.relics.invisibility_cloak.ability.cosmetic_armor.description": "Hides your currently worn armor",
+  "tooltip.relics.invisibility_cloak.ability.invisibility": "Disappearing",
+  "tooltip.relics.invisibility_cloak.ability.invisibility.description": "disappear after %1$s seconds of standing still or crouching",
+  "tooltip.relics.invisibility_cloak.leveling_source.invisibility.title": "Disappearing",
+  "tooltip.relics.invisibility_cloak.leveling_source.invisibility.description": "+%1$s exp for each seconds spent invisible",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
