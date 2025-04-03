@@ -43,8 +43,8 @@ public class MapleSyrupBottleItem extends RelicItem {
                                         .formatValue(MathButCool::percentage)
                                         .build())
                                 .stat(StatData.builder("regen_time")
-                                        .initialValue(200, 300)
-                                        .upgradeModifier(UpgradeOperation.ADD, 30)
+                                        .initialValue(140, 200)
+                                        .upgradeModifier(UpgradeOperation.ADD, 20)
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .build())
                                 .build())
@@ -112,6 +112,7 @@ public class MapleSyrupBottleItem extends RelicItem {
             int toAdd = (int) Math.round(relic.getStatValue(stack, "sugar_rush", "regen_time"));
 
             stack.set(DataComponentRegistry.REGENERATION_TICKS, regenerationTicks + toAdd);
+            relic.spreadRelicExperience(e.getEntity(), stack, 1);
         }
 
         if (original.has(DataComponentRegistry.DONT_EAT)) {

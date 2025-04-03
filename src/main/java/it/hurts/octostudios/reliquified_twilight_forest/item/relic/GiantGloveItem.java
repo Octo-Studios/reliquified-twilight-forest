@@ -9,9 +9,9 @@ import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicAttributeModifier;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
@@ -33,6 +33,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.jetbrains.annotations.Nullable;
+import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.List;
@@ -50,6 +51,13 @@ public class GiantGloveItem extends RelicItem {
                                         .build())
                                 .build())
                         .build())
+                .leveling(LevelingData.builder()
+                        .sources(LevelingSourcesData.builder()
+                                .source(LevelingSourceData.abilityBuilder("oversized_grip")
+                                        .gem(GemShape.SQUARE, GemColor.RED)
+                                        .build())
+                                .build())
+                        .build())
                 .loot(LootData.builder()
                         .entry(LootEntries.TROLL)
                         .build())
@@ -63,6 +71,14 @@ public class GiantGloveItem extends RelicItem {
                 .attribute(new RelicAttributeModifier.Modifier(Attributes.BLOCK_INTERACTION_RANGE, 2.5F*(1+multiplier), AttributeModifier.Operation.ADD_VALUE))
                 .attribute(new RelicAttributeModifier.Modifier(Attributes.ENTITY_INTERACTION_RANGE, 2.5F*(1+multiplier), AttributeModifier.Operation.ADD_VALUE))
                 .build();
+    }
+
+    @Override
+    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
+        super.onUnequip(slotContext, newStack, stack);
+        if (newStack.getItem() != stack.getItem()) {
+            removeAttributes(slotContext);
+        }
     }
 
     @Override
@@ -111,13 +127,7 @@ public class GiantGloveItem extends RelicItem {
 
                 ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "giant_glove_"+slotResult.slotContext().identifier());
 
-                BuiltInRegistries.ATTRIBUTE.asHolderIdMap().iterator().forEachRemaining(holder -> {
-                    if (!living.getAttributes().hasAttribute(holder)) {
-                        return;
-                    }
-
-                    living.getAttributes().getInstance(holder).removeModifier(rl);
-                });
+                removeAttributes(slotResult.slotContext());
 
                 float multiplier = (float) relic.getStatValue(stack, "oversized_grip", "multiplier");
                 living.getMainHandItem().getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attributeHolder, attributeModifier) -> {
@@ -142,6 +152,18 @@ public class GiantGloveItem extends RelicItem {
                 });
             });
         }
+    }
+
+    private static void removeAttributes(SlotContext slotContext) {
+        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "giant_glove_"+slotContext.identifier());
+
+        BuiltInRegistries.ATTRIBUTE.asHolderIdMap().iterator().forEachRemaining(holder -> {
+            if (!slotContext.entity().getAttributes().hasAttribute(holder)) {
+                return;
+            }
+
+            slotContext.entity().getAttributes().getInstance(holder).removeModifier(rl);
+        });
     }
 
     @EventBusSubscriber(Dist.CLIENT)

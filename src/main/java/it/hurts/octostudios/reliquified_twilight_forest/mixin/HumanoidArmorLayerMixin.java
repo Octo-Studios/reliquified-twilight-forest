@@ -10,6 +10,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.common.CuriosHelper;
 
 @Mixin(HumanoidArmorLayer.class)
 public class HumanoidArmorLayerMixin {
@@ -20,6 +22,7 @@ public class HumanoidArmorLayerMixin {
             float limbSwing, float limbSwingAmount, float partialTicks,
             float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci
     ) {
+        CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, ItemRegistry.INVISIBILITY_CLOAK.get());
         if (!EntityUtils.findEquippedCurio(livingEntity, ItemRegistry.INVISIBILITY_CLOAK.get()).isEmpty()) {
             ci.cancel();
         }

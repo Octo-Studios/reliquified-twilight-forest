@@ -120,7 +120,7 @@ public class LichCrownAbilities {
     public static final AbilityData FROSTBITE = AbilityData.builder("frostbite")
             .stat(StatData.builder("duration")
                     .initialValue(80, 100)
-                    .upgradeModifier(UpgradeOperation.ADD, 5)
+                    .upgradeModifier(UpgradeOperation.ADD, 10)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
             .build();
