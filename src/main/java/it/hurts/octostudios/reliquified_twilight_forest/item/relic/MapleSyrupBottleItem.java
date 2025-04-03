@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
+import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
@@ -18,7 +19,11 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
+import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.init.TFItems;
+
+import javax.swing.text.html.parser.Entity;
 
 @EventBusSubscriber
 public class MapleSyrupBottleItem extends RelicItem {
@@ -64,18 +69,68 @@ public class MapleSyrupBottleItem extends RelicItem {
                 .build();
     }
 
-    @SubscribeEvent
-    public static void eat(LivingEntityUseItemEvent.Finish e) {
-        e.getEntity().sendSystemMessage(Component.literal(Thread.currentThread().getName()));
+    @Override
+    public void curioTick(SlotContext slotContext, ItemStack stack) {
+        if (slotContext.entity().level().isClientSide) {
+            return;
+        }
 
+        int regenerationTicks = stack.getOrDefault(DataComponentRegistry.REGENERATION_TICKS, 0);
+        if (regenerationTicks > 0) {
+            regenerationTicks--;
+        }
+
+        stack.set(DataComponentRegistry.REGENERATION_TICKS, regenerationTicks);
+    }
+
+    @SubscribeEvent
+    public static void eat(LivingEntityUseItemEvent.Start e) {
         ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MAPLE_SYRUP_BOTTLE.get());
         if (e.getEntity().level().isClientSide
                 || !(stack.getItem() instanceof MapleSyrupBottleItem relic)
-                || e.getItem().getItem() != TFItems.MAZE_WAFER.get()
-                || e.getEntity().getRandom().nextDouble() > relic.getStatValue(stack, "sugar_rush", "chance")
+                || !MapleSyrupBottleItem.isAcceptable(e.getItem())
         ) return;
 
-        e.setResultStack(e.getItem());
-        e.setDuration(e.getItem().getUseDuration(e.getEntity()));
+        if (e.getEntity().getRandom().nextDouble() > relic.getStatValue(stack, "sugar_rush", "chance")) {
+            e.getItem().remove(DataComponentRegistry.DONT_EAT);
+            return;
+        }
+
+        e.getItem().set(DataComponentRegistry.DONT_EAT, true);
+    }
+
+    @SubscribeEvent
+    public static void eat(LivingEntityUseItemEvent.Finish e) {
+        ItemStack original = e.getItem();
+        ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MAPLE_SYRUP_BOTTLE.get());
+        if (stack.isEmpty() || !(stack.getItem() instanceof MapleSyrupBottleItem relic)) {
+            return;
+        }
+
+        if (!e.getEntity().level().isClientSide && MapleSyrupBottleItem.isAcceptable(e.getItem())) {
+            int regenerationTicks = stack.getOrDefault(DataComponentRegistry.REGENERATION_TICKS, 0);
+            int toAdd = (int) Math.round(relic.getStatValue(stack, "sugar_rush", "regen_time"));
+
+            stack.set(DataComponentRegistry.REGENERATION_TICKS, regenerationTicks + toAdd);
+        }
+
+        if (original.has(DataComponentRegistry.DONT_EAT)) {
+            e.setResultStack(original);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onHeal(LivingHealEvent e) {
+        ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MAPLE_SYRUP_BOTTLE.get());
+        if (e.getEntity().level().isClientSide
+                || !(stack.getItem() instanceof MapleSyrupBottleItem relic)
+                || stack.getOrDefault(DataComponentRegistry.REGENERATION_TICKS, 0) <= 0
+        ) return;
+
+        e.setAmount(e.getAmount() * (float) (1f + relic.getStatValue(stack, "sugar_rush", "regen_multiplier")));
+    }
+
+    public static boolean isAcceptable(ItemStack stack) {
+        return stack.getItem() == TFItems.MAZE_WAFER.asItem();
     }
 }

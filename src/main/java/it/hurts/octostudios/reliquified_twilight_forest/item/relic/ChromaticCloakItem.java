@@ -1,11 +1,8 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
-import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
-import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.BundleLikeTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.ChromaticCloakTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharmItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -13,7 +10,9 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
+import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
@@ -24,15 +23,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
-import twilightforest.compat.top.QuestRamWoolElement;
-import twilightforest.entity.passive.QuestRam;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +51,16 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
                                         .upgradeModifier(UpgradeOperation.ADD, 1)
                                         .formatValue(Math::round)
                                         .build())
+                                .stat(StatData.builder("duration")
+                                        .initialValue(200, 280)
+                                        .upgradeModifier(UpgradeOperation.ADD, 30)
+                                        .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
+                                        .build())
                                 .build())
                         .ability(AbilityData.builder("effect_stacking")
-                                .stat(StatData.builder("nax_amplifier")
-                                        .initialValue(3, 5)
-                                        .upgradeModifier(UpgradeOperation.ADD, 2)
+                                .stat(StatData.builder("max_amplifier")
+                                        .initialValue(2, 5)
+                                        .upgradeModifier(UpgradeOperation.ADD, 1)
                                         .formatValue(Math::round)
                                         .build())
                                 .requiredPoints(2)
@@ -72,6 +73,17 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
                                         .gem(GemShape.SQUARE, GemColor.ORANGE)
                                         .build())
                                 .build())
+                        .build())
+                .style(StyleData.builder()
+                        .beams((player, stack) -> {
+                            float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+                            Color color = Color.getHSBColor((player.tickCount+partialTick)/60f, .75f, 1f);
+
+                            return BeamsData.builder()
+                                    .startColor(color.getRGB())
+                                    .endColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0).getRGB())
+                                    .build();
+                        })
                         .build())
                 .build();
     }
@@ -100,7 +112,8 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
 
             if (effect == null
                     || (durationOffset == 0 ? player.hasEffect(effect) :
-                    (player.getEffect(effect) != null && player.getEffect(effect).getDuration() > durationOffset || toApply.getOrDefault(effect, 0) >= maxAmplifier))
+                    (player.getEffect(effect) != null && player.getEffect(effect).getDuration() > durationOffset))
+                    || toApply.getOrDefault(effect, 0) >= maxAmplifier
             ) return itemStack;
 
             toApply.merge(effect, 1, Integer::sum);
@@ -110,8 +123,8 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
         }).filter(itemStack -> !itemStack.isEmpty() && itemStack.getCount() > 0).toList();
 
         toApply.forEach((effect, amplifier) -> {
-            int durationOffset = ChromaticCloakItem.getEffectDurationOffset(effect);
-            player.addEffect(new MobEffectInstance(effect, 200+durationOffset, amplifier-1));
+            int duration = (int) Math.round(this.getStatValue(stack, "wool_storage", "duration")) + ChromaticCloakItem.getEffectDurationOffset(effect);
+            player.addEffect(new MobEffectInstance(effect, duration, amplifier - 1));
             this.spreadRelicExperience(player, stack, amplifier);
         });
 
@@ -121,9 +134,11 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
     private static int getEffectDurationOffset(Holder<MobEffect> effect) {
         if (effect == MobEffects.NIGHT_VISION) {
             return 210;
+        } else if (effect == MobEffects.HEALTH_BOOST || effect == MobEffects.ABSORPTION) {
+            return 10;
         }
 
-        return 0;
+        return 1;
     }
 
     @Override

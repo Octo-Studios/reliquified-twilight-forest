@@ -135,6 +135,8 @@
 
   "tooltip.relics.lich_crown.ability.frostbite": "Frostbite",
   "tooltip.relics.lich_crown.ability.frostbite.description": "duration to apply %1$s seconds",
+  "tooltip.relics.lich_crown.leveling_source.frostbite.title": "Frostbite",
+  "tooltip.relics.lich_crown.leveling_source.frostbite.description": "+%1$s experience points for each stack of frostbite applied.",
 
   "item.reliquified_twilight_forest.maple_syrup_bottle": "Bottle of Maple Syrup",
   "tooltip.relics.maple_syrup_bottle.description": "beee",

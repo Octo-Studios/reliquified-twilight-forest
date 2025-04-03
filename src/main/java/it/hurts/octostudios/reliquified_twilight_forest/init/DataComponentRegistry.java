@@ -33,9 +33,18 @@ public class DataComponentRegistry {
                     .build()
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> DONT_EAT = registerBoolean("dont_eat");
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> REGENERATION_TICKS = registerInt("regeneration_ticks");
+
     public static DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> registerInt(String id) {
         return DATA_COMPONENTS.register(id, () -> DataComponentType.<Integer>builder()
                 .persistent(Codec.INT)
+                .build());
+    }
+
+    public static DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> registerBoolean(String id) {
+        return DATA_COMPONENTS.register(id, () -> DataComponentType.<Boolean>builder()
+                .persistent(Codec.BOOL)
                 .build());
     }
 

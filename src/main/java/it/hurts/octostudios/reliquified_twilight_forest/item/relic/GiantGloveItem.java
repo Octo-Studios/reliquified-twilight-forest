@@ -22,10 +22,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -153,13 +155,18 @@ public class GiantGloveItem extends RelicItem {
 
             float scale;
             if (e.getDisplayContext().firstPerson()) {
-                scale = (float) (1.25d + relic.getStatValue(stack, "oversized_grip", "multiplier") * 2d);
+                scale = (float) (1.25d + relic.getStatValue(stack, "oversized_grip", "multiplier") * 1.8d);
 
                 e.getPoseStack().scale(scale,scale,scale);
+                e.getPoseStack().translate(0,-0.1,0);
+
+                if (e.getItemStack().is(Tags.Items.TOOLS_SHIELD)) {
+                    e.getPoseStack().translate(0.1 * (e.getDisplayContext() == ItemDisplayContext.FIRST_PERSON_LEFT_HAND ? -1 : 1), -0.2, 0);
+                }
                 return;
             }
 
-            scale = (float) (2d + relic.getStatValue(stack, "oversized_grip", "multiplier") * 8d);
+            scale = (float) (2d + relic.getStatValue(stack, "oversized_grip", "multiplier") * 6d);
             e.getPoseStack().scale(scale,scale,scale);
             e.getPoseStack().translate(0,0,-0.075f);
         }
