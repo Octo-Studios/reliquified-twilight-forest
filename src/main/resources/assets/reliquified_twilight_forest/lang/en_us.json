@@ -120,7 +120,7 @@
   "item.reliquified_twilight_forest.giant_glove": "Giant's Glove",
   "tooltip.relics.giant_glove.description": "A piece of gear once worn by fairy-tale giants who dwell in cloud-top huts. It's said the only way to reach them is with magic beans whose stalk pierces the skies...",
   "tooltip.relics.giant_glove.ability.oversized_grip": "Giant's Grip",
-  "tooltip.relics.giant_glove.ability.oversized_grip.description": "Increases the size and stats of the held item by %1$s%%, and interaction range by 2.5 blocks.",
+  "tooltip.relics.giant_glove.ability.oversized_grip.description": "Increases the size and stats of the held item by %1$s%%.",
   "tooltip.relics.giant_glove.leveling_source.oversized_grip.title": "Giant's Grip",
   "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s XP for each block broken or entity hit made with an item enhanced by %2$s.",
 
