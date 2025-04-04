@@ -20,8 +20,8 @@ public class EntitiesButCool {
     }
 
     public static List<SlotResult> findEquippedSlots(Entity entity, Item item) {
-        if (entity instanceof LivingEntity living) {
-            return CuriosApi.getCuriosInventory(living).map((inventory) -> inventory.findCurios(item).stream().toList()).orElse(List.of());
+        if (entity instanceof Player player) {
+            return CuriosApi.getCuriosInventory(player).map((inventory) -> inventory.findCurios(item).stream().toList()).orElse(List.of());
         } else {
             return List.of();
         }

@@ -70,7 +70,7 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
                 .leveling(LevelingData.builder()
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("wool_storage")
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                        .gem(GemShape.SQUARE, GemColor.BLUE)
                                         .build())
                                 .build())
                         .build())
