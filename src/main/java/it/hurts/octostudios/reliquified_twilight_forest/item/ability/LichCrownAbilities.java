@@ -330,13 +330,14 @@ public class LichCrownAbilities {
             ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
 
             if (!(e.getSource().getEntity() instanceof Player player)
+                    || player == e.getEntity()
                     || player.level().isClientSide
                     || !(stack.getItem() instanceof LichCrownItem relic)
                     || !(relic.isAbilityUnlocked(stack, "frostbite"))
             ) return;
 
             e.getEntity().setTicksFrozen(e.getEntity().getTicksFrozen() + (int) Math.round(relic.getStatValue(stack, "frostbite", "duration")));
-            player.displayClientMessage(Component.literal(String.valueOf(e.getEntity().getTicksFrozen())), true);
+            //player.displayClientMessage(Component.literal(String.valueOf(e.getEntity().getTicksFrozen())), true);
             relic.spreadRelicExperience(player, stack, 1);
         }
 

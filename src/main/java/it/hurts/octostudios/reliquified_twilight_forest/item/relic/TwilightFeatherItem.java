@@ -97,7 +97,7 @@ public class TwilightFeatherItem extends RelicItem {
                     || source.getRandom().nextDouble() > relic.getStatValue(stack, "execution", "chance")
             ) continue;
 
-            if (performExecution(source, victim)) {
+            if (hasPerformedExecution(source, victim)) {
                 e.setNewDamage(0);
                 relic.spreadRelicExperience(source, stack, 1);
                 break;
@@ -105,8 +105,8 @@ public class TwilightFeatherItem extends RelicItem {
         }
     }
 
-    public static boolean performExecution(LivingEntity source, LivingEntity victim) {
-        if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), 2147483647)) {
+    public static boolean hasPerformedExecution(LivingEntity source, LivingEntity victim) {
+        if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), 99999)) {
             return false;
         };
         victim.deathTime = 19;
