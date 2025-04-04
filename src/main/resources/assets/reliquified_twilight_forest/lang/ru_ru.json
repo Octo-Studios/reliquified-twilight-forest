@@ -120,7 +120,7 @@
   "item.reliquified_twilight_forest.giant_glove": "Перчатка гиганта",
   "tooltip.relics.giant_glove.description": "Элемент амуниции сказочных гигантов, живущих в хижинах на облаках. Поговаривают, единственный путь туда - волшебные бобы, чей стебель пронзит небеса...",
   "tooltip.relics.giant_glove.ability.oversized_grip": "Хватка гиганта",
-  "tooltip.relics.giant_glove.ability.oversized_grip.description": "Увеличивает размеры и характеристики предмета в руке на %1$s%%, а дистанцию взаимодействия на 2.5 блока.",
+  "tooltip.relics.giant_glove.ability.oversized_grip.description": "Увеличивает размеры и характеристики предмета в руке на %1$s%%.",
   "tooltip.relics.giant_glove.leveling_source.oversized_grip.title": "Хватка гиганта",
   "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s единиц опыта за каждый разрушенный блок или совершённый удар увеличенным от способности %2$s предметом в руке.",
 
