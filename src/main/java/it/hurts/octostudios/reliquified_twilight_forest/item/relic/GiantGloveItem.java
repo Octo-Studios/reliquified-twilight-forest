@@ -22,6 +22,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -115,7 +116,7 @@ public class GiantGloveItem extends RelicItem {
         @SubscribeEvent
         public static void playerTick(EntityTickEvent.Post e) {
             List<SlotResult> slots = EntitiesButCool.findEquippedSlots(e.getEntity(), ItemRegistry.GIANT_GLOVE.get());
-            if (!(e.getEntity() instanceof LivingEntity living)
+            if (!(e.getEntity() instanceof Player living)
                     || living.level().isClientSide
             ) return;
 
