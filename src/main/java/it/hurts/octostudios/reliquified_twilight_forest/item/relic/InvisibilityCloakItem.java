@@ -15,7 +15,9 @@ import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +26,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.init.TFItems;
+
+import java.awt.Color;
 
 public class InvisibilityCloakItem extends RelicItem {
     @Override
@@ -35,7 +39,7 @@ public class InvisibilityCloakItem extends RelicItem {
                                 .build())
                         .ability(AbilityData.builder("invisibility")
                                 .stat(StatData.builder("duration")
-                                        .initialValue(160, 110)
+                                        .initialValue(160, 120)
                                         .upgradeModifier(UpgradeOperation.ADD, -10)
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .thresholdValue(1, 9999)
@@ -50,10 +54,13 @@ public class InvisibilityCloakItem extends RelicItem {
                                 .build())
                         .build())
                 .style(StyleData.builder()
-                        .beams(BeamsData.builder()
-                                .startColor(0xff44ff71)
-                                .endColor(0x000f1c13)
-                                .build())
+                        .beams((player, stack) -> {
+                            float ticks = player.tickCount + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+                            return BeamsData.builder()
+                                    .startColor(new Color(0.5f, 0.5f, 0.5f, Mth.sin(ticks/10f)/2f+0.5f).getRGB())
+                                    .endColor(0x00444444)
+                                    .build();
+                        })
                         .build())
                 .loot(LootData.builder()
                         .entry(LootEntries.HEDGE)

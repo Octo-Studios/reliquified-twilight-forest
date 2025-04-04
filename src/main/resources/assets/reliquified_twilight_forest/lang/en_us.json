@@ -122,7 +122,7 @@
   "tooltip.relics.giant_glove.ability.oversized_grip": "Giant's Grip",
   "tooltip.relics.giant_glove.ability.oversized_grip.description": "Increases the size and stats of the held item by %1$s%%, and interaction range by 2.5 blocks.",
   "tooltip.relics.giant_glove.leveling_source.oversized_grip.title": "Giant's Grip",
-  "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s XP for each block broken or hit made with an item enhanced by %2$s.",
+  "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s XP for each block broken or entity hit made with an item enhanced by %2$s.",
 
   "item.reliquified_twilight_forest.chromatic_cloak": "Chromatic Cloak",
   "tooltip.relics.chromatic_cloak.description": "A stylish and vibrant cloak, woven from the wool of a mythical rainbow sheep...",

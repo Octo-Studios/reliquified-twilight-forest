@@ -54,7 +54,7 @@ public class GiantGloveItem extends RelicItem {
                 .leveling(LevelingData.builder()
                         .sources(LevelingSourcesData.builder()
                                 .source(LevelingSourceData.abilityBuilder("oversized_grip")
-                                        .gem(GemShape.SQUARE, GemColor.RED)
+                                        .gem(GemShape.SQUARE, GemColor.BLUE)
                                         .build())
                                 .build())
                         .build())

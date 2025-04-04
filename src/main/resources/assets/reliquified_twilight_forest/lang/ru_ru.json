@@ -122,7 +122,7 @@
   "tooltip.relics.giant_glove.ability.oversized_grip": "Хватка гиганта",
   "tooltip.relics.giant_glove.ability.oversized_grip.description": "Увеличивает размеры и характеристики предмета в руке на %1$s%%, а дистанцию взаимодействия на 2.5 блока.",
   "tooltip.relics.giant_glove.leveling_source.oversized_grip.title": "Хватка гиганта",
-  "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s единиц опыта за каждый разрушенный блоки или совершенный удар увеличенным от способности %2$s предметом в руке.",
+  "tooltip.relics.giant_glove.leveling_source.oversized_grip.description": "+%1$s единиц опыта за каждый разрушенный блок или совершённый удар увеличенным от способности %2$s предметом в руке.",
 
   "item.reliquified_twilight_forest.chromatic_cloak": "Цветная накидка",
   "tooltip.relics.chromatic_cloak.description": "Стильный яркий плащ, в основу которого легла шерсть мифического цветного барашка...",
