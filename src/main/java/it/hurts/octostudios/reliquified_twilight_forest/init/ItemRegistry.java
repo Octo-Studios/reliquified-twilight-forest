@@ -27,6 +27,11 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, GemItem> SHIELDING_GEM  = ITEMS.register("shielding_gem",  () -> new GemItem()); // 0.1
     public static final DeferredHolder<Item, GemItem> TWILIGHT_GEM   = ITEMS.register("twilight_gem",   () -> new GemItem()); // 0.1
     public static final DeferredHolder<Item, GemItem> FROST_GEM      = ITEMS.register("frost_gem",      () -> new GemItem()); // 0.4
+    public static final DeferredHolder<Item, GemItem> CARMINITE_GEM  = ITEMS.register("carminite_gem",  () -> new GemItem()); // 0.5
+    public static final DeferredHolder<Item, GemItem> MALICE_GEM     = ITEMS.register("malice_gem",     () -> new GemItem()); // 0.5
+    public static final DeferredHolder<Item, GemItem> FRENZY_GEM     = ITEMS.register("frenzy_gem",     () -> new GemItem()); // 0.5
+    public static final DeferredHolder<Item, GemItem> ETHER_GEM      = ITEMS.register("ether_gem",      () -> new GemItem()); // 0.5
+    public static final DeferredHolder<Item, GemItem> FIRE_GEM       = ITEMS.register("fire_gem",       () -> new GemItem()); // 0.5
 
     // 0.1
     public static final DeferredHolder<Item, LichCrownItem> LICH_CROWN                 = ITEMS.register("lich_crown", LichCrownItem::new);
@@ -64,32 +69,42 @@ public class ItemRegistry {
             ITEMS.register("broken_charm_of_keeping_3", () -> new BrokenCharmItem(TFItems.CHARM_OF_KEEPING_3.get(), 3));
 
     public static final Function<Item, Item> CHARMS = item -> {
-        if (item == TFItems.CHARM_OF_LIFE_1.get()) return ItemRegistry.BROKEN_CHARM_OF_LIFE_1.get();
-        if (item == TFItems.CHARM_OF_LIFE_2.get()) return ItemRegistry.BROKEN_CHARM_OF_LIFE_2.get();
-        if (item == TFItems.CHARM_OF_KEEPING_1.get()) return ItemRegistry.BROKEN_CHARM_OF_KEEPING_1.get();
-        if (item == TFItems.CHARM_OF_KEEPING_2.get()) return ItemRegistry.BROKEN_CHARM_OF_KEEPING_2.get();
-        if (item == TFItems.CHARM_OF_KEEPING_3.get()) return ItemRegistry.BROKEN_CHARM_OF_KEEPING_3.get();
+        if (item == TFItems.CHARM_OF_LIFE_1.get()) {
+            return ItemRegistry.BROKEN_CHARM_OF_LIFE_1.get();
+        }
+        if (item == TFItems.CHARM_OF_LIFE_2.get()) {
+            return ItemRegistry.BROKEN_CHARM_OF_LIFE_2.get();
+        }
+        if (item == TFItems.CHARM_OF_KEEPING_1.get()) {
+            return ItemRegistry.BROKEN_CHARM_OF_KEEPING_1.get();
+        }
+        if (item == TFItems.CHARM_OF_KEEPING_2.get()) {
+            return ItemRegistry.BROKEN_CHARM_OF_KEEPING_2.get();
+        }
+        if (item == TFItems.CHARM_OF_KEEPING_3.get()) {
+            return ItemRegistry.BROKEN_CHARM_OF_KEEPING_3.get();
+        }
         return Items.AIR;
     };
 
     public static final Map<Item, Holder<MobEffect>> CHROMATIC_EFFECTS = new HashMap<>();
     static {
-        CHROMATIC_EFFECTS.put(Items.RED_WOOL.asItem(), MobEffects.HEALTH_BOOST);
-        CHROMATIC_EFFECTS.put(Items.ORANGE_WOOL.asItem(), MobEffects.FIRE_RESISTANCE);
-        CHROMATIC_EFFECTS.put(Items.YELLOW_WOOL.asItem(), MobEffects.DAMAGE_BOOST);
-        CHROMATIC_EFFECTS.put(Items.LIME_WOOL.asItem(), MobEffects.JUMP);
-        CHROMATIC_EFFECTS.put(Items.CYAN_WOOL.asItem(), MobEffects.WATER_BREATHING);
+        CHROMATIC_EFFECTS.put(Items.RED_WOOL.asItem(),        MobEffects.HEALTH_BOOST);
+        CHROMATIC_EFFECTS.put(Items.ORANGE_WOOL.asItem(),     MobEffects.FIRE_RESISTANCE);
+        CHROMATIC_EFFECTS.put(Items.YELLOW_WOOL.asItem(),     MobEffects.DAMAGE_BOOST);
+        CHROMATIC_EFFECTS.put(Items.LIME_WOOL.asItem(),       MobEffects.JUMP);
+        CHROMATIC_EFFECTS.put(Items.CYAN_WOOL.asItem(),       MobEffects.WATER_BREATHING);
         CHROMATIC_EFFECTS.put(Items.LIGHT_BLUE_WOOL.asItem(), MobEffects.MOVEMENT_SPEED);
-        CHROMATIC_EFFECTS.put(Items.BLUE_WOOL.asItem(), MobEffects.NIGHT_VISION);
-        CHROMATIC_EFFECTS.put(Items.GREEN_WOOL.asItem(), MobEffects.LUCK);
-        CHROMATIC_EFFECTS.put(Items.PURPLE_WOOL.asItem(), MobEffects.DAMAGE_RESISTANCE);
+        CHROMATIC_EFFECTS.put(Items.BLUE_WOOL.asItem(),       MobEffects.NIGHT_VISION);
+        CHROMATIC_EFFECTS.put(Items.GREEN_WOOL.asItem(),      MobEffects.LUCK);
+        CHROMATIC_EFFECTS.put(Items.PURPLE_WOOL.asItem(),     MobEffects.DAMAGE_RESISTANCE);
         CHROMATIC_EFFECTS.put(Items.LIGHT_GRAY_WOOL.asItem(), MobEffects.INVISIBILITY);
-        CHROMATIC_EFFECTS.put(Items.PINK_WOOL.asItem(), MobEffects.SLOW_FALLING);
-        CHROMATIC_EFFECTS.put(Items.BROWN_WOOL.asItem(), MobEffects.DIG_SPEED);
-        CHROMATIC_EFFECTS.put(Items.GRAY_WOOL.asItem(), MobEffects.LEVITATION);
-        CHROMATIC_EFFECTS.put(Items.WHITE_WOOL.asItem(), MobEffects.GLOWING);
-        CHROMATIC_EFFECTS.put(Items.BLACK_WOOL.asItem(), MobEffects.BAD_OMEN);
-        CHROMATIC_EFFECTS.put(Items.MAGENTA_WOOL.asItem(), MobEffects.REGENERATION);
+        CHROMATIC_EFFECTS.put(Items.PINK_WOOL.asItem(),       MobEffects.SLOW_FALLING);
+        CHROMATIC_EFFECTS.put(Items.BROWN_WOOL.asItem(),      MobEffects.DIG_SPEED);
+        CHROMATIC_EFFECTS.put(Items.GRAY_WOOL.asItem(),       MobEffects.LEVITATION);
+        CHROMATIC_EFFECTS.put(Items.WHITE_WOOL.asItem(),      MobEffects.GLOWING);
+        CHROMATIC_EFFECTS.put(Items.BLACK_WOOL.asItem(),      MobEffects.BAD_OMEN);
+        CHROMATIC_EFFECTS.put(Items.MAGENTA_WOOL.asItem(),    MobEffects.REGENERATION);
     }
 
     public static void register(IEventBus bus) {
