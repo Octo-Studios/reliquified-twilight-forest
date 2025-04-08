@@ -11,6 +11,10 @@ public class MathButCool {
         return (int) Math.round(value*100);
     }
 
+    public static double percentageAndRoundSingleDigit(double value) {
+        return roundSingleDigit(value*100);
+    }
+
     public static int secondsToTicks(double value) {
         return (int) Math.round(value*20);
     }

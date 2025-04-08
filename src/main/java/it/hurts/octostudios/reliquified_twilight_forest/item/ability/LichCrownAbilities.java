@@ -125,6 +125,14 @@ public class LichCrownAbilities {
                     .build())
             .build();
 
+    public static final AbilityData BIOME_BURN = AbilityData.builder("biome_burn")
+            .stat(StatData.builder("multiplier")
+                    .initialValue(0.02, 0.05)
+                    .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
+                    .formatValue(MathButCool::percentageAndRoundSingleDigit)
+                    .build())
+            .build();
+
     public static void fortificationTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()
                 || !(stack.getItem() instanceof LichCrownItem relic)
@@ -325,6 +333,26 @@ public class LichCrownAbilities {
 
     @EventBusSubscriber
     public static class CommonEvents {
+        @SubscribeEvent
+        public static void multiplyBiomeDamage(LivingDamageEvent.Pre e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getEntity() instanceof Player player)
+                    || player == e.getEntity()
+                    || player.level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "biome_burn"))
+            ) return;
+
+            float multiplier = (float) relic.getStatValue(stack, "biome_burn", "multiplier");
+            float temperature = player.level().getBiome(player.blockPosition()).value().getBaseTemperature();
+            if (temperature <= 0.5f) {
+                return;
+            }
+
+            e.setNewDamage(e.getNewDamage() * (multiplier * (temperature * 10 - 5f)));
+        }
+
         @SubscribeEvent
         public static void applyFrostbite(LivingDamageEvent.Post e) {
             ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
