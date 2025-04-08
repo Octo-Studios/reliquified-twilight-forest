@@ -3,6 +3,8 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.ability;
 import com.google.common.collect.Lists;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
+import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.octostudios.reliquified_twilight_forest.network.LaunchTwilightBoltPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.network.LifedrainParticlePacket;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -39,6 +42,8 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.entity.monster.LoyalZombie;
@@ -46,16 +51,16 @@ import twilightforest.entity.projectile.TwilightWandBolt;
 import twilightforest.init.*;
 import twilightforest.item.LifedrainScepterItem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class LichCrownAbilities {
+    public static final Map<String, AbilityData> ABILITIES = new HashMap<>();
+    public static final Map<String, DeferredHolder<Item, GemItem>> GEMS = new HashMap<>();
+
     public static final int MAX_LIFEDRAIN_TIME = 100;
     public static final int MAX_TWILIGHT_TIME = 50;
 
-    public static final AbilityData FORTIFICATION = AbilityData.builder("fortification")
+    public static final AbilityData FORTIFICATION = register(AbilityData.builder("fortification")
             .stat(StatData.builder("max_shields")
                     .initialValue(3, 5)
                     .upgradeModifier(UpgradeOperation.ADD, 1)
@@ -66,9 +71,9 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.125f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
-            .build();
+            .build(), ItemRegistry.SHIELDING_GEM);
 
-    public static final AbilityData ZOMBIE = AbilityData.builder("zombie")
+    public static final AbilityData ZOMBIE = register(AbilityData.builder("zombie")
             .stat(StatData.builder("max_zombies")
                     .initialValue(1, 2)
                     .upgradeModifier(UpgradeOperation.ADD, 1)
@@ -84,9 +89,9 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.075f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
-            .build();
+            .build(), ItemRegistry.NECROMANCY_GEM);
 
-    public static final AbilityData TWILIGHT = AbilityData.builder("twilight")
+    public static final AbilityData TWILIGHT = register(AbilityData.builder("twilight")
             .stat(StatData.builder("damage")
                     .initialValue(3, 4)
                     .upgradeModifier(UpgradeOperation.ADD, 0.5)
@@ -97,9 +102,9 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.ADD, 0.1)
                     .formatValue(MathButCool::roundSingleDigit)
                     .build())
-            .build();
+            .build(), ItemRegistry.TWILIGHT_GEM);
 
-    public static final AbilityData LIFEDRAIN = AbilityData.builder("lifedrain")
+    public static final AbilityData LIFEDRAIN = register(AbilityData.builder("lifedrain")
             .stat(StatData.builder("heal_percentage")
                     .initialValue(0.0075, 0.015)
                     .upgradeModifier(UpgradeOperation.ADD, 0.0035)
@@ -115,23 +120,23 @@ public class LichCrownAbilities {
                     .upgradeModifier(UpgradeOperation.MULTIPLY_TOTAL, -0.1f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
-            .build();
+            .build(), ItemRegistry.ABSORPTION_GEM);
 
-    public static final AbilityData FROSTBITE = AbilityData.builder("frostbite")
+    public static final AbilityData FROSTBITE = register(AbilityData.builder("frostbite")
             .stat(StatData.builder("duration")
                     .initialValue(80, 100)
                     .upgradeModifier(UpgradeOperation.ADD, 10)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
-            .build();
+            .build(), ItemRegistry.FROST_GEM);
 
-    public static final AbilityData BIOME_BURN = AbilityData.builder("biome_burn")
+    public static final AbilityData BIOME_BURN = register(AbilityData.builder("biome_burn")
             .stat(StatData.builder("multiplier")
                     .initialValue(0.02, 0.05)
                     .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.2)
                     .formatValue(MathButCool::percentageAndRoundSingleDigit)
                     .build())
-            .build();
+            .build(), ItemRegistry.FIRE_GEM);
 
     public static void fortificationTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()
@@ -346,11 +351,12 @@ public class LichCrownAbilities {
 
             float multiplier = (float) relic.getStatValue(stack, "biome_burn", "multiplier");
             float temperature = player.level().getBiome(player.blockPosition()).value().getBaseTemperature();
+            player.displayClientMessage(Component.literal("Temperature: " + temperature), false);
             if (temperature <= 0.5f) {
                 return;
             }
 
-            e.setNewDamage(e.getNewDamage() * (multiplier * (temperature * 10 - 5f)));
+            e.setNewDamage(e.getNewDamage() * (1 + multiplier * (temperature * 10 - 5f)));
         }
 
         @SubscribeEvent
@@ -416,5 +422,11 @@ public class LichCrownAbilities {
                             && !EntityUtils.isAlliedTo(player, entity),
                     maxDistance * maxDistance);
         }
+    }
+
+    private static AbilityData register(AbilityData data, DeferredHolder<Item, GemItem> gem) {
+        ABILITIES.put(data.getId(), data);
+        GEMS.put(data.getId(), gem);
+        return data;
     }
 }

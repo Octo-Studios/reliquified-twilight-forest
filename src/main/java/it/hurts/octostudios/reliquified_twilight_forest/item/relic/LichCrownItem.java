@@ -81,6 +81,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
+                        .abilities(LichCrownAbilities.ABILITIES)
                         .ability(AbilityData.builder("bone_pact").maxLevel(0).build())
                         .ability(AbilityData.builder("soulbound_gems")
                                 .stat(StatData.builder("gem_amount")
@@ -90,12 +91,6 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                                         .build())
                                 .maxLevel(15)
                                 .build())
-                        .ability(LichCrownAbilities.ZOMBIE)
-                        .ability(LichCrownAbilities.TWILIGHT)
-                        .ability(LichCrownAbilities.LIFEDRAIN)
-                        .ability(LichCrownAbilities.FORTIFICATION)
-                        .ability(LichCrownAbilities.FROSTBITE)
-                        .ability(LichCrownAbilities.BIOME_BURN)
                         .build())
                 .leveling(LevelingData.builder()
                         .initialCost(250)
@@ -250,62 +245,65 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
 
     @Override
     public int getAbilityLevel(ItemStack stack, String ability) {
-        return switch (ability) {
-            case "fortification" -> this.getItemCount(stack, ItemRegistry.SHIELDING_GEM.get());
-            case "zombie" -> this.getItemCount(stack, ItemRegistry.NECROMANCY_GEM.get());
-            case "twilight" -> this.getItemCount(stack, ItemRegistry.TWILIGHT_GEM.get());
-            case "lifedrain" -> this.getItemCount(stack, ItemRegistry.ABSORPTION_GEM.get());
-            case "frostbite" -> this.getItemCount(stack, ItemRegistry.FROST_GEM.get());
-            default -> super.getAbilityLevel(stack, ability);
-        };
+        if (LichCrownAbilities.GEMS.containsKey(ability)) {
+            return this.getItemCount(stack, LichCrownAbilities.GEMS.get(ability).get());
+        }
+
+        return super.getAbilityLevel(stack, ability);
     }
 
     @Override
     public int getAbilityMaxLevel(ItemStack stack, String ability) {
-        return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
-            default -> super.getAbilityMaxLevel(stack, ability);
-        };
+        if (LichCrownAbilities.ABILITIES.containsKey(ability)) {
+            return (int) Math.round(this.getStatValue(stack, "soulbound_gems", "gem_amount"));
+        }
+
+        return super.getAbilityMaxLevel(stack, ability);
     }
 
     @Override
     public boolean mayUpgrade(ItemStack stack, String ability) {
-        return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
-            default -> super.mayUpgrade(stack, ability);
-        };
+        if (LichCrownAbilities.ABILITIES.containsKey(ability)) {
+            return false;
+        }
+
+        return super.mayUpgrade(stack, ability);
     }
 
     @Override
     public boolean mayReset(ItemStack stack, String ability) {
-        return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
-            default -> super.mayReset(stack, ability);
-        };
+        if (LichCrownAbilities.ABILITIES.containsKey(ability)) {
+            return false;
+        }
+
+        return super.mayReset(stack, ability);
     }
 
     @Override
     public boolean isAbilityEnabled(ItemStack stack, String ability) {
-        return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> this.getAbilityLevel(stack, ability) > 0;
-            default -> super.isAbilityEnabled(stack, ability);
-        };
+        if (LichCrownAbilities.ABILITIES.containsKey(ability)) {
+            return this.getAbilityLevel(stack, ability) > 0;
+        }
+
+        return super.isAbilityEnabled(stack, ability);
     }
 
     @Override
     public boolean isAbilityUpgradeEnabled(ItemStack stack, String ability) {
-        return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
-            default -> super.isAbilityUpgradeEnabled(stack, ability);
-        };
+        if (LichCrownAbilities.ABILITIES.containsKey(ability)) {
+            return false;
+        }
+
+        return super.isAbilityUpgradeEnabled(stack, ability);
     }
 
     @Override
     public boolean isAbilityResetEnabled(ItemStack stack, String ability) {
-        return switch (ability) {
-            case "fortification", "zombie", "twilight", "lifedrain", "frostbite" -> false;
-            default -> super.isAbilityResetEnabled(stack, ability);
-        };
+        if (LichCrownAbilities.ABILITIES.containsKey(ability)) {
+            return false;
+        }
+
+        return super.isAbilityResetEnabled(stack, ability);
     }
 
     @Override
