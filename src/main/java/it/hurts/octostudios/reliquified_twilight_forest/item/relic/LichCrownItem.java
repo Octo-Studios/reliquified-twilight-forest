@@ -81,7 +81,6 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
-                        .abilities(LichCrownAbilities.ABILITIES)
                         .ability(AbilityData.builder("bone_pact").maxLevel(0).build())
                         .ability(AbilityData.builder("soulbound_gems")
                                 .stat(StatData.builder("gem_amount")
@@ -91,30 +90,30 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                                         .build())
                                 .maxLevel(15)
                                 .build())
+                        .ability(LichCrownAbilities.FORTIFICATION)
+                        .ability(LichCrownAbilities.LIFEDRAIN)
+                        .ability(LichCrownAbilities.TWILIGHT)
+                        .ability(LichCrownAbilities.ZOMBIE)
+                        .ability(LichCrownAbilities.FROSTBITE)
+                        .ability(LichCrownAbilities.BIOME_BURN)
+                        .ability(LichCrownAbilities.ETHEREAL_GUARD)
+                        .ability(LichCrownAbilities.VENDETTA)
+                        .ability(LichCrownAbilities.MIRROR_LEECH)
                         .build())
                 .leveling(LevelingData.builder()
                         .initialCost(250)
                         .step(250)
                         .maxLevel(15)
                         .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("zombie")
-                                        .gem(GemShape.SQUARE, GemColor.GREEN)
-                                        .build())
-                                .source(LevelingSourceData.abilityBuilder("twilight")
-                                        .gem(GemShape.SQUARE, GemColor.BLUE)
-                                        .build())
-                                .source(LevelingSourceData.abilityBuilder("lifedrain")
-                                        .gem(GemShape.SQUARE, GemColor.RED)
-                                        .build())
-                                .source(LevelingSourceData.abilityBuilder("fortification")
-                                        .gem(GemShape.SQUARE, GemColor.YELLOW)
-                                        .build())
-                                .source(LevelingSourceData.abilityBuilder("frostbite")
-                                        .gem(GemShape.SQUARE, GemColor.CYAN)
-                                        .build())
-                                .source(LevelingSourceData.abilityBuilder("biome_burn")
-                                        .gem(GemShape.SQUARE, GemColor.RED)
-                                        .build())
+                                .source(getSource(LichCrownAbilities.FORTIFICATION, GemColor.YELLOW))
+                                .source(getSource(LichCrownAbilities.LIFEDRAIN, GemColor.RED))
+                                .source(getSource(LichCrownAbilities.TWILIGHT, GemColor.BLUE))
+                                .source(getSource(LichCrownAbilities.ZOMBIE, GemColor.GREEN))
+                                .source(getSource(LichCrownAbilities.FROSTBITE, GemColor.CYAN))
+                                .source(getSource(LichCrownAbilities.BIOME_BURN, GemColor.RED))
+                                .source(getSource(LichCrownAbilities.ETHEREAL_GUARD, GemColor.PURPLE))
+                                .source(getSource(LichCrownAbilities.VENDETTA, GemColor.GREEN))
+                                .source(getSource(LichCrownAbilities.MIRROR_LEECH, GemColor.RED))
                                 .build())
                         .build())
                 .style(StyleData.builder()
@@ -426,5 +425,9 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
         matrixStack.scale(1.0047f, 1.0047f, 1.0047f);
         model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
         matrixStack.popPose();
+    }
+
+    public static LevelingSourceData getSource(AbilityData data, GemColor color) {
+        return LevelingSourceData.abilityBuilder(data.getId()).gem(GemShape.SQUARE, color).build();
     }
 }

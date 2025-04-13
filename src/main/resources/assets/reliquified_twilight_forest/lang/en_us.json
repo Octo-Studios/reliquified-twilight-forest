@@ -17,10 +17,11 @@
   "item.reliquified_twilight_forest.necromancy_gem": "Necromancy Gem",
   "item.reliquified_twilight_forest.shielding_gem": "Shielding Gem",
   "item.reliquified_twilight_forest.twilight_gem": "Twilight Gem",
-  "item.reliquified_twilight_forest.gem.tip": "Can be used to inlay the Lich Crown or to craft wands.",
+  "item.reliquified_twilight_forest.gem.tip": "Can be used to inlay the Lich Crown",
+  "item.reliquified_twilight_forest.gem.tip_wand": "Can be used to inlay the Lich Crown or to craft wands",
 
   "item.reliquified_twilight_forest.lich_crown": "Lich Crown",
-  "tooltip.relics.lich_crown.description": "The crown of the Twilight Forest’s very own king — the Lich. A symbol of his power and dominance. Legend has it that the true potential of this relic can only be unlocked by uniting all five gems...",
+  "tooltip.relics.lich_crown.description": "The crown of the Twilight Forest’s very own king — the Lich. A symbol of his power and dominance. Legend has it that the true potential of this relic can only be unlocked by uniting all ten gems...",
   "tooltip.relics.lich_crown.ability.soulbound_gems": "Soulbound Gems",
   "tooltip.relics.lich_crown.ability.soulbound_gems.description": "Allows the crown to be inlaid with %1$s special gems. Each unique gem unlocks a new ability, while additional gems of the same type increase the level of the corresponding ability. To insert a gem into the crown, right-click it while holding it in your inventory. To remove a gem, ensure your cursor is empty and right-click the crown.",
   "tooltip.relics.lich_crown.ability.bone_pact": "Bone Pact",

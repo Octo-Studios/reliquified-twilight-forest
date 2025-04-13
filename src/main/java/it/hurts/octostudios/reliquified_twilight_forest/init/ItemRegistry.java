@@ -3,6 +3,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.init;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BrokenCharmItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.GemItem;
+import it.hurts.octostudios.reliquified_twilight_forest.item.WandGemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,13 +23,13 @@ import java.util.function.Function;
 
 public class ItemRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, ReliquifiedTwilightForest.MOD_ID);
-    public static final DeferredHolder<Item, GemItem> ABSORPTION_GEM = ITEMS.register("absorption_gem", () -> new GemItem()); // 0.1
-    public static final DeferredHolder<Item, GemItem> NECROMANCY_GEM = ITEMS.register("necromancy_gem", () -> new GemItem()); // 0.1
-    public static final DeferredHolder<Item, GemItem> SHIELDING_GEM  = ITEMS.register("shielding_gem",  () -> new GemItem()); // 0.1
-    public static final DeferredHolder<Item, GemItem> TWILIGHT_GEM   = ITEMS.register("twilight_gem",   () -> new GemItem()); // 0.1
+    public static final DeferredHolder<Item, GemItem> ABSORPTION_GEM = ITEMS.register("absorption_gem",    WandGemItem::new); // 0.1
+    public static final DeferredHolder<Item, GemItem> NECROMANCY_GEM = ITEMS.register("necromancy_gem",    WandGemItem::new); // 0.1
+    public static final DeferredHolder<Item, GemItem> SHIELDING_GEM  = ITEMS.register("shielding_gem",     WandGemItem::new); // 0.1
+    public static final DeferredHolder<Item, GemItem> TWILIGHT_GEM   = ITEMS.register("twilight_gem",      WandGemItem::new); // 0.1
     public static final DeferredHolder<Item, GemItem> FROST_GEM      = ITEMS.register("frost_gem",      () -> new GemItem()); // 0.4
     public static final DeferredHolder<Item, GemItem> CARMINITE_GEM  = ITEMS.register("carminite_gem",  () -> new GemItem()); // 0.5
-    public static final DeferredHolder<Item, GemItem> MALICE_GEM     = ITEMS.register("malice_gem",     () -> new GemItem()); // 0.5
+    public static final DeferredHolder<Item, GemItem> VENGEFUL_GEM   = ITEMS.register("vengeful_gem",   () -> new GemItem()); // 0.5
     public static final DeferredHolder<Item, GemItem> FRENZY_GEM     = ITEMS.register("frenzy_gem",     () -> new GemItem()); // 0.5
     public static final DeferredHolder<Item, GemItem> ETHER_GEM      = ITEMS.register("ether_gem",      () -> new GemItem()); // 0.5
     public static final DeferredHolder<Item, GemItem> FIRE_GEM       = ITEMS.register("fire_gem",       () -> new GemItem()); // 0.5

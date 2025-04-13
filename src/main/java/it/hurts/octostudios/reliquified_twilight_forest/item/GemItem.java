@@ -15,14 +15,23 @@ public class GemItem extends Item implements Gem, ICreativeTabContent {
         super(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(16));
     }
 
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        return true;
+    }
+
     public GemItem(Properties properties) {
         super(properties);
+    }
+
+    public Component getTipText(ItemStack stack, TooltipContext context) {
+        return Component.translatable("item.reliquified_twilight_forest.gem.tip").withStyle(ChatFormatting.GRAY);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.translatable("item.reliquified_twilight_forest.gem.tip").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(this.getTipText(stack, context));
     }
 
     @Override

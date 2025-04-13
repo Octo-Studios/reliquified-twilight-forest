@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.ability;
 
 import com.google.common.collect.Lists;
+import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
@@ -14,9 +15,13 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,9 +43,12 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -59,6 +67,7 @@ public class LichCrownAbilities {
 
     public static final int MAX_LIFEDRAIN_TIME = 100;
     public static final int MAX_TWILIGHT_TIME = 50;
+    public static final String VENDETTA_ID = ReliquifiedTwilightForest.MOD_ID+":vendetta";
 
     public static final AbilityData FORTIFICATION = register(AbilityData.builder("fortification")
             .stat(StatData.builder("max_shields")
@@ -138,6 +147,49 @@ public class LichCrownAbilities {
                     .build())
             .build(), ItemRegistry.FIRE_GEM);
 
+    public static final AbilityData VENDETTA = register(AbilityData.builder("vendetta")
+            .stat(StatData.builder("lifetime")
+                    .initialValue(10, 15)
+                    .upgradeModifier(UpgradeOperation.ADD, 4)
+                    .formatValue(MathButCool::percentageAndRoundSingleDigit)
+                    .build())
+            .stat(StatData.builder("multiplier")
+                    .initialValue(0.5, 1)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.1)
+                    .formatValue(MathButCool::percentage)
+                    .build())
+            .build(), ItemRegistry.VENGEFUL_GEM);
+
+    public static final AbilityData ETHEREAL_GUARD = register(AbilityData.builder("ethereal_guard")
+            .stat(StatData.builder("chance")
+                    .initialValue(0.2, 0.3)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.7/18d)
+                    .formatValue(MathButCool::percentageAndRoundSingleDigit)
+                    .build())
+            .build(), ItemRegistry.ETHER_GEM);
+
+    public static final AbilityData MIRROR_LEECH = register(AbilityData.builder("mirror_leech")
+            .stat(StatData.builder("chance")
+                    .initialValue(0.05, 0.1)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.4/18d)
+                    .formatValue(MathButCool::percentageAndRoundSingleDigit)
+                    .build())
+            .build(), ItemRegistry.CARMINITE_GEM);
+
+    public static void fortificationUnequip(SlotContext slotContext, ItemStack stack) {
+        slotContext.entity().getData(TFDataAttachments.FORTIFICATION_SHIELDS).setShields(slotContext.entity(), 0, false);
+    }
+
+    public static void zombieUnequip(SlotContext slotContext, ItemStack stack) {
+        ArrayList<UUID> uuids = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
+        uuids.forEach(uuid -> {
+            Entity entity = ((ServerLevel) slotContext.entity().level()).getEntity(uuid);
+            if (entity != null) entity.discard();
+        });
+        uuids.clear();
+        stack.set(DataComponentRegistry.ZOMBIES, List.of());
+    }
+
     public static void fortificationTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()
                 || !(stack.getItem() instanceof LichCrownItem relic)
@@ -157,21 +209,6 @@ public class LichCrownAbilities {
 
         stack.set(DataComponentRegistry.FORTIFICATION_TIME, time);
     }
-
-    public static void fortificationUnequip(SlotContext slotContext, ItemStack stack) {
-        slotContext.entity().getData(TFDataAttachments.FORTIFICATION_SHIELDS).setShields(slotContext.entity(), 0, false);
-    }
-
-    public static void zombieUnequip(SlotContext slotContext, ItemStack stack) {
-        ArrayList<UUID> uuids = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
-        uuids.forEach(uuid -> {
-            Entity entity = ((ServerLevel) slotContext.entity().level()).getEntity(uuid);
-            if (entity != null) entity.discard();
-        });
-        uuids.clear();
-        stack.set(DataComponentRegistry.ZOMBIES, List.of());
-    }
-
 
     public static void lifedrainTick(LivingEntity entity, ItemStack stack) {
         if (entity.isSpectator()
@@ -264,6 +301,193 @@ public class LichCrownAbilities {
         stack.set(DataComponentRegistry.ZOMBIES, uuids);
     }
 
+    @EventBusSubscriber
+    public static class CommonEvents {
+        @SubscribeEvent
+        public static void processMirrorLeech(LivingDamageEvent.Pre e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (e.getSource().getEntity() == e.getEntity()
+                    || e.getEntity().level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "mirror_leech"))
+                    || e.getEntity().getRandom().nextFloat() > relic.getStatValue(stack, "mirror_leech", "chance")
+            ) return;
+
+            if (e.getSource().getEntity() instanceof LivingEntity source) {
+                source.hurt(e.getSource(), e.getOriginalDamage());
+            }
+
+            e.getEntity().heal(e.getNewDamage());
+            relic.spreadRelicExperience(e.getEntity(), stack, 1);
+            e.getEntity().level().playSound(null, e.getEntity(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.NEUTRAL, 1f, 2f);
+            e.setNewDamage(0);
+        }
+
+        @SubscribeEvent
+        public static void phaseProjectiles(ProjectileImpactEvent e) {
+            if (e.getEntity().level().isClientSide || !(e.getRayTraceResult() instanceof EntityHitResult hitResult && hitResult.getEntity() instanceof LivingEntity entity)) {
+                return;
+            }
+
+            ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.LICH_CROWN.get());
+            if (!(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "ethereal_guard"))
+                    || entity.getRandom().nextFloat() > relic.getStatValue(stack, "ethereal_guard", "chance")
+            ) return;
+
+            entity.level().playSound(null, entity, SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.NEUTRAL, 1f, 2f);
+            relic.spreadRelicExperience(entity, stack, 1);
+            e.setCanceled(true);
+        }
+
+        @SubscribeEvent
+        public static void storeRevengeData(LivingDamageEvent.Post e) {
+            LivingEntity victim = e.getEntity();
+            ItemStack stack = EntityUtils.findEquippedCurio(victim, ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getEntity() instanceof LivingEntity source)
+                    || source == e.getEntity()
+                    || victim.level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "vendetta"))
+            ) return;
+
+            CompoundTag tag = source.getPersistentData().getCompound(VENDETTA_ID);
+            tag.putInt(victim.getStringUUID(), (int) Math.round(relic.getStatValue(stack, "vendetta", "lifetime")));
+            source.getPersistentData().put(VENDETTA_ID, tag);
+        }
+
+        @SubscribeEvent
+        public static void tickRevenge(EntityTickEvent.Post e) {
+            if (!e.getEntity().getPersistentData().contains(VENDETTA_ID)) {
+                return;
+            }
+
+            CompoundTag tag = e.getEntity().getPersistentData().getCompound(VENDETTA_ID);
+            Set<String> keys = tag.getAllKeys();
+            if (keys.isEmpty()) {
+                e.getEntity().getPersistentData().remove(VENDETTA_ID);
+                return;
+            }
+
+            CompoundTag newTag = new CompoundTag();
+            tag.getAllKeys().forEach(key -> {
+                int ticks = tag.getInt(key);
+                ticks--;
+                if (ticks > 0) {
+                    newTag.putInt(key, ticks);
+                }
+            });
+            e.getEntity().getPersistentData().put(VENDETTA_ID, newTag);
+        }
+
+        @SubscribeEvent
+        public static void multiplyRevengeDamage(LivingDamageEvent.Pre e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getEntity() instanceof LivingEntity source)
+                    || source == e.getEntity()
+                    || source.level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "vendetta"))
+                    || !e.getEntity().getPersistentData().getCompound(VENDETTA_ID).contains(source.getStringUUID())
+            ) return;
+
+            float multiplier = (float) relic.getStatValue(stack, "vendetta", "multiplier");
+            e.setNewDamage(e.getNewDamage() * (multiplier + 1));
+        }
+
+        @SubscribeEvent
+        public static void multiplyBiomeDamage(LivingDamageEvent.Pre e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getEntity() instanceof Player player)
+                    || player == e.getEntity()
+                    || player.level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "biome_burn"))
+            ) return;
+
+            float multiplier = (float) relic.getStatValue(stack, "biome_burn", "multiplier");
+            float temperature = player.level().getBiome(player.blockPosition()).value().getBaseTemperature();
+            player.displayClientMessage(Component.literal("Temperature: " + temperature), false);
+            if (temperature <= 0.5f) {
+                return;
+            }
+
+            e.setNewDamage(e.getNewDamage() * (1 + multiplier * (temperature * 10 - 5f)));
+        }
+
+        @SubscribeEvent
+        public static void applyFrostbite(LivingDamageEvent.Post e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getEntity() instanceof Player player)
+                    || player == e.getEntity()
+                    || player.level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "frostbite"))
+            ) return;
+
+            e.getEntity().setTicksFrozen(e.getEntity().getTicksFrozen() + (int) Math.round(relic.getStatValue(stack, "frostbite", "duration")));
+            relic.spreadRelicExperience(player, stack, 1);
+        }
+
+        @SubscribeEvent
+        public static void onTwilightBoltHit(LivingDamageEvent.Post e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (!(e.getSource().getDirectEntity() instanceof TwilightWandBolt bolt)
+                    || !(e.getSource().getEntity() instanceof Player player)
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(bolt.getPersistentData().contains("reliquified_twilight_forest:isCustom"))
+            ) return;
+
+            relic.spreadRelicExperience(player, stack, 1);
+        }
+    }
+    @EventBusSubscriber(Dist.CLIENT)
+    public static class ClientEvents {
+        @SubscribeEvent
+        public static void renderRevengeData(RenderLivingEvent.Post e) {
+
+        }
+
+        @SubscribeEvent
+        public static void swingEvent(PlayerInteractEvent.LeftClickEmpty e) {
+            Player player = e.getEntity();
+            if (player.isSpectator()) {
+                return;
+            }
+
+            double maxDistance = 64.0;
+
+            EntityHitResult target = getEntityLookingAt(player, maxDistance);
+
+            if (target != null && target.getEntity() instanceof LivingEntity) {
+                PacketDistributor.sendToServer(new LaunchTwilightBoltPacket());
+            }
+        }
+
+        public static EntityHitResult getEntityLookingAt(Player player, double maxDistance) {
+            Vec3 eyePosition = player.getEyePosition(1.0F);
+            Vec3 lookVector = player.getViewVector(1.0F);
+            Vec3 reachEnd = eyePosition.add(lookVector.scale(maxDistance));
+
+            // Perform entity ray tracing
+            return ProjectileUtil.getEntityHitResult(player, eyePosition, reachEnd,
+                    player.getBoundingBox().expandTowards(lookVector.scale(maxDistance)).inflate(1.0),
+                    entity -> entity instanceof LivingEntity
+                            && entity.isAlive()
+                            && player.hasLineOfSight(entity)
+                            && entity != player
+                            && !EntityUtils.isAlliedTo(player, entity),
+                    maxDistance * maxDistance);
+        }
+
+    }
+
     public static LoyalZombie spawnZombie(LivingEntity entity, float damage, BlockPos position) {
         Level level = entity.level();
         LoyalZombie zombie = new LoyalZombie(TFEntities.LOYAL_ZOMBIE.get(), level) {
@@ -334,94 +558,6 @@ public class LichCrownAbilities {
         return world.getBlockState(pos).isAir() && // Ensure the spawn spot is air
                 world.getBlockState(pos.below()).isSolid() && // Ensure there's solid ground
                 world.getBlockState(pos.below()).getBlock() != Blocks.LAVA; // Avoid lava pools
-    }
-
-    @EventBusSubscriber
-    public static class CommonEvents {
-        @SubscribeEvent
-        public static void multiplyBiomeDamage(LivingDamageEvent.Pre e) {
-            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
-
-            if (!(e.getSource().getEntity() instanceof Player player)
-                    || player == e.getEntity()
-                    || player.level().isClientSide
-                    || !(stack.getItem() instanceof LichCrownItem relic)
-                    || !(relic.isAbilityUnlocked(stack, "biome_burn"))
-            ) return;
-
-            float multiplier = (float) relic.getStatValue(stack, "biome_burn", "multiplier");
-            float temperature = player.level().getBiome(player.blockPosition()).value().getBaseTemperature();
-            player.displayClientMessage(Component.literal("Temperature: " + temperature), false);
-            if (temperature <= 0.5f) {
-                return;
-            }
-
-            e.setNewDamage(e.getNewDamage() * (1 + multiplier * (temperature * 10 - 5f)));
-        }
-
-        @SubscribeEvent
-        public static void applyFrostbite(LivingDamageEvent.Post e) {
-            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
-
-            if (!(e.getSource().getEntity() instanceof Player player)
-                    || player == e.getEntity()
-                    || player.level().isClientSide
-                    || !(stack.getItem() instanceof LichCrownItem relic)
-                    || !(relic.isAbilityUnlocked(stack, "frostbite"))
-            ) return;
-
-            e.getEntity().setTicksFrozen(e.getEntity().getTicksFrozen() + (int) Math.round(relic.getStatValue(stack, "frostbite", "duration")));
-            //player.displayClientMessage(Component.literal(String.valueOf(e.getEntity().getTicksFrozen())), true);
-            relic.spreadRelicExperience(player, stack, 1);
-        }
-
-        @SubscribeEvent
-        public static void onTwilightBoltHit(LivingDamageEvent.Post e) {
-            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
-
-            if (!(e.getSource().getDirectEntity() instanceof TwilightWandBolt bolt)
-                    || !(e.getSource().getEntity() instanceof Player player)
-                    || !(stack.getItem() instanceof LichCrownItem relic)
-                    || !(bolt.getPersistentData().contains("reliquified_twilight_forest:isCustom"))
-            ) return;
-
-            relic.spreadRelicExperience(player, stack, 1);
-        }
-    }
-
-    @EventBusSubscriber(Dist.CLIENT)
-    public static class ClientEvents {
-        @SubscribeEvent
-        public static void swingEvent(PlayerInteractEvent.LeftClickEmpty e) {
-            Player player = e.getEntity();
-            if (player.isSpectator()) {
-                return;
-            }
-
-            double maxDistance = 64.0;
-
-            EntityHitResult target = getEntityLookingAt(player, maxDistance);
-
-            if (target != null && target.getEntity() instanceof LivingEntity) {
-                PacketDistributor.sendToServer(new LaunchTwilightBoltPacket());
-            }
-        }
-
-        public static EntityHitResult getEntityLookingAt(Player player, double maxDistance) {
-            Vec3 eyePosition = player.getEyePosition(1.0F);
-            Vec3 lookVector = player.getViewVector(1.0F);
-            Vec3 reachEnd = eyePosition.add(lookVector.scale(maxDistance));
-
-            // Perform entity ray tracing
-            return ProjectileUtil.getEntityHitResult(player, eyePosition, reachEnd,
-                    player.getBoundingBox().expandTowards(lookVector.scale(maxDistance)).inflate(1.0),
-                    entity -> entity instanceof LivingEntity
-                            && entity.isAlive()
-                            && player.hasLineOfSight(entity)
-                            && entity != player
-                            && !EntityUtils.isAlliedTo(player, entity),
-                    maxDistance * maxDistance);
-        }
     }
 
     private static AbilityData register(AbilityData data, DeferredHolder<Item, GemItem> gem) {

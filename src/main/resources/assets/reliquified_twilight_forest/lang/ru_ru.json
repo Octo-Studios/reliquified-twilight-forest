@@ -17,10 +17,11 @@
   "item.reliquified_twilight_forest.necromancy_gem": "Самоцвет некромантии",
   "item.reliquified_twilight_forest.shielding_gem": "Самоцвет защиты",
   "item.reliquified_twilight_forest.twilight_gem": "Самоцвет сумрака",
-  "item.reliquified_twilight_forest.gem.tip": "Может быть использовано для инкрустации Короны Лича или для создания посохов",
+  "item.reliquified_twilight_forest.gem.tip": "Может быть использовано для инкрустации Короны Лича",
+  "item.reliquified_twilight_forest.gem.tip_wand": "Может быть использовано для инкрустации Короны Лича или для создания посохов",
 
   "item.reliquified_twilight_forest.lich_crown": "Корона Лича",
-  "tooltip.relics.lich_crown.description": "Корона самого короля Сумеречного Леса - Лича, символ его силы и власти. Бытует легенда, что истинный потенциал этой реликвии можно раскрыть лишь собрав все 5 самоцветов воедино...",
+  "tooltip.relics.lich_crown.description": "Корона самого короля Сумеречного Леса - Лича, символ его силы и власти. Бытует легенда, что истинный потенциал этой реликвии можно раскрыть лишь собрав все десять самоцветов воедино...",
   "tooltip.relics.lich_crown.ability.soulbound_gems": "Духовные самоцветы",
   "tooltip.relics.lich_crown.ability.soulbound_gems.description": "Позволяет инкрустировать корону %1$s специальными самоцветами. Каждый уникальный самоцвет разблокирует новую способность, а самоцвет уже существующего типа увеличивает уровень соответствующей ему способности. Для помещения самоцвета в корону необходимо нажать им ПКМ по короне в инвентаре, для извлечения - предмета в курсоре быть не должно.",
   "tooltip.relics.lich_crown.ability.bone_pact": "Костяной пакт",
