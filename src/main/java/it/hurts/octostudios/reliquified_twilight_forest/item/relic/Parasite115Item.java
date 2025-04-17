@@ -16,8 +16,10 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -36,6 +38,8 @@ import java.util.Optional;
 
 @EventBusSubscriber
 public class Parasite115Item extends RelicItem {
+    public static final String LAST_INFECTED_BY = ReliquifiedTwilightForest.MOD_ID+":last_infected_by";
+
     @Override
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
@@ -78,12 +82,18 @@ public class Parasite115Item extends RelicItem {
 
         if (e.getEntity().hasEffect(EffectRegistry.INFECTIOUS_BLOOM) || e.getEntity().getRandom().nextFloat() < relic.getStatValue(stack, "infectious_bloom", "chance")) {
             e.getEntity().addEffect(new MobEffectInstance(EffectRegistry.INFECTIOUS_BLOOM, 100, (int) Math.round(relic.getStatValue(stack, "infectious_bloom", "amplifier"))));
+            e.getEntity().getPersistentData().putUUID(LAST_INFECTED_BY, livingEntity.getUUID());
         }
     }
 
     @SubscribeEvent
     public static void generateDrops(LivingDeathEvent e) {
-        if (!(e.getSource().getEntity() instanceof LivingEntity livingEntity)) {
+        if (!(e.getEntity().level() instanceof ServerLevel serverLevel)
+                || !e.getEntity().getPersistentData().contains(LAST_INFECTED_BY)
+        ) return;
+
+        Entity infectedBy = serverLevel.getEntity(e.getEntity().getPersistentData().getUUID(LAST_INFECTED_BY));
+        if (!(infectedBy instanceof LivingEntity livingEntity)) {
             return;
         }
 
@@ -117,7 +127,6 @@ public class Parasite115Item extends RelicItem {
 
         relic.setDataComponent(evolvedParasite, this.getDataComponent(stack));
 
-        // TODO: Not tested. Additional rechecking is required, as well as fixing any errors if present
         for (var ability : this.getAbilitiesData().getAbilities().values()) {
             var abilityID = ability.getId();
 

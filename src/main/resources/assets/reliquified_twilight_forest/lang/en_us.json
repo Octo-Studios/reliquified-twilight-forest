@@ -155,6 +155,20 @@
   "tooltip.relics.invisibility_cloak.leveling_source.invisibility.title": "Camouflage",
   "tooltip.relics.invisibility_cloak.leveling_source.invisibility.description": "+%1$s XP for each activation of the %2$s ability.",
 
+  "item.reliquified_twilight_forest.parasite_115": "Parasite №115",
+  "tooltip.relics.parasite_115.description": "uwu",
+  "tooltip.relics.parasite_115.ability.infectious_bloom": "infectious_bloom",
+  "tooltip.relics.parasite_115.ability.infectious_bloom.description": "%1$s%% chance, %2$s amplifier, up to %3$s drops",
+  "tooltip.relics.parasite_115.leveling_source.infectious_bloom.title": "infectious_bloom",
+  "tooltip.relics.parasite_115.leveling_source.infectious_bloom.description": "+%1$s XP idk",
+
+  "item.reliquified_twilight_forest.parasite_116": "Parasite №116",
+  "tooltip.relics.parasite_116.description": "owo",
+  "tooltip.relics.parasite_116.ability.infectious_bloom": "infectious_bloom",
+  "tooltip.relics.parasite_116.ability.infectious_bloom.description": "%1$s%% chance, %2$s amplifier, up to %3$s drops",
+  "tooltip.relics.parasite_116.leveling_source.infectious_bloom.title": "infectious_bloom",
+  "tooltip.relics.parasite_116.leveling_source.infectious_bloom.description": "+%1$s XP idk",
+
   "item.reliquified_twilight_forest.frost_gem": "Frost Gem",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
