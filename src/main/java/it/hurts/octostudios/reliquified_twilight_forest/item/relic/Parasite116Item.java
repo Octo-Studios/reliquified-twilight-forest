@@ -44,7 +44,7 @@ public class Parasite116Item extends Parasite115Item {
     }
 
     @Override
-    public void evolve(ItemStack stack, LivingEntity entity) {
-        //no
+    public void evolve(String identifier, int index, ItemStack stack, LivingEntity entity) {
+        super.evolve(identifier, index, stack, entity);
     }
 }
