@@ -116,7 +116,20 @@ public class Parasite115Item extends RelicItem {
         Parasite116Item relic = (Parasite116Item) evolvedParasite.getItem();
 
         relic.setDataComponent(evolvedParasite, this.getDataComponent(stack));
-        relic.randomizeAbilityStats(evolvedParasite, "infectious_bloom", 50);
+
+        // TODO: Not tested. Additional rechecking is required, as well as fixing any errors if present
+        for (var ability : this.getAbilitiesData().getAbilities().values()) {
+            var abilityID = ability.getId();
+
+            for (var stat : ability.getStats().values()) {
+                var statID = stat.getId();
+
+                var quality = this.getStatQuality(stack, abilityID, statID);
+                var value = relic.getStatValueByQuality(abilityID, statID, quality);
+
+                relic.setStatInitialValue(evolvedParasite, abilityID, statID, value);
+            }
+        }
 
         CuriosApi.getCuriosInventory(entity).get().setEquippedCurio(identifier, index, evolvedParasite);
     }
