@@ -115,10 +115,10 @@ public class GiantGloveItem extends RelicItem {
 
         @SubscribeEvent
         public static void playerTick(EntityTickEvent.Post e) {
-            List<SlotResult> slots = EntitiesButCool.findEquippedSlots(e.getEntity(), ItemRegistry.GIANT_GLOVE.get());
             if (!(e.getEntity() instanceof Player living)
                     || living.level().isClientSide
             ) return;
+            List<SlotResult> slots = EntitiesButCool.findEquippedSlots(living, ItemRegistry.GIANT_GLOVE.get());
 
             slots.forEach(slotResult -> {
                 ItemStack stack = slotResult.stack();

@@ -161,8 +161,13 @@
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 
   "effect.reliquified_twilight_forest.cicada_infestation": "Cicada Curse",
+  "effect.reliquified_twilight_forest.infectious_bloom": "Infectious Bloom",
 
   "death.attack.reliquified_twilight_forest.execution": "%1$s was executed",
   "death.attack.reliquified_twilight_forest.execution.item": "%1$s was executed by %2$s using %3$s",
-  "death.attack.reliquified_twilight_forest.execution.player": "%1$s was executed by %2$s"
+  "death.attack.reliquified_twilight_forest.execution.player": "%1$s was executed by %2$s",
+
+  "death.attack.reliquified_twilight_forest.infectious_bloom": "%1$s was consumed by The Parasite",
+  "death.attack.reliquified_twilight_forest.infectious_bloom.item": "%1$s was consumed by The Parasite",
+  "death.attack.reliquified_twilight_forest.infectious_bloom.player": "%1$s was consumed by The Parasite"
 }

@@ -22,7 +22,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.jetbrains.annotations.Nullable;
+import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.common.CuriosHelper;
 
 @EventBusSubscriber
 public class HydraHeartItem extends RelicItem {
@@ -30,14 +33,14 @@ public class HydraHeartItem extends RelicItem {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
-//                        .ability(AbilityData.builder("regenerative_heads")
-//                                .stat(StatData.builder("head_amount")
-//                                        .initialValue(2, 4)
-//                                        .formatValue(Math::round)
-//                                        .upgradeModifier(UpgradeOperation.ADD, 1)
-//                                        .build())
-//                                .maxLevel(5)
-//                                .build())
+                        .ability(AbilityData.builder("regenerative_heads")
+                                .stat(StatData.builder("head_amount")
+                                        .initialValue(2, 4)
+                                        .formatValue(Math::round)
+                                        .upgradeModifier(UpgradeOperation.ADD, 1)
+                                        .build())
+                                .maxLevel(5)
+                                .build())
                         .ability(AbilityData.builder("hydra_fire")
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.15, 0.2)
@@ -83,11 +86,10 @@ public class HydraHeartItem extends RelicItem {
 
     @Override
     public @Nullable RelicSlotModifier getSlotModifiers(ItemStack stack) {
-        return super.getSlotModifiers(stack);
-//        if (!(stack.getItem() instanceof HydraHeartItem relic)) return super.getSlotModifiers(stack);
-//        return RelicSlotModifier.builder()
-//                .modifier("head", (int) Math.round(relic.getStatValue(stack, "regenerative_heads", "head_amount")))
-//                .build();
+        if (!(stack.getItem() instanceof HydraHeartItem relic)) return super.getSlotModifiers(stack);
+        return RelicSlotModifier.builder()
+                .modifier("head", (int) Math.round(relic.getStatValue(stack, "regenerative_heads", "head_amount")))
+                .build();
     }
 
     @Override
@@ -101,11 +103,11 @@ public class HydraHeartItem extends RelicItem {
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity livingEntity = slotContext.entity();
-        if (!(stack.getItem() instanceof HydraHeartItem relic)
-                || livingEntity.level().isClientSide
-        ) return;
+        if (livingEntity.level().isClientSide) {
+            return;
+        }
 
-
+        //CuriosApi.getCuriosInventory(livingEntity).ifPresent(handler -> handler.setSlotsActive("head", !slotContext.entity().isCrouching()));
     }
 
     @SubscribeEvent

@@ -6,10 +6,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 
+import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class EntitiesButCool {
@@ -19,11 +23,17 @@ public class EntitiesButCool {
         );
     }
 
-    public static List<SlotResult> findEquippedSlots(Entity entity, Item item) {
-        if (entity instanceof Player player) {
-            return CuriosApi.getCuriosInventory(player).map((inventory) -> inventory.findCurios(item).stream().toList()).orElse(List.of());
-        } else {
-            return List.of();
-        }
+    public static List<SlotResult> findEquippedSlots(LivingEntity entity, Item item) {
+        Optional<ICuriosItemHandler> handler = CuriosApi.getCuriosInventory(entity);
+        return handler.map(iCuriosItemHandler -> iCuriosItemHandler.findCurios(item).stream().toList()).orElseGet(List::of);
+    }
+
+    public static Optional<ImmutableTriple<String, Integer, ItemStack>> findEquippedCurio(Class<? extends Item> itemClass, LivingEntity livingEntity) {
+        return CuriosApi.getCuriosHelper().findEquippedCurio(stack -> stack.getItem().getClass().isAssignableFrom(itemClass), livingEntity);
+    }
+
+    public static ItemStack findEquippedStack(Class<? extends Item> itemClass, LivingEntity livingEntity) {
+        Optional<ImmutableTriple<String, Integer, ItemStack>> optional = findEquippedCurio(itemClass, livingEntity);
+        return optional.isEmpty() ? ItemStack.EMPTY : optional.get().getRight();
     }
 }

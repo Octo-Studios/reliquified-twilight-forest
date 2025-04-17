@@ -58,6 +58,10 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, MapleSyrupBottleItem> MAPLE_SYRUP_BOTTLE  = ITEMS.register("maple_syrup_bottle", MapleSyrupBottleItem::new);
     public static final DeferredHolder<Item, InvisibilityCloakItem> INVISIBILITY_CLOAK = ITEMS.register("invisibility_cloak", InvisibilityCloakItem::new);
 
+    //0.5
+    public static final DeferredHolder<Item, Parasite115Item> PARASITE_115 = ITEMS.register("parasite_115", Parasite115Item::new);
+    public static final DeferredHolder<Item, Parasite116Item> PARASITE_116 = ITEMS.register("parasite_116", Parasite116Item::new);
+
     public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_LIFE_1 =
             ITEMS.register("broken_charm_of_life_1", () -> new BrokenCharmItem(TFItems.CHARM_OF_LIFE_1.get(), 1));
     public static final DeferredHolder<Item, BrokenCharmItem> BROKEN_CHARM_OF_LIFE_2 =

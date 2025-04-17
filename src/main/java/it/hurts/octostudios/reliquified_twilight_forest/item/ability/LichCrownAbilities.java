@@ -163,7 +163,7 @@ public class LichCrownAbilities {
     public static final AbilityData ETHEREAL_GUARD = register(AbilityData.builder("ethereal_guard")
             .stat(StatData.builder("chance")
                     .initialValue(0.2, 0.3)
-                    .upgradeModifier(UpgradeOperation.ADD, 0.7/18d)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.2/18d)
                     .formatValue(MathButCool::percentageAndRoundSingleDigit)
                     .build())
             .build(), ItemRegistry.ETHER_GEM);

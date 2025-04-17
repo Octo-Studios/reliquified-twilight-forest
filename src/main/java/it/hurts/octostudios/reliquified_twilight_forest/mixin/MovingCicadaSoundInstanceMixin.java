@@ -2,7 +2,6 @@ package it.hurts.octostudios.reliquified_twilight_forest.mixin;
 
 import it.hurts.octostudios.reliquified_twilight_forest.init.EffectRegistry;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.fml.ModList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,8 +9,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import twilightforest.client.MovingCicadaSoundInstance;
-import twilightforest.compat.curios.CuriosCompat;
-import twilightforest.init.TFBlocks;
 
 @Mixin(MovingCicadaSoundInstance.class)
 public class MovingCicadaSoundInstanceMixin {

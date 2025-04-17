@@ -1,0 +1,7 @@
+{
+  "message_id": "reliquified_twilight_forest.infectious_bloom",
+  "scaling": "never",
+  "exhaustion": 0.1,
+  "effects": "hurt",
+  "death_message_type": "default"
+}
