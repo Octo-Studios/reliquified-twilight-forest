@@ -198,6 +198,15 @@
   "tooltip.relics.lich_crown.leveling_source.ethereal_guard.title": "ethereal_guard",
   "tooltip.relics.lich_crown.leveling_source.ethereal_guard.description": "+%1$s XP for each projectile phased.",
 
+  "item.reliquified_twilight_forest.frenzy_gem": "Frenzy Gem",
+  "tooltip.relics.lich_crown.ability.frenzy": "Frenzy",
+  "tooltip.relics.lich_crown.ability.frenzy.description": "+%1$s%% additive multiplier for each target",
+  "tooltip.relics.lich_crown.leveling_source.frenzy.title": "Frenzy",
+  "tooltip.relics.lich_crown.leveling_source.frenzy.description": "+%1$s XP for each bonus added.",
+
+  "tooltip.relics.lich_crown.ability.ruler_of_the_forest": "Ruler of The Forest",
+  "tooltip.relics.lich_crown.ability.ruler_of_the_forest.description": "immortality/flight idk yet",
+
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",
 
