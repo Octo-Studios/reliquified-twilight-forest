@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -161,10 +162,15 @@ public class LichCrownAbilities {
             .build(), ItemRegistry.VENGEFUL_GEM);
 
     public static final AbilityData ETHEREAL_GUARD = register(AbilityData.builder("ethereal_guard")
-            .stat(StatData.builder("chance")
-                    .initialValue(0.2, 0.3)
-                    .upgradeModifier(UpgradeOperation.ADD, 0.2/18d)
-                    .formatValue(MathButCool::percentageAndRoundSingleDigit)
+            .stat(StatData.builder("max_projectiles")
+                    .initialValue(1, 2)
+                    .upgradeModifier(UpgradeOperation.ADD, 1)
+                    .formatValue(Math::round)
+                    .build())
+            .stat(StatData.builder("cooldown")
+                    .initialValue(200, 160)
+                    .upgradeModifier(UpgradeOperation.ADD, 120/18d)
+                    .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
             .build(), ItemRegistry.ETHER_GEM);
 
@@ -319,25 +325,57 @@ public class LichCrownAbilities {
             }
 
             e.getEntity().heal(e.getNewDamage());
-            relic.spreadRelicExperience(e.getEntity(), stack, 1);
+            relic.spreadRelicExperience(e.getEntity(), stack, Mth.floor(e.getNewDamage()));
             e.getEntity().level().playSound(null, e.getEntity(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.NEUTRAL, 1f, 2f);
             e.setNewDamage(0);
         }
 
         @SubscribeEvent
+        public static void tickEther(EntityTickEvent.Post e) {
+            if (e.getEntity().level().isClientSide) {
+                return;
+            }
+
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.LICH_CROWN.get());
+            int count = stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.COUNT, 0);
+            int time = stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME, 0);
+
+            if (!(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "ethereal_guard"))
+                    || count < relic.getStatValue(stack, "ethereal_guard", "max_projectiles")
+            ) return;
+
+            if (time < relic.getStatValue(stack, "ethereal_guard", "cooldown")) {
+                time++;
+            } else {
+                count = 0;
+                time = 0;
+            }
+
+            stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.COUNT, count);
+            stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.TIME, time);
+        }
+
+        @SubscribeEvent
         public static void phaseProjectiles(ProjectileImpactEvent e) {
-            if (e.getEntity().level().isClientSide || !(e.getRayTraceResult() instanceof EntityHitResult hitResult && hitResult.getEntity() instanceof LivingEntity entity)) {
+            if (!(e.getRayTraceResult() instanceof EntityHitResult hitResult && hitResult.getEntity() instanceof LivingEntity entity)) {
                 return;
             }
 
             ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.LICH_CROWN.get());
+            int count = stack.getOrDefault(it.hurts.sskirillss.relics.init.DataComponentRegistry.COUNT, 0);
+
             if (!(stack.getItem() instanceof LichCrownItem relic)
                     || !(relic.isAbilityUnlocked(stack, "ethereal_guard"))
-                    || entity.getRandom().nextFloat() > relic.getStatValue(stack, "ethereal_guard", "chance")
+                    || count >= relic.getStatValue(stack, "ethereal_guard", "max_projectiles")
             ) return;
 
-            entity.level().playSound(null, entity, SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.NEUTRAL, 1f, 2f);
-            relic.spreadRelicExperience(entity, stack, 1);
+            if (!e.getEntity().level().isClientSide) {
+                entity.level().playSound(null, entity, SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.NEUTRAL, 1f, 2f);
+                relic.spreadRelicExperience(entity, stack, 1);
+                stack.set(it.hurts.sskirillss.relics.init.DataComponentRegistry.COUNT, count + 1);
+            }
+
             e.setCanceled(true);
         }
 
@@ -396,27 +434,28 @@ public class LichCrownAbilities {
 
             float multiplier = (float) relic.getStatValue(stack, "vendetta", "multiplier");
             e.setNewDamage(e.getNewDamage() * (multiplier + 1));
+            relic.spreadRelicExperience(source, stack, 1);
         }
 
         @SubscribeEvent
         public static void multiplyBiomeDamage(LivingDamageEvent.Pre e) {
             ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
 
-            if (!(e.getSource().getEntity() instanceof Player player)
-                    || player == e.getEntity()
-                    || player.level().isClientSide
+            if (!(e.getSource().getEntity() instanceof LivingEntity livingEntity)
+                    || livingEntity == e.getEntity()
+                    || livingEntity.level().isClientSide
                     || !(stack.getItem() instanceof LichCrownItem relic)
                     || !(relic.isAbilityUnlocked(stack, "biome_burn"))
             ) return;
 
             float multiplier = (float) relic.getStatValue(stack, "biome_burn", "multiplier");
-            float temperature = player.level().getBiome(player.blockPosition()).value().getBaseTemperature();
-            player.displayClientMessage(Component.literal("Temperature: " + temperature), false);
+            float temperature = livingEntity.level().getBiome(livingEntity.blockPosition()).value().getBaseTemperature();
             if (temperature <= 0.5f) {
                 return;
             }
 
             e.setNewDamage(e.getNewDamage() * (1 + multiplier * (temperature * 10 - 5f)));
+            relic.spreadRelicExperience(livingEntity, stack, 1);
         }
 
         @SubscribeEvent

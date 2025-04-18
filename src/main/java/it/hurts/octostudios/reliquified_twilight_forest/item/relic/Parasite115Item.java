@@ -6,6 +6,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.init.EffectRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.util.EntitiesButCool;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
+import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
@@ -15,6 +16,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -28,6 +30,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curios.api.CuriosApi;
 import twilightforest.entity.boss.UrGhast;
@@ -81,8 +85,13 @@ public class Parasite115Item extends RelicItem {
         ) return;
 
         if (e.getEntity().hasEffect(EffectRegistry.INFECTIOUS_BLOOM) || e.getEntity().getRandom().nextFloat() < relic.getStatValue(stack, "infectious_bloom", "chance")) {
+            if (!e.getEntity().hasEffect(EffectRegistry.INFECTIOUS_BLOOM)) {
+                relic.spreadRelicExperience(livingEntity, stack, 1);
+            }
+
             e.getEntity().addEffect(new MobEffectInstance(EffectRegistry.INFECTIOUS_BLOOM, 100, (int) Math.round(relic.getStatValue(stack, "infectious_bloom", "amplifier"))));
             e.getEntity().getPersistentData().putUUID(LAST_INFECTED_BY, livingEntity.getUUID());
+
         }
     }
 
@@ -116,7 +125,7 @@ public class Parasite115Item extends RelicItem {
             e.getEntity().level().addFreshEntity(toDrop);
         }
 
-        if (e.getEntity() instanceof UrGhast) {
+        if (e.getEntity() instanceof UrGhast && !relic.isEvolved()) {
             relic.evolve(triple.getLeft(), triple.getMiddle(), stack, livingEntity);
         }
     }
@@ -143,6 +152,10 @@ public class Parasite115Item extends RelicItem {
         CuriosApi.getCuriosInventory(entity).get().setEquippedCurio(identifier, index, evolvedParasite);
     }
 
+    public boolean isEvolved() {
+        return false;
+    }
+
     @Override
     public String getConfigRoute() {
         return ReliquifiedTwilightForest.MOD_ID;
@@ -166,5 +179,19 @@ public class Parasite115Item extends RelicItem {
                         .build())
                 .maxLevel(maxLevel)
                 .build();
+    }
+
+    @SubscribeEvent
+    public static void consumeExperiment115(LivingEntityUseItemEvent.Finish e) {
+        ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.PARASITE_116.get());
+        if (e.getEntity().level().isClientSide
+                || e.getItem().getItem() != TFItems.EXPERIMENT_115.get()
+                || !(stack.getItem() instanceof Parasite116Item relic)
+        ) return;
+
+        int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        time = (int) Mth.clamp(time + relic.getStatValue(stack, "rage_consumption", "amount_restored"), 0, 200);
+        stack.set(DataComponentRegistry.TIME, time);
+        relic.spreadRelicExperience(e.getEntity(), stack, 1);
     }
 }

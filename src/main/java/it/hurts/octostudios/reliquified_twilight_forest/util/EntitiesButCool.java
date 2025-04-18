@@ -29,7 +29,7 @@ public class EntitiesButCool {
     }
 
     public static Optional<ImmutableTriple<String, Integer, ItemStack>> findEquippedCurio(Class<? extends Item> itemClass, LivingEntity livingEntity) {
-        return CuriosApi.getCuriosHelper().findEquippedCurio(stack -> stack.getItem().getClass().isAssignableFrom(itemClass), livingEntity);
+        return CuriosApi.getCuriosHelper().findEquippedCurio(stack -> itemClass.isAssignableFrom(stack.getItem().getClass()), livingEntity);
     }
 
     public static ItemStack findEquippedStack(Class<? extends Item> itemClass, LivingEntity livingEntity) {
