@@ -36,7 +36,6 @@ public class GemItem extends Item implements Gem, ICreativeTabContent {
 
     @Override
     public void gatherCreativeTabContent(CreativeContentConstructor creativeContentConstructor) {
-        creativeContentConstructor.entry(TFCreativeTabs.ITEMS.get(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS, this);
         creativeContentConstructor.entry(CreativeTabRegistry.RELICS_TAB.get(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS, this);
     }
 }

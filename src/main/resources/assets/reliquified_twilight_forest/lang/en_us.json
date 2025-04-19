@@ -204,8 +204,8 @@
   "tooltip.relics.lich_crown.leveling_source.frenzy.title": "Frenzy",
   "tooltip.relics.lich_crown.leveling_source.frenzy.description": "+%1$s XP for each bonus gained from the %2$s ability.",
 
-  "tooltip.relics.lich_crown.ability.ruler_of_the_forest": "Twilight Sovereign",
-  "tooltip.relics.lich_crown.ability.ruler_of_the_forest.description": "Grants full immortality within the boundaries of the Twilight Forest.",
+  "tooltip.relics.lich_crown.ability.twilight_sovereign": "Twilight Sovereign",
+  "tooltip.relics.lich_crown.ability.twilight_sovereign.description": "Grants full immortality within the boundaries of the Twilight Forest.",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Blood Droplet",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Fiery Puddle",

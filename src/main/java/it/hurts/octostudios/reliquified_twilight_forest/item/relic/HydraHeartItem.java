@@ -107,7 +107,7 @@ public class HydraHeartItem extends RelicItem {
             return;
         }
 
-        CuriosApi.getCuriosInventory(livingEntity).ifPresent(handler -> handler.setSlotsActive("head", !slotContext.entity().isCrouching()));
+        //CuriosApi.getCuriosInventory(livingEntity).ifPresent(handler -> handler.setSlotsActive("head", !slotContext.entity().isCrouching()));
     }
 
     @SubscribeEvent

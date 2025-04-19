@@ -137,7 +137,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:20.1.0'
 
     implementation "it.hurts.octostudios.octolib:octolib-neoforge:0.5.0.1+1.21"
-    implementation 'top.theillusivec4.curios:curios-neoforge:9.5.0-alpha.3+1.21.1'
+    implementation 'top.theillusivec4.curios:curios-neoforge:9.3.1+1.21.1'
     implementation "team-twilight:twilightforest:4.7.3032:universal"
     implementation "curse.maven:jei-238222:5846880"
 

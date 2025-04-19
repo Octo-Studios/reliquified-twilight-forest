@@ -204,8 +204,8 @@
   "tooltip.relics.lich_crown.leveling_source.frenzy.title": "Безумие",
   "tooltip.relics.lich_crown.leveling_source.frenzy.description": "+%1$s единиц опыта за каждый полученный бонус от способности %2$s.",
 
-  "tooltip.relics.lich_crown.ability.ruler_of_the_forest": "Сумеречный властитель",
-  "tooltip.relics.lich_crown.ability.ruler_of_the_forest.description": "Наделяет полным бессмертием в пределах Сумеречного Леса.",
+  "tooltip.relics.lich_crown.ability.twilight_sovereign": "Сумеречный властитель",
+  "tooltip.relics.lich_crown.ability.twilight_sovereign.description": "Наделяет полным бессмертием в пределах Сумеречного Леса.",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Капля Крови",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Огненная лужица",
@@ -216,7 +216,7 @@
   "death.attack.reliquified_twilight_forest.execution.item": "%1$s был казнён игроком %2$s при помощи %3$s",
   "death.attack.reliquified_twilight_forest.execution.player": "%1$s был казнён игроком %2$s",
 
-  "death.attack.reliquified_twilight_forest.infectious_bloom": "%1$s был поглощён паразитом",
-  "death.attack.reliquified_twilight_forest.infectious_bloom.item": "%1$s был поглощён паразитом",
-  "death.attack.reliquified_twilight_forest.infectious_bloom.player": "%1$s был поглощён паразитом"
+  "death.attack.reliquified_twilight_forest.infectious_bloom": "%1$s был поглощён Паразитом",
+  "death.attack.reliquified_twilight_forest.infectious_bloom.item": "%1$s был поглощён Паразитом",
+  "death.attack.reliquified_twilight_forest.infectious_bloom.player": "%1$s был поглощён Паразитом"
 }
