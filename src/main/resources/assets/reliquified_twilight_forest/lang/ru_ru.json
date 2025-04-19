@@ -134,6 +134,7 @@
   "tooltip.relics.chromatic_cloak.leveling_source.wool_storage.title": "Волшебство спектра",
   "tooltip.relics.chromatic_cloak.leveling_source.wool_storage.description": "+%1$s единиц опыта за каждый уровень применяемого эффекта от способности %2$s.",
 
+  "item.reliquified_twilight_forest.frost_gem": "Самоцвет мороза",
   "tooltip.relics.lich_crown.ability.frostbite": "Обморожение",
   "tooltip.relics.lich_crown.ability.frostbite.description": "При атаке накладывает на цель суммируемый эффект обморожения на %1$s секунд. Как только длительность обморожения на цели превысит 7 секунд, она начнёт получать по 1 единице урона сквозь броню каждые 2 секунды до момента аннулирования эффекта.",
   "tooltip.relics.lich_crown.leveling_source.frostbite.title": "Обморожение",
@@ -155,7 +156,56 @@
   "tooltip.relics.invisibility_cloak.leveling_source.invisibility.title": "Маскировка",
   "tooltip.relics.invisibility_cloak.leveling_source.invisibility.description": "+%1$s единиц опыта за каждое срабатывание способности %2$s.",
 
-  "item.reliquified_twilight_forest.frost_gem": "Самоцвет мороза",
+  "item.reliquified_twilight_forest.parasite_115": "Паразит 115",
+  "tooltip.relics.parasite_115.description": "...в глубине тюремных камер §kТёмной§r Башни узника под номером 115 принудительно инфицировали неизвестным §kпаразитом§r. §kЛичинка§r переплелась с его телом, питаясь §kразумом§r и плотью, пока не осталась лишь искажённая масса красноватой §kгнили§r. Извращённые умы надзирателей тотчас принудили §kбедолагу§r из соседней камеры испытать получившееся на вкус. Он сопротивлялся, но, стоило лишь кусочку коснуться его языка...",
+  "tooltip.relics.parasite_115.ability.infectious_bloom": "Инвазия",
+  "tooltip.relics.parasite_115.ability.infectious_bloom.description": "С вероятностью в %1$s%% инфицирует атакуемую цель паразитом, который при условии отсутствия совершения атак по цели в течение 5 секунд наносит %2$s быстрых ударов по %3$s единиц урона каждый. Если цель была убита атакой паразита, с неё выпадет случайное количество §kЭксперимента 115§r, но не более %4$s единиц.",
+  "tooltip.relics.parasite_115.leveling_source.infectious_bloom.title": "Инвазия",
+  "tooltip.relics.parasite_115.leveling_source.infectious_bloom.description": "+%1$s единиц опыта за каждое заражение цели паразитом от способности %2$s.",
+
+  "item.reliquified_twilight_forest.parasite_116": "Паразит 116",
+  "tooltip.relics.parasite_116.description": "...как вдруг его начало трясти, тело выгнулось, будто §kчто-то§r внутри пыталось вырваться наружу. Глаза побелели, и с безумным рыком он вцепился в надзирателя, затем - в другого, и ещё, и ещё... Пока на его пути ни осталось никого. Очнулся он уже в §kглуши§r Сумеречного Леса - израненный, босой, весь в крови. Кто знает, была тому виной его последняя трапеза, или он теперь жертва нового эксперимента под номером §k116§r.",
+  "tooltip.relics.parasite_116.ability.infectious_bloom": "Инвазия",
+  "tooltip.relics.parasite_116.ability.infectious_bloom.description": "С вероятностью в %1$s%% инфицирует атакуемую цель паразитом, который при условии отсутствия совершения атак по цели в течение 5 секунд наносит %2$s быстрых ударов по %3$s единиц урона каждый. Если цель была убита атакой паразита, с неё выпадет случайное количество §kЭксперимента 115§r, но не более %4$s единиц.",
+  "tooltip.relics.parasite_116.ability.rage_consumption": "Поглощение яростью",
+  "tooltip.relics.parasite_116.ability.rage_consumption.description": "При употреблении §kЭксперимента 115§r восполняет заряд ярости на %1$s%%, который расходуется по 1% каждую секунду. Ярость увеличивает скорость передвижения, атаки, а также наносимый урон игрока. При показателе ярости в 100% бонус будет составлять %2$s%%.",
+  "tooltip.relics.parasite_116.leveling_source.infectious_bloom.title": "Инвазия",
+  "tooltip.relics.parasite_116.leveling_source.infectious_bloom.description": "+%1$s единиц опыта за каждое заражение цели паразитом от способности %2$s.",
+  "tooltip.relics.parasite_116.leveling_source.rage_consumption.title": "Поглощение яростью",
+  "tooltip.relics.parasite_116.leveling_source.rage_consumption.description": "+%1$s единиц опыта за каждый поглощённый §kЭксперимент 115§r.",
+
+  "item.reliquified_twilight_forest.carminite_gem": "Самоцвет карминита",
+  "tooltip.relics.lich_crown.ability.mirror_leech": "Зеркальное поглощение",
+  "tooltip.relics.lich_crown.ability.mirror_leech.description": "Любая совершенная по игроку атака с вероятностью в %1$s%% будет отражена в атакующего, исцеляя игрока на число нанесенного ею урона.",
+  "tooltip.relics.lich_crown.leveling_source.mirror_leech.title": "Зеркальное поглощение",
+  "tooltip.relics.lich_crown.leveling_source.mirror_leech.description": "+%1$s единиц опыта за каждую полную единицу отраженного способностью %2$s урона.",
+
+  "item.reliquified_twilight_forest.vengeful_gem": "Самоцвет мести",
+  "tooltip.relics.lich_crown.ability.vendetta": "Вендетта",
+  "tooltip.relics.lich_crown.ability.vendetta.description": "Совершение атаки по цели, которая атаковала игрока в последние %1$s секунд, нанесёт повышенный на %2$s%% урон.",
+  "tooltip.relics.lich_crown.leveling_source.vendetta.title": "Вендетта",
+  "tooltip.relics.lich_crown.leveling_source.vendetta.description": "+%1$s единиц опыта за каждую совершённую атаку с повышенным уроном от способности %2$s",
+
+  "item.reliquified_twilight_forest.fire_gem": "Самоцвет огня",
+  "tooltip.relics.lich_crown.ability.biome_burn": "Концентрация жара",
+  "tooltip.relics.lich_crown.ability.biome_burn.description": "Увеличивает наносимый урон на %1$s%% за каждые 0.1 единиц температуры биома, в котором сейчас находится игрок.",
+  "tooltip.relics.lich_crown.leveling_source.biome_burn.title": "Концентрация жара",
+  "tooltip.relics.lich_crown.leveling_source.biome_burn.description": "+%1$s единиц опыта за каждую совершенную атаку с повышенным способностью %2$s уроном.",
+
+  "item.reliquified_twilight_forest.ether_gem": "Самоцвет эфира",
+  "tooltip.relics.lich_crown.ability.ethereal_guard": "Эфирная трансформация",
+  "tooltip.relics.lich_crown.ability.ethereal_guard.description": "Любой снаряд, нацеленный на игрока, проходит сквозь него, не причиняя вреда. При преодолении порога в %1$s парирований способность отправляется на перезарядку на %2$s секунд.",
+  "tooltip.relics.lich_crown.leveling_source.ethereal_guard.title": "Эфирная трансформация",
+  "tooltip.relics.lich_crown.leveling_source.ethereal_guard.description": "+%1$s единиц опыта за каждый снаряд, парированный при помощи способности %2$s.",
+
+  "item.reliquified_twilight_forest.frenzy_gem": "Самоцвет безумия",
+  "tooltip.relics.lich_crown.ability.frenzy": "Безумие",
+  "tooltip.relics.lich_crown.ability.frenzy.description": "Совершение атак по неповторяющимся целям увеличивает урон на %1$s за каждую. Нанесение урона атакованной ранее цели или полное отсутствие атак на протяжении более 5 секунд сбрасывает прогресс и аннулирует бонус. Если под действием эффекта игрок убивает цель - их список обнуляется без потери полученных бонусов.",
+  "tooltip.relics.lich_crown.leveling_source.frenzy.title": "Безумие",
+  "tooltip.relics.lich_crown.leveling_source.frenzy.description": "+%1$s единиц опыта за каждый полученный бонус от способности %2$s.",
+
+  "tooltip.relics.lich_crown.ability.ruler_of_the_forest": "Сумеречный властитель",
+  "tooltip.relics.lich_crown.ability.ruler_of_the_forest.description": "Наделяет полным бессмертием в пределах Сумеречного Леса.",
 
   "entity.reliquified_twilight_forest.hydra_fire": "Капля Крови",
   "entity.reliquified_twilight_forest.hydra_fire_puddle": "Огненная лужица",
@@ -164,5 +214,9 @@
 
   "death.attack.reliquified_twilight_forest.execution": "%1$s был казнён",
   "death.attack.reliquified_twilight_forest.execution.item": "%1$s был казнён игроком %2$s при помощи %3$s",
-  "death.attack.reliquified_twilight_forest.execution.player": "%1$s был казнён игроком %2$s"
+  "death.attack.reliquified_twilight_forest.execution.player": "%1$s был казнён игроком %2$s",
+
+  "death.attack.reliquified_twilight_forest.infectious_bloom": "%1$s был поглощён паразитом",
+  "death.attack.reliquified_twilight_forest.infectious_bloom.item": "%1$s был поглощён паразитом",
+  "death.attack.reliquified_twilight_forest.infectious_bloom.player": "%1$s был поглощён паразитом"
 }
