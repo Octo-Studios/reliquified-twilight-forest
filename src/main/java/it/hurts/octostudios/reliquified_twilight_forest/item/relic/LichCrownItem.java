@@ -99,6 +99,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                         .ability(LichCrownAbilities.ETHEREAL_GUARD)
                         .ability(LichCrownAbilities.VENDETTA)
                         .ability(LichCrownAbilities.MIRROR_LEECH)
+                        .ability(LichCrownAbilities.FRENZY)
                         .build())
                 .leveling(LevelingData.builder()
                         .initialCost(250)
@@ -114,6 +115,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                                 .source(getSource(LichCrownAbilities.ETHEREAL_GUARD, GemColor.PURPLE))
                                 .source(getSource(LichCrownAbilities.VENDETTA, GemColor.GREEN))
                                 .source(getSource(LichCrownAbilities.MIRROR_LEECH, GemColor.RED))
+                                .source(getSource(LichCrownAbilities.FRENZY, GemColor.ORANGE))
                                 .build())
                         .build())
                 .style(StyleData.builder()
@@ -130,12 +132,14 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         if (!(stack.getItem() instanceof LichCrownItem relic)) return;
         LivingEntity livingEntity = slotContext.entity();
+
         if (livingEntity.level().isClientSide) return;
 
         if (relic.isAbilityUnlocked(stack, "zombie")) LichCrownAbilities.zombieTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "twilight")) LichCrownAbilities.twilightTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "lifedrain")) LichCrownAbilities.lifedrainTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
+        if (relic.isAbilityUnlocked(stack, "frenzy")) LichCrownAbilities.frenzyTick(livingEntity, stack, this);
     }
 
     @Override

@@ -15,6 +15,7 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.BlockPos;
@@ -48,11 +49,13 @@ import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
+import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.entity.monster.LoyalZombie;
@@ -60,6 +63,7 @@ import twilightforest.entity.projectile.TwilightWandBolt;
 import twilightforest.init.*;
 import twilightforest.item.LifedrainScepterItem;
 
+import java.awt.Color;
 import java.util.*;
 
 public class LichCrownAbilities {
@@ -68,7 +72,7 @@ public class LichCrownAbilities {
 
     public static final int MAX_LIFEDRAIN_TIME = 100;
     public static final int MAX_TWILIGHT_TIME = 50;
-    public static final String VENDETTA_ID = ReliquifiedTwilightForest.MOD_ID+":vendetta";
+    public static final String VENDETTA_ID = ReliquifiedTwilightForest.MOD_ID + ":vendetta";
 
     public static final AbilityData FORTIFICATION = register(AbilityData.builder("fortification")
             .stat(StatData.builder("max_shields")
@@ -169,7 +173,7 @@ public class LichCrownAbilities {
                     .build())
             .stat(StatData.builder("cooldown")
                     .initialValue(200, 160)
-                    .upgradeModifier(UpgradeOperation.ADD, 120/18d)
+                    .upgradeModifier(UpgradeOperation.ADD, 120 / 18d)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
             .build(), ItemRegistry.ETHER_GEM);
@@ -177,10 +181,18 @@ public class LichCrownAbilities {
     public static final AbilityData MIRROR_LEECH = register(AbilityData.builder("mirror_leech")
             .stat(StatData.builder("chance")
                     .initialValue(0.05, 0.1)
-                    .upgradeModifier(UpgradeOperation.ADD, 0.4/18d)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.4 / 18d)
                     .formatValue(MathButCool::percentageAndRoundSingleDigit)
                     .build())
             .build(), ItemRegistry.CARMINITE_GEM);
+
+    public static final AbilityData FRENZY = register(AbilityData.builder("frenzy")
+            .stat(StatData.builder("additive_multiplier")
+                    .initialValue(0.025, 0.05)
+                    .upgradeModifier(UpgradeOperation.ADD, 0.3 / 18d)
+                    .formatValue(MathButCool::percentageAndRoundSingleDigit)
+                    .build())
+            .build(), ItemRegistry.FRENZY_GEM);
 
     public static void fortificationUnequip(SlotContext slotContext, ItemStack stack) {
         slotContext.entity().getData(TFDataAttachments.FORTIFICATION_SHIELDS).setShields(slotContext.entity(), 0, false);
@@ -307,8 +319,93 @@ public class LichCrownAbilities {
         stack.set(DataComponentRegistry.ZOMBIES, uuids);
     }
 
+    public static void frenzyTick(LivingEntity entity, ItemStack stack, LichCrownItem instance) {
+        List<UUID> entities = stack.getOrDefault(DataComponentRegistry.ENTITIES, List.of());
+        ServerLevel serverLevel = (ServerLevel) entity.level();
+        if (entities.isEmpty() && stack.getOrDefault(DataComponentRegistry.MULTIPLIER, 0).floatValue() == 0f) {
+            return;
+        }
+
+        entities.forEach(uuid -> {
+            Entity target = serverLevel.getEntity(uuid);
+            if (target == null || !target.isAlive()) {
+                return;
+            }
+
+            serverLevel.sendParticles(ParticleUtils.constructSimpleSpark(Color.GREEN, 0.25f, 10, 0.8f),
+                    target.getX(),
+                    target.getY() + target.getBbHeight() + 0.15f,
+                    target.getZ(),
+                    1, 0, 0, 0, 0
+            );
+        });
+
+        int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+
+        if (time >= 100) {
+            resetFrenzy(entity, stack, null);
+        }
+
+        stack.set(DataComponentRegistry.TIME, ++time);
+    }
+
+    public static void resetFrenzy(LivingEntity entity, ItemStack stack, @Nullable LivingEntity newTarget) {
+        List<UUID> uuids = List.of();
+        if (newTarget != null) {
+            uuids = List.of(newTarget.getUUID());
+        }
+        if (!stack.getOrDefault(DataComponentRegistry.ENTITIES, List.of()).equals(uuids) || stack.getOrDefault(DataComponentRegistry.MULTIPLIER, 0f).floatValue() != 0) {
+            entity.level().playSound(null, entity, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.8f, 1.5f);
+        }
+
+        stack.set(DataComponentRegistry.ENTITIES, uuids);
+        stack.set(DataComponentRegistry.MULTIPLIER, 0f);
+        stack.set(DataComponentRegistry.TIME, 0);
+    }
+
     @EventBusSubscriber
     public static class CommonEvents {
+        @SubscribeEvent
+        public static void frenzyDeath(LivingDeathEvent e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+            if (e.getEntity().level().isClientSide
+                    || !(e.getSource().getEntity() instanceof LivingEntity entity)
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "frenzy"))
+            ) return;
+
+            stack.set(DataComponentRegistry.ENTITIES, List.of());
+            stack.set(DataComponentRegistry.TIME, 0);
+            //entity.level().playSound(null, entity, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.5f);
+        }
+
+        @SubscribeEvent
+        public static void processFrenzy(LivingDamageEvent.Pre e) {
+            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getEntity(), ItemRegistry.LICH_CROWN.get());
+
+            if (e.getEntity().level().isClientSide
+                    || !(stack.getItem() instanceof LichCrownItem relic)
+                    || !(relic.isAbilityUnlocked(stack, "frenzy"))
+            ) return;
+
+            List<UUID> entities = stack.getOrDefault(DataComponentRegistry.ENTITIES, List.of());
+            if (entities.contains(e.getEntity().getUUID())) {
+                resetFrenzy((LivingEntity) e.getSource().getEntity(), stack, e.getEntity());
+                return;
+            }
+
+            ArrayList<UUID> mutable = Lists.newArrayList(entities);
+            mutable.add(e.getEntity().getUUID());
+
+            float multiplier = stack.getOrDefault(DataComponentRegistry.MULTIPLIER, 0f);
+            e.setNewDamage(e.getNewDamage() * (multiplier + 1));
+            multiplier += (float) relic.getStatValue(stack, "frenzy", "additive_multiplier");
+
+            stack.set(DataComponentRegistry.ENTITIES, mutable);
+            stack.set(DataComponentRegistry.MULTIPLIER, multiplier);
+            stack.set(DataComponentRegistry.TIME, 0);
+        }
+
         @SubscribeEvent
         public static void processMirrorLeech(LivingDamageEvent.Pre e) {
             ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.LICH_CROWN.get());
@@ -486,6 +583,7 @@ public class LichCrownAbilities {
             relic.spreadRelicExperience(player, stack, 1);
         }
     }
+
     @EventBusSubscriber(Dist.CLIENT)
     public static class ClientEvents {
         @SubscribeEvent

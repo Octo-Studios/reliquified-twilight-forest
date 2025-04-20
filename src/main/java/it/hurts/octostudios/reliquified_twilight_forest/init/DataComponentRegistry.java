@@ -33,12 +33,26 @@ public class DataComponentRegistry {
                     .build()
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<UUID>>> ENTITIES = DATA_COMPONENTS.register("entities",
+            () -> DataComponentType.<List<UUID>>builder()
+                    .persistent(UUIDUtil.CODEC.listOf())
+                    .build()
+    );
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>> MULTIPLIER = registerFloat("multiplier");
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> TIME = registerInt("time");
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> DONT_EAT = registerBoolean("dont_eat");
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> REGENERATION_TICKS = registerInt("regeneration_ticks");
 
     public static DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> registerInt(String id) {
         return DATA_COMPONENTS.register(id, () -> DataComponentType.<Integer>builder()
                 .persistent(Codec.INT)
+                .build());
+    }
+
+    public static DeferredHolder<DataComponentType<?>, DataComponentType<Float>> registerFloat(String id) {
+        return DATA_COMPONENTS.register(id, () -> DataComponentType.<Float>builder()
+                .persistent(Codec.FLOAT)
                 .build());
     }
 
