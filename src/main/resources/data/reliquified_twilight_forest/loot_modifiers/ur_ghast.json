@@ -3,11 +3,10 @@
   "conditions": [
     {
       "condition": "neoforge:loot_table_id",
-      "loot_table_id": "twilightforest:entities/hydra"
+      "loot_table_id": "twilightforest:entities/ur_ghast"
     }
   ],
   "item_modifiers": {
-    "reliquified_twilight_forest:hydra_heart": 0.33,
-    "reliquified_twilight_forest:fire_gem": 0.33
+    "reliquified_twilight_forest:carminite_gem": 0.33
   }
 }

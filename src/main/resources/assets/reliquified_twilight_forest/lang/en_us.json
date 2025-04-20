@@ -164,11 +164,11 @@
   "tooltip.relics.parasite_115.leveling_source.infectious_bloom.description": "+%1$s XP for each parasite infection caused by the %2$s ability.",
 
   "item.reliquified_twilight_forest.parasite_116": "Parasite 116",
-  "tooltip.relics.parasite_116.description": "...suddenly he began to tremble, his body arching as if §ksomething§r inside tried to break free. His eyes turned white, and with a mad roar he attacked a warden, then another, and another... until no one remained in his path. He awoke deep within the §kwilderness§r of the Twilight Forest-wounded, barefoot, covered in blood. Who knows if it was his last meal to blame, or if he is now the victim of a new experiment-§knumber 116§r.",
+  "tooltip.relics.parasite_116.description": "...suddenly he began to tremble, his body arching as if §ksomething§r inside tried to break free. His eyes turned white, and with a mad roar he attacked a warden, then another, and another... until no one remained in his path. He awoke deep within the §kwilderness§r of the Twilight Forest - wounded, barefoot, covered in blood. Who knows if it was his last meal to blame, or if he is now the victim of a new experiment - §k116§r.",
   "tooltip.relics.parasite_116.ability.infectious_bloom": "Invasion",
   "tooltip.relics.parasite_116.ability.infectious_bloom.description": "Has a %1$s%% chance to infect the attacked target with a parasite, which, if the target is not attacked again within 5 seconds, delivers %2$s rapid strikes dealing %3$s damage each. If the target is killed by the parasite's attack, a random amount of §kExperiment 115§r will drop, up to %4$s units.",
   "tooltip.relics.parasite_116.ability.rage_consumption": "Rage Consumption",
-  "tooltip.relics.parasite_116.ability.rage_consumption.description": "Consuming §kExperiment 115§r restores %1$s%% rage charge, which is consumed at a rate of 1%% per second. Rage increases the player's movement speed, attack speed, and damage. At 100%% rage, the bonus reaches %2$s%%.",
+  "tooltip.relics.parasite_116.ability.rage_consumption.description": "Consuming §kExperiment 115§r restores %1$s%% rage charge, which is consumed at a rate of 10%% per second. Rage increases the player's movement speed, attack speed, and damage. At 100%% rage, the bonus reaches %2$s%%.",
   "tooltip.relics.parasite_116.leveling_source.infectious_bloom.title": "Invasion",
   "tooltip.relics.parasite_116.leveling_source.infectious_bloom.description": "+%1$s XP for each parasite infection caused by the %2$s ability.",
   "tooltip.relics.parasite_116.leveling_source.rage_consumption.title": "Rage Consumption",
@@ -182,7 +182,7 @@
 
   "item.reliquified_twilight_forest.vengeful_gem": "Vengeful Gem",
   "tooltip.relics.lich_crown.ability.vendetta": "Vendetta",
-  "tooltip.relics.lich_crown.ability.vendetta.description": "Attacking a target that damaged the player in the last %1$s seconds deals %2$s%% increased damage.",
+  "tooltip.relics.lich_crown.ability.vendetta.description": "Attacking a target that damaged the player in the last %1$s seconds increases damage by %2$s%%.",
   "tooltip.relics.lich_crown.leveling_source.vendetta.title": "Vendetta",
   "tooltip.relics.lich_crown.leveling_source.vendetta.description": "+%1$s XP for each attack with increased damage from the %2$s ability.",
 
@@ -200,7 +200,7 @@
 
   "item.reliquified_twilight_forest.frenzy_gem": "Frenzy Gem",
   "tooltip.relics.lich_crown.ability.frenzy": "Frenzy",
-  "tooltip.relics.lich_crown.ability.frenzy.description": "Attacking different targets consecutively increases damage by %1$s per hit. Damaging a previously attacked target or not attacking for more than 5 seconds resets the bonus. Killing a target while the effect is active resets the target list without losing the accumulated bonus.",
+  "tooltip.relics.lich_crown.ability.frenzy.description": "Attacking different targets consecutively increases damage by %1$s%% per hit. Damaging a previously attacked target or not attacking for more than 5 seconds resets the bonus. Killing a target while the effect is active resets the target list without losing the accumulated bonus.",
   "tooltip.relics.lich_crown.leveling_source.frenzy.title": "Frenzy",
   "tooltip.relics.lich_crown.leveling_source.frenzy.description": "+%1$s XP for each bonus gained from the %2$s ability.",
 

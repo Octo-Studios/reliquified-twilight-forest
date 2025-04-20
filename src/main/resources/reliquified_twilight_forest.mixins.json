@@ -6,6 +6,7 @@
   "refmap": "reliquified_twilight_forest.refmap.json",
   "mixins": [
     "ChainBlockMixin",
+    "Experiment115BlockMixin",
     "HurtByTargetGoalAccessor",
     "NearestAttackableTargetGoalAccessor",
     "TFItemStackUtilsMixin"

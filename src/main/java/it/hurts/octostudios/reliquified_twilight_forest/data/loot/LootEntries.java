@@ -48,4 +48,11 @@ public class LootEntries {
             .table("twilightforest:troll_vault_with_lamp", "twilightforest:troll_vault", "twilightforest:troll_garden")
             .weight(500)
             .build();
+
+    public static final LootEntry DARK_TOWER = LootEntry.builder()
+            .dimension(TFDimension.DIMENSION.toString())
+            .biome(".*")
+            .table("twilightforest:darktower_key", "twilightforest:darktower_cache")
+            .weight(500)
+            .build();
 }

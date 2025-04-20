@@ -1,6 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer.RedVignetteLayer;
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer.TwilightIndicatorLayer;
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer.VignetteLayer;
 import it.hurts.octostudios.reliquified_twilight_forest.client.gui.tooltip.ClientBundleLikeTooltip;
@@ -34,6 +35,7 @@ public class RemoteRegistry {
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerBelowAll(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "goblin_vignette"), new VignetteLayer());
+        event.registerBelowAll(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "rage_consumption_vignette"), new RedVignetteLayer());
         event.registerAbove(
                 VanillaGuiLayers.CROSSHAIR,
                 ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "twilight_indicator"), new TwilightIndicatorLayer()

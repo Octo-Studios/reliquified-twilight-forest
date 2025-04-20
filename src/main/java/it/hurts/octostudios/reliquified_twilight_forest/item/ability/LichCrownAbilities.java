@@ -154,13 +154,13 @@ public class LichCrownAbilities {
 
     public static final AbilityData VENDETTA = register(AbilityData.builder("vendetta")
             .stat(StatData.builder("lifetime")
-                    .initialValue(10, 15)
-                    .upgradeModifier(UpgradeOperation.ADD, 4)
-                    .formatValue(MathButCool::percentageAndRoundSingleDigit)
+                    .initialValue(6, 10)
+                    .upgradeModifier(UpgradeOperation.ADD, 30/18d)
+                    .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
             .stat(StatData.builder("multiplier")
-                    .initialValue(0.5, 1)
-                    .upgradeModifier(UpgradeOperation.ADD, 0.1)
+                    .initialValue(0.25, 0.5)
+                    .upgradeModifier(UpgradeOperation.ADD, 1.5/18d)
                     .formatValue(MathButCool::percentage)
                     .build())
             .build(), ItemRegistry.VENGEFUL_GEM);
@@ -326,19 +326,13 @@ public class LichCrownAbilities {
             return;
         }
 
-        entities.forEach(uuid -> {
-            Entity target = serverLevel.getEntity(uuid);
-            if (target == null || !target.isAlive()) {
-                return;
-            }
-
-            serverLevel.sendParticles(ParticleUtils.constructSimpleSpark(Color.GREEN, 0.25f, 10, 0.8f),
-                    target.getX(),
-                    target.getY() + target.getBbHeight() + 0.15f,
-                    target.getZ(),
-                    1, 0, 0, 0, 0
-            );
-        });
+//        entities.forEach(uuid -> {
+//            Entity target = serverLevel.getEntity(uuid);
+//            if (target == null || !target.isAlive()) {
+//                return;
+//            }
+//
+//        });
 
         int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
 
@@ -354,9 +348,9 @@ public class LichCrownAbilities {
         if (newTarget != null) {
             uuids = List.of(newTarget.getUUID());
         }
-        if (!stack.getOrDefault(DataComponentRegistry.ENTITIES, List.of()).equals(uuids) || stack.getOrDefault(DataComponentRegistry.MULTIPLIER, 0f).floatValue() != 0) {
-            entity.level().playSound(null, entity, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.8f, 1.5f);
-        }
+//        if (!stack.getOrDefault(DataComponentRegistry.ENTITIES, List.of()).equals(uuids) || stack.getOrDefault(DataComponentRegistry.MULTIPLIER, 0f).floatValue() != 0) {
+//            entity.level().playSound(null, entity, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.8f, 1.5f);
+//        }
 
         stack.set(DataComponentRegistry.ENTITIES, uuids);
         stack.set(DataComponentRegistry.MULTIPLIER, 0f);
@@ -417,10 +411,11 @@ public class LichCrownAbilities {
                     || e.getEntity().getRandom().nextFloat() > relic.getStatValue(stack, "mirror_leech", "chance")
             ) return;
 
-            if (e.getSource().getEntity() instanceof LivingEntity source) {
-                source.hurt(e.getSource(), e.getOriginalDamage());
+            if (!(e.getSource().getEntity() instanceof LivingEntity source)) {
+                return;
             }
 
+            source.hurt(e.getSource(), e.getOriginalDamage());
             e.getEntity().heal(e.getNewDamage());
             relic.spreadRelicExperience(e.getEntity(), stack, Mth.floor(e.getNewDamage()));
             e.getEntity().level().playSound(null, e.getEntity(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.NEUTRAL, 1f, 2f);

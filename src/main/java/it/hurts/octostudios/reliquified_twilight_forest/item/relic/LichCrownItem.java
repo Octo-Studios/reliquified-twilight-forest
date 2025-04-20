@@ -12,6 +12,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
+import it.hurts.sskirillss.relics.init.EffectRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -35,6 +36,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -62,6 +64,7 @@ import twilightforest.data.tags.EntityTagGenerator;
 import twilightforest.entity.monster.LoyalZombie;
 import twilightforest.init.TFDamageTypes;
 import twilightforest.init.TFDataAttachments;
+import twilightforest.init.TFDimension;
 import twilightforest.loot.TFLootTables;
 import twilightforest.util.entities.EntityUtil;
 
@@ -100,6 +103,9 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                         .ability(LichCrownAbilities.VENDETTA)
                         .ability(LichCrownAbilities.MIRROR_LEECH)
                         .ability(LichCrownAbilities.FRENZY)
+                        .ability(AbilityData.builder("twilight_sovereign")
+                                .maxLevel(0)
+                                .build())
                         .build())
                 .leveling(LevelingData.builder()
                         .initialCost(250)
@@ -113,7 +119,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                                 .source(getSource(LichCrownAbilities.FROSTBITE, GemColor.CYAN))
                                 .source(getSource(LichCrownAbilities.BIOME_BURN, GemColor.RED))
                                 .source(getSource(LichCrownAbilities.ETHEREAL_GUARD, GemColor.PURPLE))
-                                .source(getSource(LichCrownAbilities.VENDETTA, GemColor.GREEN))
+                                .source(getSource(LichCrownAbilities.VENDETTA, GemColor.YELLOW))
                                 .source(getSource(LichCrownAbilities.MIRROR_LEECH, GemColor.RED))
                                 .source(getSource(LichCrownAbilities.FRENZY, GemColor.ORANGE))
                                 .build())
@@ -140,6 +146,10 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
         if (relic.isAbilityUnlocked(stack, "lifedrain")) LichCrownAbilities.lifedrainTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "fortification")) LichCrownAbilities.fortificationTick(livingEntity, stack);
         if (relic.isAbilityUnlocked(stack, "frenzy")) LichCrownAbilities.frenzyTick(livingEntity, stack, this);
+
+        if (relic.isAbilityUnlocked(stack, "twilight_sovereign") && livingEntity.level().dimension().equals(TFDimension.DIMENSION_KEY)) {
+            livingEntity.addEffect(new MobEffectInstance(EffectRegistry.IMMORTALITY, 45, 0, true, false, false));
+        }
     }
 
     @Override
@@ -288,6 +298,16 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
             return this.getAbilityLevel(stack, ability) > 0;
         }
 
+        if (!ability.equals("twilight_sovereign")) {
+            return super.isAbilityEnabled(stack, ability);
+        }
+
+        for (String key : LichCrownAbilities.ABILITIES.keySet()) {
+            if (this.getAbilityLevel(stack, key) <= 0) {
+                return false;
+            }
+        }
+
         return super.isAbilityEnabled(stack, ability);
     }
 
@@ -311,10 +331,17 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
 
     @Override
     public boolean isRelicFlawless(ItemStack stack) {
-        return (this.isAbilityFlawless(stack, "soulbound_gems")
-                && this.isAbilityMaxLevel(stack, "soulbound_gems")
-                && this.getContents(stack).size() >= this.getMaxSlots(stack)
-        );
+        for (String key : LichCrownAbilities.ABILITIES.keySet()) {
+            if (!this.isAbilityFlawless(stack, key)) {
+                return false;
+            }
+        }
+
+        if (!this.isAbilityUnlocked(stack, "twilight_sovereign") || !this.isAbilityFlawless(stack, "twilight_sovereign")) {
+            return false;
+        }
+
+        return this.isAbilityFlawless(stack, "soulbound_gems") && this.isAbilityMaxLevel(stack, "soulbound_gems");
     }
 
     public static void makeRedMagicTrail(Level level, LivingEntity source, Vec3 target) {

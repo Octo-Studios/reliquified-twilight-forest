@@ -6,7 +6,9 @@
     "reliquified_twilight_forest:scaled_cloak",
     "reliquified_twilight_forest:minotaur_hoof",
     "reliquified_twilight_forest:frost_gem",
-    "reliquified_twilight_forest:chromatic_cloak"
+    "reliquified_twilight_forest:chromatic_cloak",
+    "reliquified_twilight_forest:ur_ghast",
+    "reliquified_twilight_forest:knight_phantom"
   ],
   "replace": false
 }

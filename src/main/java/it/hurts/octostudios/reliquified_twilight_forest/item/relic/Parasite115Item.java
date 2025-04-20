@@ -2,25 +2,31 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.api.ExtraDataDamageSource;
+import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DamageTypeRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.network.ParasiteEvolveParticlePacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilitiesData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.LevelingData;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.network.packets.PacketItemActivation;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,6 +39,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import sun.misc.Unsafe;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
@@ -53,11 +60,38 @@ public class Parasite115Item extends RelicItem {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
-                        .ability(Parasite115Item.getInfectiousBloom(1, 5))
+                        .ability(AbilityData.builder("infectious_bloom")
+                                .stat(StatData.builder("chance")
+                                        .initialValue(0.075, 0.125)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.36)
+                                        .formatValue(MathButCool::percentageAndRoundSingleDigit)
+                                        .build())
+                                .stat(StatData.builder("max_attacks")
+                                        .initialValue(1, 3)
+                                        .upgradeModifier(UpgradeOperation.ADD, 0.5)
+                                        .formatValue(Math::round)
+                                        .build())
+                                .stat(StatData.builder("damage")
+                                        .initialValue(0.5, 1)
+                                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.5)
+                                        .formatValue(MathButCool::roundSingleDigit)
+                                        .build())
+                                .stat(StatData.builder("drops")
+                                        .initialValue(1, 3)
+                                        .upgradeModifier(UpgradeOperation.ADD, 1)
+                                        .formatValue(Math::round)
+                                        .build())
+                                .maxLevel(5)
+                                .build())
                         .build())
                 .leveling(LevelingData.builder()
-                        .maxLevel(5)
+                .sources(LevelingSourcesData.builder()
+                        .source(LevelingSourceData.abilityBuilder("infectious_bloom")
+                                .gem(GemShape.SQUARE, GemColor.RED)
+                                .build())
                         .build())
+                .maxLevel(5)
+                .build())
                 .style(StyleData.builder()
                         .beams((player, stack) -> {
                             float ticks = player.tickCount + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
@@ -72,6 +106,9 @@ public class Parasite115Item extends RelicItem {
                                     .endColor(new Color(r, g, b, 0).getRGB())
                                     .build();
                         })
+                        .build())
+                .loot(LootData.builder()
+                        .entry(LootEntries.DARK_TOWER)
                         .build())
                 .build();
     }
@@ -229,8 +266,10 @@ public class Parasite115Item extends RelicItem {
         ItemStack evolvedParasite = ItemRegistry.PARASITE_116.get().getDefaultInstance();
         Parasite116Item relic = (Parasite116Item) evolvedParasite.getItem();
 
-        relic.setDataComponent(evolvedParasite, this.getDataComponent(stack));
+        //relic.setDataComponent(evolvedParasite, this.getDataComponent(stack));
 
+        relic.setAbilityComponent(evolvedParasite, "infectious_bloom", this.getAbilityComponent(stack, "infectious_bloom"));
+        relic.setLevelingComponent(evolvedParasite, this.getLevelingComponent(stack));
         for (var ability : this.getAbilitiesData().getAbilities().values()) {
             var abilityID = ability.getId();
 
@@ -245,6 +284,12 @@ public class Parasite115Item extends RelicItem {
         }
 
         CuriosApi.getCuriosInventory(entity).get().setEquippedCurio(identifier, index, evolvedParasite);
+        entity.level().playSound(null, entity, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1f, 0.5f);
+        entity.level().playSound(null, entity, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1f, 1.5f);
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new ParasiteEvolveParticlePacket(entity.getId()));
+        if (entity instanceof ServerPlayer player) {
+            PacketDistributor.sendToPlayer(player, new PacketItemActivation(evolvedParasite));
+        }
     }
 
     public boolean isEvolved() {
@@ -256,42 +301,23 @@ public class Parasite115Item extends RelicItem {
         return ReliquifiedTwilightForest.MOD_ID;
     }
 
-    public static AbilityData getInfectiousBloom(float baseStatMultiplier, int maxLevel) {
-        return AbilityData.builder("infectious_bloom")
-                .stat(StatData.builder("chance")
-                        .initialValue(0.05 * baseStatMultiplier, 0.1 * baseStatMultiplier)
-                        .upgradeModifier(UpgradeOperation.MULTIPLY_BASE, 0.3)
-                        .formatValue(MathButCool::percentageAndRoundSingleDigit)
-                        .build())
-                .stat(StatData.builder("max_attacks")
-                        .initialValue(baseStatMultiplier, 2 + baseStatMultiplier)
-                        .upgradeModifier(UpgradeOperation.ADD, baseStatMultiplier / 3d)
-                        .formatValue(Math::round)
-                        .build())
-                .stat(StatData.builder("damage")
-                        .initialValue(baseStatMultiplier / 2f, 1 + baseStatMultiplier / 2f)
-                        .upgradeModifier(UpgradeOperation.ADD, baseStatMultiplier / 2d)
-                        .formatValue(MathButCool::roundSingleDigit)
-                        .build())
-                .stat(StatData.builder("drops")
-                        .initialValue(baseStatMultiplier, 2 + baseStatMultiplier)
-                        .upgradeModifier(UpgradeOperation.ADD, 1)
-                        .build())
-                .maxLevel(maxLevel)
-                .build();
-    }
-
     @SubscribeEvent
     public static void consumeExperiment115(LivingEntityUseItemEvent.Finish e) {
-        ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.PARASITE_116.get());
-        if (e.getEntity().level().isClientSide
-                || e.getItem().getItem() != TFItems.EXPERIMENT_115.get()
+        if (e.getItem().is(TFItems.EXPERIMENT_115)) {
+            nomnomnom(e.getEntity());
+        }
+    }
+
+    public static void nomnomnom(LivingEntity entity) {
+        ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.PARASITE_116.get());
+        if (entity.level().isClientSide
                 || !(stack.getItem() instanceof Parasite116Item relic)
+                || !relic.isAbilityUnlocked(stack, "rage_consumption")
         ) return;
 
         int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
         time = (int) Mth.clamp(time + relic.getStatValue(stack, "rage_consumption", "amount_restored"), 0, 200);
         stack.set(DataComponentRegistry.TIME, time);
-        relic.spreadRelicExperience(e.getEntity(), stack, 1);
+        relic.spreadRelicExperience(entity, stack, 1);
     }
 }

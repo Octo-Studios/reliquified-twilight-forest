@@ -33,14 +33,14 @@ public class HydraHeartItem extends RelicItem {
     public RelicData constructDefaultRelicData() {
         return RelicData.builder()
                 .abilities(AbilitiesData.builder()
-                        .ability(AbilityData.builder("regenerative_heads")
-                                .stat(StatData.builder("head_amount")
-                                        .initialValue(2, 4)
-                                        .formatValue(Math::round)
-                                        .upgradeModifier(UpgradeOperation.ADD, 1)
-                                        .build())
-                                .maxLevel(5)
-                                .build())
+//                        .ability(AbilityData.builder("regenerative_heads")
+//                                .stat(StatData.builder("head_amount")
+//                                        .initialValue(2, 4)
+//                                        .formatValue(Math::round)
+//                                        .upgradeModifier(UpgradeOperation.ADD, 1)
+//                                        .build())
+//                                .maxLevel(5)
+//                                .build())
                         .ability(AbilityData.builder("hydra_fire")
                                 .stat(StatData.builder("chance")
                                         .initialValue(0.15, 0.2)
@@ -87,9 +87,10 @@ public class HydraHeartItem extends RelicItem {
     @Override
     public @Nullable RelicSlotModifier getSlotModifiers(ItemStack stack) {
         if (!(stack.getItem() instanceof HydraHeartItem relic)) return super.getSlotModifiers(stack);
-        return RelicSlotModifier.builder()
-                .modifier("head", (int) Math.round(relic.getStatValue(stack, "regenerative_heads", "head_amount")))
-                .build();
+//        return RelicSlotModifier.builder()
+//                .modifier("head", (int) Math.round(relic.getStatValue(stack, "regenerative_heads", "head_amount")))
+//                .build();
+        return super.getSlotModifiers(stack);
     }
 
     @Override

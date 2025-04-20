@@ -14,7 +14,7 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 public abstract class BundleLikeRelicItem extends BundleLikeItem implements ICurioItem, IRelicItem, ICreativeTabContent {
     @Override
-    public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+    public boolean canEquip(SlotContext slotContext, ItemStack stack) {
         return true;
     }
 

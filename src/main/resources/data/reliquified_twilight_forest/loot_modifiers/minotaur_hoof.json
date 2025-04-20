@@ -7,6 +7,7 @@
     }
   ],
   "item_modifiers": {
-    "reliquified_twilight_forest:minotaur_hoof": 0.33
+    "reliquified_twilight_forest:minotaur_hoof": 0.33,
+    "reliquified_twilight_forest:frenzy_gem": 0.33
   }
 }
