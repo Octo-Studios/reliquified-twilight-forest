@@ -167,13 +167,13 @@ public class LichCrownAbilities {
 
     public static final AbilityData ETHEREAL_GUARD = register(AbilityData.builder("ethereal_guard")
             .stat(StatData.builder("max_projectiles")
-                    .initialValue(1, 2)
-                    .upgradeModifier(UpgradeOperation.ADD, 1)
+                    .initialValue(3, 6)
+                    .upgradeModifier(UpgradeOperation.ADD, 28/18d)
                     .formatValue(Math::round)
                     .build())
             .stat(StatData.builder("cooldown")
-                    .initialValue(200, 160)
-                    .upgradeModifier(UpgradeOperation.ADD, 120 / 18d)
+                    .initialValue(300, 200)
+                    .upgradeModifier(UpgradeOperation.ADD, -100 / 18d)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                     .build())
             .build(), ItemRegistry.ETHER_GEM);
@@ -527,6 +527,7 @@ public class LichCrownAbilities {
             float multiplier = (float) relic.getStatValue(stack, "vendetta", "multiplier");
             e.setNewDamage(e.getNewDamage() * (multiplier + 1));
             relic.spreadRelicExperience(source, stack, 1);
+            e.getEntity().getPersistentData().remove(VENDETTA_ID);
         }
 
         @SubscribeEvent

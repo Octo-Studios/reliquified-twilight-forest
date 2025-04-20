@@ -119,6 +119,7 @@ public class Parasite115Item extends RelicItem {
                 || e.getSource().is(DamageTypeRegistry.INFECTIOUS_BLOOM)
                 || !(e.getSource().getEntity() instanceof LivingEntity livingEntity)
                 || e.getEntity() == livingEntity
+                || e.getNewDamage() < 1
         ) return;
 
         Optional<ICuriosItemHandler> inventory = CuriosApi.getCuriosInventory(livingEntity);
