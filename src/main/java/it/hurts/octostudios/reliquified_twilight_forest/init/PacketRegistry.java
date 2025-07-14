@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public class PacketRegistry {
     @SubscribeEvent
     public static void setupPackets(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar(ReliquifiedTwilightForest.MOD_ID).versioned("1.0.0").optional();
+        PayloadRegistrar registrar = event.registrar(ReliquifiedTwilightForest.MOD_ID).versioned("1.0.0");
         registrar.playToClient(UpdateChunkPacket.TYPE, UpdateChunkPacket.STREAM_CODEC, UpdateChunkPacket::handle);
         registrar.playToClient(ExecutionEffectPacket.TYPE, ExecutionEffectPacket.STREAM_CODEC, ExecutionEffectPacket::handle);
         registrar.playToClient(EntityStopRidingPacket.TYPE, EntityStopRidingPacket.STREAM_CODEC, EntityStopRidingPacket::handle);
