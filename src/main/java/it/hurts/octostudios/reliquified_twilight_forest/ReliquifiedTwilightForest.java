@@ -12,6 +12,7 @@ public class ReliquifiedTwilightForest {
     public ReliquifiedTwilightForest(IEventBus bus) {
         bus.addListener(this::setupCommon);
 
+        ConfigRegistry.register();
         ItemRegistry.register(bus);
         EffectRegistry.register(bus);
         EntityRegistry.register(bus);

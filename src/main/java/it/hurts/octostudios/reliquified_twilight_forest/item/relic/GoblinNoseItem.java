@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
+import it.hurts.octostudios.reliquified_twilight_forest.init.ConfigRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.api.OreCache;
@@ -17,9 +18,11 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -28,6 +31,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -111,6 +115,17 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+
+        if (!ConfigRegistry.GENERAL.isEnabledOreScanner()) {
+            tooltipComponents.add(Component.literal(" "));
+
+            tooltipComponents.add(Component.literal("Temporarily disabled due to a technical issue!").withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.DARK_RED));
+        }
+    }
+
+    @Override
     public int getMaxSlots(ItemStack stack) {
         if (!(stack.getItem() instanceof GoblinNoseItem relic)) {
             return 0;
@@ -125,16 +140,20 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
         public static void onChunkLoad(ChunkEvent.Load event) {
             if (!event.getLevel().isClientSide()) return;
 
-            ChunkAccess chunk = event.getChunk();
-            OreCache.scanChunkAsync(event.getLevel(), chunk);
+            if (ConfigRegistry.GENERAL.isEnabledOreScanner()) {
+                ChunkAccess chunk = event.getChunk();
+                OreCache.scanChunkAsync(event.getLevel(), chunk);
+            }
         }
 
         @SubscribeEvent
         public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
             if (event.getLevel().isClientSide()) return;
 
-            ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
-            PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+            if (ConfigRegistry.GENERAL.isEnabledOreScanner()) {
+                ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
+                PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+            }
         }
 
         @SubscribeEvent
@@ -142,8 +161,10 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
             ItemStack stack = EntityUtils.findEquippedCurio(event.getPlayer(), ItemRegistry.GOBLIN_NOSE.get());
             if (event.getLevel().isClientSide()) return;
 
-            ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
-            PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+            if (ConfigRegistry.GENERAL.isEnabledOreScanner()) {
+                ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
+                PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+            }
 
             if (stack.getItem() instanceof GoblinNoseItem relic
                     && relic.isAbilityTicking(stack, "vein_seeker")
@@ -157,8 +178,10 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
                 return;
             }
 
-            ChunkAccess chunk = event.getChunk();
-            OreCache.removeChunk(chunk.getPos());
+            if (ConfigRegistry.GENERAL.isEnabledOreScanner()) {
+                ChunkAccess chunk = event.getChunk();
+                OreCache.removeChunk(chunk.getPos());
+            }
         }
     }
 
