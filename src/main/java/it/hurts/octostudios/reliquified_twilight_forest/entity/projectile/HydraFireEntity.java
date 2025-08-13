@@ -1,7 +1,8 @@
 package it.hurts.octostudios.reliquified_twilight_forest.entity.projectile;
 
-import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
-import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
+import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
+import it.hurts.octostudios.octolib.module.particle.trail.EntityTrailProvider;
+import it.hurts.octostudios.octolib.module.particle.trail.TrailProvider;
 import it.hurts.octostudios.reliquified_twilight_forest.entity.HydraFirePuddleEntity;
 import it.hurts.octostudios.reliquified_twilight_forest.init.EntityRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.HydraHeartItem;
@@ -32,13 +33,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 import java.util.Vector;
 
-public class HydraFireEntity extends ThrowableProjectile implements TrailProvider {
+public class HydraFireEntity extends ThrowableProjectile {
     private static final EntityDataAccessor<ItemStack> RELIC_STACK = SynchedEntityData.defineId(HydraFireEntity.class, EntityDataSerializers.ITEM_STACK);
     @Getter
     @Setter
@@ -106,13 +109,6 @@ public class HydraFireEntity extends ThrowableProjectile implements TrailProvide
     }
 
     @Override
-    public void onAddedToLevel() {
-        super.onAddedToLevel();
-
-        OctoRenderManager.registerProvider(this);
-    }
-
-    @Override
     public void onRemovedFromLevel() {
         super.onRemovedFromLevel();
 
@@ -176,43 +172,50 @@ public class HydraFireEntity extends ThrowableProjectile implements TrailProvide
         return false;
     }
 
-    @Override
-    public Vec3 getTrailPosition(float partialTicks) {
-        return getPosition(partialTicks);
-    }
+    @OnlyIn(Dist.CLIENT)
+    public static class TrailProvider extends EntityTrailProvider<HydraFireEntity> {
+        public TrailProvider(HydraFireEntity entity) {
+            super(entity);
+        }
 
-    @Override
-    public int getTrailUpdateFrequency() {
-        return 1;
-    }
+        @Override
+        public Vec3 getTrailPosition(float partialTicks) {
+            return entity.getPosition(partialTicks);
+        }
 
-    @Override
-    public boolean isTrailAlive() {
-        return isAlive();
-    }
+        @Override
+        public int getTrailUpdateFrequency() {
+            return 1;
+        }
 
-    @Override
-    public boolean isTrailGrowing() {
-        return tickCount > 1;
-    }
+        @Override
+        public boolean isTrailAlive() {
+            return entity.isAlive();
+        }
 
-    @Override
-    public int getTrailMaxLength() {
-        return 3;
-    }
+        @Override
+        public boolean isTrailGrowing() {
+            return entity.tickCount > 1;
+        }
 
-    @Override
-    public int getTrailFadeInColor() {
-        return 0xFFFF7700;
-    }
+        @Override
+        public int getTrailMaxLength() {
+            return 3;
+        }
 
-    @Override
-    public int getTrailFadeOutColor() {
-        return 0x00FF0000;
-    }
+        @Override
+        public int getTrailFadeInColor() {
+            return 0xFFFF7700;
+        }
 
-    @Override
-    public double getTrailScale() {
-        return 0.075F;
+        @Override
+        public int getTrailFadeOutColor() {
+            return 0x00FF0000;
+        }
+
+        @Override
+        public double getTrailScale() {
+            return 0.075F;
+        }
     }
 }
