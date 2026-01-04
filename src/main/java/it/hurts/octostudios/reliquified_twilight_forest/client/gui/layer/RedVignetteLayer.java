@@ -43,6 +43,8 @@ public class RedVignetteLayer implements LayeredDraw.Layer {
         float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         poseStack.pushPose();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 
@@ -54,7 +56,9 @@ public class RedVignetteLayer implements LayeredDraw.Layer {
                 .alpha(percentage*0.75f)
                 .end();
 
+        RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
         poseStack.popPose();
     }
 }
