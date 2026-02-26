@@ -96,14 +96,12 @@ public class FireflyQueenItem extends RelicItem {
 
         if (charge > 0
                 && entity.onGround()
+                && !entity.isInLiquid()
                 && (!level.isDay() || level.getBrightness(LightLayer.SKY, pos) == 0)
                 && level.getBrightness(LightLayer.BLOCK, pos) == 0
                 && state.canSurvive(level, pos)
                 && posState.canBeReplaced()
         ) {
-            if (posState.is(Blocks.WATER)) {
-                state = state.setValue(BlockStateProperties.WATERLOGGED, true);
-            }
             level.setBlock(pos, state, 0b00000011);
             relic.spreadRelicExperience(entity, stack, 1);
             charge--;
