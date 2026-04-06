@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "it.hurts.octostudios.reliquified_twilight_forest.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "reliquified_twilight_forest.refmap.json",
   "mixins": [
     "ChainBlockMixin",
