@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
+import it.hurts.octostudios.reliquified_twilight_forest.init.PacketHandler;
 import it.hurts.octostudios.reliquified_twilight_forest.network.CastRideAlongAbilityPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.network.EntityStopRidingPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
@@ -38,19 +39,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityMountEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.EntityMountEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import java.util.List;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
     public static final String ON_ANTLERS = "reliquified_twilight_forest:on_antlers";
 
@@ -115,12 +116,12 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
         boolean isMounting = player.getPassengers().isEmpty();
         int passengerId = -1;
 
-        if (getEntityLookingAt(player, player.entityInteractionRange()) instanceof EntityHitResult result
+        if (getEntityLookingAt(player, player.getEntityReach()) instanceof EntityHitResult result
                 && result.getEntity() instanceof LivingEntity passenger
                 && getBoundingBoxVolume(passenger.getBoundingBox()) <= this.getStatValue(stack, ability, "entity_volume")
         ) passengerId = passenger.getId();
 
-        PacketDistributor.sendToServer(new CastRideAlongAbilityPacket(passengerId, isMounting));
+        PacketHandler.CHANNEL.sendToServer(new CastRideAlongAbilityPacket(passengerId, isMounting));
     }
 
     public static EntityHitResult getEntityLookingAt(Player player, double maxDistance) {
@@ -148,7 +149,7 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
         if (slotContext.entity().hasPassenger(e -> e.getPersistentData().getBoolean(ON_ANTLERS))) {
             Entity passenger = slotContext.entity().getFirstPassenger();
             passenger.stopRiding();
-            PacketDistributor.sendToPlayersTrackingEntityAndSelf(passenger, new EntityStopRidingPacket(passenger.getId()));
+            PacketHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> passenger), new EntityStopRidingPacket(passenger.getId()));
         }
     }
 
@@ -156,13 +157,13 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
     public static void riding(EntityMountEvent e) {
         if (!e.getLevel().isClientSide && e.isDismounting()) {
             e.getEntityMounting().getPersistentData().remove(ON_ANTLERS);
-            PacketDistributor.sendToPlayersTrackingEntityAndSelf(e.getEntityMounting(), new EntityStopRidingPacket(e.getEntityMounting().getId()));
+            PacketHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> e.getEntityMounting()), new EntityStopRidingPacket(e.getEntityMounting().getId()));
         }
     }
 
 
     @SubscribeEvent
-    public static void livingDamage(LivingIncomingDamageEvent e) {
+    public static void livingDamage(LivingHurtEvent e) {
         Entity entity = e.getSource().getEntity();
         if (entity != null
                 && entity.isPassenger()

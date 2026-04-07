@@ -4,6 +4,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightFores
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DamageTypeRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.PacketHandler;
 import it.hurts.octostudios.reliquified_twilight_forest.network.ExecutionEffectPacket;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -23,10 +24,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.network.PacketDistributor;
 import twilightforest.entity.passive.TinyBird;
 import twilightforest.entity.passive.TinyBirdVariant;
 import twilightforest.init.TFEntities;
@@ -36,7 +37,7 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class TwilightFeatherItem extends RelicItem {
     public static final Map<ResourceKey<TinyBirdVariant>, Color> VARIANTS = Map.of(
             TinyBirdVariants.RED, new Color(231, 70, 70, 255),
@@ -80,7 +81,7 @@ public class TwilightFeatherItem extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void onDamage(LivingDamageEvent.Pre e) {
+    public static void onDamage(LivingHurtEvent e) {
         LivingEntity victim = e.getEntity();
         Entity entity = e.getSource().getEntity();
 
@@ -98,7 +99,7 @@ public class TwilightFeatherItem extends RelicItem {
             ) continue;
 
             if (hasPerformedExecution(source, victim)) {
-                e.setNewDamage(0);
+                e.setAmount(0);
                 relic.spreadRelicExperience(source, stack, 1);
                 break;
             }
@@ -106,7 +107,7 @@ public class TwilightFeatherItem extends RelicItem {
     }
 
     public static boolean hasPerformedExecution(LivingEntity source, LivingEntity victim) {
-        if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), 99999)) {
+        if (!victim.hurt(new DamageSource(victim.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), 99999)) {
             return false;
         };
         victim.deathTime = 19;
@@ -122,7 +123,7 @@ public class TwilightFeatherItem extends RelicItem {
         birb.setDeltaMovement(victim.getDeltaMovement());
         victim.level().addFreshEntity(birb);
         victim.level().playSound(null, birb, SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1f, 0.8f);
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(victim, new ExecutionEffectPacket(victim.getId(), color));
+        PacketHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> victim), new ExecutionEffectPacket(victim.getId(), color));
         return true;
     }
 

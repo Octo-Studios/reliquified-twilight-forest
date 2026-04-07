@@ -1,8 +1,8 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.ChromaticCloakTooltip;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.NBTHelper;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -13,8 +13,6 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -76,7 +74,7 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
                         .build())
                 .style(StyleData.builder()
                         .beams((player, stack) -> {
-                            float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+                            float partialTick = Minecraft.getInstance().getPartialTick();
                             Color color = Color.getHSBColor((player.tickCount+partialTick)/60f, .75f, 1f);
 
                             return BeamsData.builder()
@@ -91,9 +89,8 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
 
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-        return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)
-                ? Optional.ofNullable(stack.get(DataComponentRegistry.BUNDLE_LIKE_CONTENTS)).map(list -> new ChromaticCloakTooltip(list, this.getMaxSlots(stack)))
-                : Optional.empty();
+        List<ItemStack> contents = NBTHelper.getBundleLikeContents(stack);
+        return Optional.of(new ChromaticCloakTooltip(contents, this.getMaxSlots(stack)));
     }
 
     @Override
@@ -104,10 +101,10 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
         ) return;
 
         int maxAmplifier = this.isAbilityUnlocked(stack, "effect_stacking") ? (int) Math.round(this.getStatValue(stack, "effect_stacking", "max_amplifier")) : 1;
-        Map<Holder<MobEffect>, Integer> toApply = new HashMap<>();
+        Map<MobEffect, Integer> toApply = new HashMap<>();
 
         List<ItemStack> contents = this.getContents(stack).stream().map(itemStack -> {
-            Holder<MobEffect> effect = ItemRegistry.CHROMATIC_EFFECTS.get(itemStack.getItem());
+            MobEffect effect = ItemRegistry.CHROMATIC_EFFECTS.get(itemStack.getItem());
             int durationOffset = ChromaticCloakItem.getEffectDurationOffset(effect);
 
             if (effect == null
@@ -131,7 +128,7 @@ public class ChromaticCloakItem extends BundleLikeRelicItem {
         this.setContents(player, stack, contents);
     }
 
-    private static int getEffectDurationOffset(Holder<MobEffect> effect) {
+    private static int getEffectDurationOffset(MobEffect effect) {
         if (effect == MobEffects.NIGHT_VISION) {
             return 210;
         } else if (effect == MobEffects.HEALTH_BOOST || effect == MobEffects.ABSORPTION) {

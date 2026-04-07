@@ -1,8 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item;
 
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.BundleLikeTooltip;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
-import net.minecraft.core.component.DataComponents;
+import it.hurts.octostudios.reliquified_twilight_forest.init.NBTHelper;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +14,6 @@ import java.util.Optional;
 public abstract class BundleLikeItem extends Item implements BundleLike {
     public BundleLikeItem() {
         super(new Properties()
-                .component(DataComponentRegistry.BUNDLE_LIKE_CONTENTS, List.of())
                 .rarity(Rarity.RARE)
                 .stacksTo(1)
         );
@@ -23,9 +21,8 @@ public abstract class BundleLikeItem extends Item implements BundleLike {
 
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-        return !stack.has(DataComponents.HIDE_TOOLTIP) && !stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP)
-                ? Optional.ofNullable(stack.get(DataComponentRegistry.BUNDLE_LIKE_CONTENTS)).map(list -> new BundleLikeTooltip(list, this.getMaxSlots(stack)))
-                : Optional.empty();
+        List<ItemStack> contents = NBTHelper.getBundleLikeContents(stack);
+        return Optional.of(new BundleLikeTooltip(contents, this.getMaxSlots(stack)));
     }
 
     @Override

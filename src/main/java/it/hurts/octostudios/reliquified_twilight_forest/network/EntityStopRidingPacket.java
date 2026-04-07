@@ -1,46 +1,38 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
-import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
-public record EntityStopRidingPacket(int entityID) implements CustomPacketPayload {
-    public static final Type<EntityStopRidingPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "entity_stop_riding"));
+import java.util.function.Supplier;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, EntityStopRidingPacket> STREAM_CODEC = CustomPacketPayload.codec(
-            EntityStopRidingPacket::write, EntityStopRidingPacket::new
-    );
+public class EntityStopRidingPacket {
+    private final int entityID;
 
-    public EntityStopRidingPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt());
+    public EntityStopRidingPacket(int entityID) {
+        this.entityID = entityID;
     }
 
-    public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeInt(entityID);
+    public static void encode(EntityStopRidingPacket packet, FriendlyByteBuf buf) {
+        buf.writeInt(packet.entityID);
     }
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static EntityStopRidingPacket decode(FriendlyByteBuf buf) {
+        return new EntityStopRidingPacket(buf.readInt());
     }
 
-    public static void handle(EntityStopRidingPacket packet, IPayloadContext ctx) {
-        if (ctx.flow().isServerbound()) {
-            return;
+    public static void handle(EntityStopRidingPacket packet, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            ctx.get().enqueueWork(() -> {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.level == null) return;
+                Entity entity = mc.level.getEntity(packet.entityID);
+                if (entity == null) return;
+                entity.stopRiding();
+            });
         }
-        ctx.enqueueWork(() -> {
-
-            Entity entity = ctx.player().level().getEntity(packet.entityID);
-
-            if (entity == null) {
-                return;
-            }
-
-            entity.stopRiding();
-        });
+        ctx.get().setPacketHandled(true);
     }
 }

@@ -7,7 +7,6 @@ import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.util.EntitiesButCool;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicAttributeModifier;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
@@ -15,29 +14,29 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.List;
+import java.util.UUID;
 
 public class GiantGloveItem extends RelicItem {
     @Override
@@ -66,15 +65,6 @@ public class GiantGloveItem extends RelicItem {
     }
 
     @Override
-    public @Nullable RelicAttributeModifier getRelicAttributeModifiers(ItemStack stack) {
-        float multiplier = (float) this.getStatValue(stack, "oversized_grip", "multiplier");
-        return RelicAttributeModifier.builder()
-                .attribute(new RelicAttributeModifier.Modifier(Attributes.BLOCK_INTERACTION_RANGE, 2.5F*(1+multiplier), AttributeModifier.Operation.ADD_VALUE))
-                .attribute(new RelicAttributeModifier.Modifier(Attributes.ENTITY_INTERACTION_RANGE, 2.5F*(1+multiplier), AttributeModifier.Operation.ADD_VALUE))
-                .build();
-    }
-
-    @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         super.onUnequip(slotContext, newStack, stack);
         if (newStack.getItem() != stack.getItem()) {
@@ -87,10 +77,10 @@ public class GiantGloveItem extends RelicItem {
         return ReliquifiedTwilightForest.MOD_ID;
     }
 
-    @EventBusSubscriber
+    @Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
     public static class CommonEvents {
         @SubscribeEvent
-        public static void entityHit(LivingDamageEvent.Post e) {
+        public static void entityHit(LivingDamageEvent e) {
             ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getDirectEntity(), ItemRegistry.GIANT_GLOVE.get());
             if (e.getEntity().level().isClientSide
                     || !(stack.getItem() instanceof GiantGloveItem relic)
@@ -114,10 +104,11 @@ public class GiantGloveItem extends RelicItem {
         }
 
         @SubscribeEvent
-        public static void playerTick(EntityTickEvent.Post e) {
-            if (!(e.getEntity() instanceof Player living)
-                    || living.level().isClientSide
-            ) return;
+        public static void playerTick(TickEvent.PlayerTickEvent e) {
+            if (e.phase != TickEvent.Phase.END) return;
+            Player living = e.player;
+            if (living.level().isClientSide) return;
+
             List<SlotResult> slots = EntitiesButCool.findEquippedSlots(living, ItemRegistry.GIANT_GLOVE.get());
 
             slots.forEach(slotResult -> {
@@ -126,29 +117,33 @@ public class GiantGloveItem extends RelicItem {
                     return;
                 }
 
-                ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "giant_glove_"+slotResult.slotContext().identifier());
+                ResourceLocation rl = new ResourceLocation(ReliquifiedTwilightForest.MOD_ID, "giant_glove_"+slotResult.slotContext().identifier());
 
                 removeAttributes(slotResult.slotContext());
 
                 float multiplier = (float) relic.getStatValue(stack, "oversized_grip", "multiplier");
-                living.getMainHandItem().getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attributeHolder, attributeModifier) -> {
-                    if (!(living.getAttribute(attributeHolder) instanceof AttributeInstance instance)) {
+                living.getMainHandItem().getAttributeModifiers(EquipmentSlot.MAINHAND).forEach((attribute, attributeModifier) -> {
+                    AttributeInstance instance = living.getAttribute(attribute);
+                    if (instance == null) {
                         return;
                     }
 
+                    UUID modId = UUID.nameUUIDFromBytes(rl.toString().getBytes());
                     if (instance.getBaseValue() < 0) {
                         instance.addOrUpdateTransientModifier(new AttributeModifier(
-                                rl,
+                                modId,
+                                rl.toString(),
                                 Math.abs(instance.getValue() * multiplier),
-                                AttributeModifier.Operation.ADD_VALUE
-                        ));;
+                                AttributeModifier.Operation.ADDITION
+                        ));
                         return;
                     }
 
                     instance.addOrUpdateTransientModifier(new AttributeModifier(
-                            rl,
+                            modId,
+                            rl.toString(),
                             multiplier,
-                            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                            AttributeModifier.Operation.MULTIPLY_TOTAL
                     ));
                 });
             });
@@ -156,18 +151,18 @@ public class GiantGloveItem extends RelicItem {
     }
 
     private static void removeAttributes(SlotContext slotContext) {
-        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "giant_glove_"+slotContext.identifier());
+        ResourceLocation rl = new ResourceLocation(ReliquifiedTwilightForest.MOD_ID, "giant_glove_"+slotContext.identifier());
+        UUID modId = UUID.nameUUIDFromBytes(rl.toString().getBytes());
 
-        BuiltInRegistries.ATTRIBUTE.asHolderIdMap().iterator().forEachRemaining(holder -> {
-            if (!slotContext.entity().getAttributes().hasAttribute(holder)) {
-                return;
+        for (Attribute attribute : ForgeRegistries.ATTRIBUTES) {
+            if (!slotContext.entity().getAttributes().hasAttribute(attribute)) {
+                continue;
             }
-
-            slotContext.entity().getAttributes().getInstance(holder).removeModifier(rl);
-        });
+            slotContext.entity().getAttributes().getInstance(attribute).removeModifier(modId);
+        }
     }
 
-    @EventBusSubscriber(Dist.CLIENT)
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ReliquifiedTwilightForest.MOD_ID)
     public static class ClientEvents {
         @SubscribeEvent
         public static void renderItem(RenderItemInHandEvent e) {

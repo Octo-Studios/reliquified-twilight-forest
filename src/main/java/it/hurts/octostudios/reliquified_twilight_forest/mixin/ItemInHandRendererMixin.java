@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -20,10 +20,10 @@ public class ItemInHandRendererMixin {
     private void redirected(ItemRenderer instance, LivingEntity entity, ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack,
                             MultiBufferSource bufferSource, Level level, int packedLight, int packedOverlay, int seed
     ) {
-        RenderItemInHandEvent event = NeoForge.EVENT_BUS.post(new RenderItemInHandEvent(
+        RenderItemInHandEvent event = new RenderItemInHandEvent(
                 instance, entity, itemStack, displayContext, leftHand, poseStack, bufferSource,
-                packedLight, packedOverlay)
-        );
+                packedLight, packedOverlay);
+        MinecraftForge.EVENT_BUS.post(event);
 
         if (event.isCanceled()) {
             return;

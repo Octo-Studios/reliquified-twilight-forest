@@ -8,7 +8,7 @@ import net.minecraft.world.damagesource.DamageType;
 
 public class DamageTypeRegistry {
     public static final ResourceKey<DamageType> EXECUTION =
-            ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "execution"));
+            ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ReliquifiedTwilightForest.MOD_ID, "execution"));
     public static final ResourceKey<DamageType> INFECTIOUS_BLOOM =
-            ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "infectious_bloom"));
+            ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ReliquifiedTwilightForest.MOD_ID, "infectious_bloom"));
 }

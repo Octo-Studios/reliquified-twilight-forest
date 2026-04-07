@@ -6,6 +6,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightFores
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.EffectRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.PacketHandler;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -28,21 +29,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.TwilightForestMod;
 import twilightforest.client.model.entity.CicadaModel;
 import twilightforest.network.CreateMovingCicadaSoundPacket;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class CicadaBottleItem extends RelicItem {
     @Override
     public RelicData constructDefaultRelicData() {
@@ -88,7 +89,7 @@ public class CicadaBottleItem extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void onEntityHit(LivingDamageEvent.Post e) {
+    public static void onEntityHit(LivingDamageEvent e) {
         Entity user = e.getSource().getEntity();
         LivingEntity target = e.getEntity();
         if (target.level().isClientSide
@@ -115,7 +116,7 @@ public class CicadaBottleItem extends RelicItem {
                 && e.getEffectInstance().getEffect() == e.getOldEffectInstance().getEffect())
         ) return;
 
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(e.getEntity(), new CreateMovingCicadaSoundPacket(e.getEntity().getId()));
+        PacketHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> e.getEntity()), new CreateMovingCicadaSoundPacket(e.getEntity().getId()));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -130,7 +131,7 @@ public class CicadaBottleItem extends RelicItem {
         );
     }
 
-    @EventBusSubscriber(Dist.CLIENT)
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ReliquifiedTwilightForest.MOD_ID)
     public static class ClientEvents {
         private static final ResourceLocation TEXTURE = TwilightForestMod.getModelTexture("cicada-model.png");
 
@@ -143,13 +144,13 @@ public class CicadaBottleItem extends RelicItem {
             float bbWidth = e.getEntity().getBbWidth();
             float bbHeight = e.getEntity().getBbHeight();
             float bbMin = Math.min(bbWidth, bbHeight);
-            float scale = Math.clamp(bbMin/1.5f, 0.25f, 1.5f);
+            float scale = Mth.clamp(bbMin/1.5f, 0.25f, 1.5f);
 
             int max = (int) ((Mth.ceil(bbWidth*1.25f) + 1)/scale);
 
             for (int i = 0; i < max; i++) {
                 CicadaModel model = new CicadaModel(CicadaModel.create().bakeRoot());
-                float time = (e.getEntity().tickCount + e.getPartialTick());
+                float time = (e.getEntity().tickCount + e.getPartialRenderTick());
                 float sine = Mth.sin(time / 4f + i);
                 float cosine = Mth.cos(time / 4f + i);
 

@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/rkswl/reliquified-twilight-forest/src/main/java/it/hurts/octostudios/reliquified_twilight_forest/ -type d -o -type f -name *.java)",
+      "Bash(grep -E \"\\\\.java$|/$\")",
+      "Bash(./gradlew build:*)",
+      "Bash(ls C:/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/gradle*)",
+      "Bash(cmd.exe /c \"gradlew.bat build 2>&1\")",
+      "Bash(ls C:/Users/rkswl/reliquified-twilight-forest/gradlew*)",
+      "Bash(where gradle:*)",
+      "Bash(find src/main/resources/data/reliquified_twilight_forest/loot_modifiers -name \"*.json\" -exec sed -i 's/neoforge:loot_table_id/forge:loot_table_id/g' {} +)",
+      "Bash(gh pr:*)",
+      "Bash(where gh:*)",
+      "Bash(winget list:*)",
+      "Bash(BASE=\"C:/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/src/main/java/it/hurts/octostudios/reliquified_twilight_forest\")",
+      "Bash(__NEW_LINE_782f9590648e4cbe__ for:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/init/**)",
+      "Bash(__NEW_LINE_6b904d969fb94f5f__ for:*)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/network/**)",
+      "Bash(done)",
+      "Bash(__NEW_LINE_acdebe1e574e78f8__ for:*)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/item/**)",
+      "Bash(__NEW_LINE_e1e554a047f432e7__ for:*)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/item/relic/**)",
+      "Bash(__NEW_LINE_75c9b6749b73a2b7__ for:*)",
+      "Bash(for f:*)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/**)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/loot/modifier/**)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/**)",
+      "Bash(javap -p build/_compileJava_2/net/minecraft/world/entity/player/Player.class)",
+      "Bash(javap \"build/_compileJava_2/net/minecraft/world/entity/player/Player.class\")",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/**)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/item/component/**)",
+      "Bash(BASE=\"C:/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/src/main/java/it/hurts/octostudios/reliquified_twilight_forest\" for f in client/event/RenderItemInHandEvent.java entity/HydraFirePuddleEntity.java init/DamageTypeRegistry.java init/DataComponentRegistry.java item/relic/Parasite115Item.java item/relic/TwilightFeatherItem.java mixin/TFItemStackUtilsMixin.java)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/$BASE/mixin/**)",
+      "Bash(head -10 echo \"---\" grep -n \"registryAccess\\\\|holderOrThrow\\\\|setVariant\" \"C:/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/src/main/java/it/hurts/octostudios/reliquified_twilight_forest/item/relic/TwilightFeatherItem.java\")",
+      "Bash(head -5 echo \"---\" grep -n \"net\\\\.neoforged\\\\|DataComponentType\" \"C:/Users/rkswl/reliquified-twilight-forest/.claude/worktrees/pedantic-cray/src/main/java/it/hurts/octostudios/reliquified_twilight_forest/init/DataComponentRegistry.java\")"
+    ]
+  }
+}

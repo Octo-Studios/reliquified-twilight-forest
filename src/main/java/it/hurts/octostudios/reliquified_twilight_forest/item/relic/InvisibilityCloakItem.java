@@ -3,7 +3,6 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.init.EffectRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -14,18 +13,12 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOp
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
-import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import top.theillusivec4.curios.api.SlotContext;
-import twilightforest.init.TFItems;
 
 import java.awt.Color;
 
@@ -75,7 +68,7 @@ public class InvisibilityCloakItem extends RelicItem {
         }
 
         LivingEntity entity = slotContext.entity();
-        int idleTicks = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        int idleTicks = (stack.hasTag() && stack.getTag().contains("time") ? stack.getTag().getInt("time") : 0);
         int maxIdleTicks = this.getMaxIdleTicks(slotContext, stack);
         double lengthSqr = slotContext.entity().getKnownMovement().lengthSqr();
         double movementThreshold = 0.005;
@@ -94,7 +87,7 @@ public class InvisibilityCloakItem extends RelicItem {
             entity.removeEffect(EffectRegistry.VANISHING);
         }
 
-        stack.set(DataComponentRegistry.TIME, idleTicks);
+        stack.getOrCreateTag().putInt("time", idleTicks);
     }
 
     public int getMaxIdleTicks(SlotContext slotContext, ItemStack stack) {

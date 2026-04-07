@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWithPredicate;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.NBTHelper;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.Gem;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
@@ -51,12 +51,12 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 import twilightforest.components.entity.FortificationShieldAttachment;
@@ -76,7 +76,7 @@ import java.util.function.Predicate;
 
 import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCurio {
     public static final Predicate<LivingEntity> HAS_CROWN = target -> !EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
 
@@ -198,8 +198,8 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
     }
 
     @SubscribeEvent
-    public static void onLivingEntityTick(EntityTickEvent.Post e) {
-        Entity entity = e.getEntity();
+    public static void onLivingEntityTick(LivingEvent.LivingUpdateEvent e) {
+        LivingEntity entity = e.getEntity();
         if (entity.level().isClientSide
                 || entity.tickCount % 10 != 0
                 || !(entity instanceof AbstractSkeleton skeleton)
@@ -230,7 +230,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
         int maxZombies = necromancy < 1 ? 0 : (int) Math.round(this.getStatValue(stack, "zombie", "max_zombies"));
 
         FortificationShieldAttachment attachment = player.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
-        ArrayList<UUID> zombies = Lists.newArrayList(stack.getOrDefault(DataComponentRegistry.ZOMBIES, List.of()));
+        ArrayList<UUID> zombies = Lists.newArrayList(NBTHelper.getZombies(stack));
 
         if (shielding < oldShielding && attachment.permanentShieldsLeft() > maxShields) {
             attachment.setShields(player, maxShields, false);
@@ -247,7 +247,7 @@ public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCur
                 }
             });
             toClear.clear();
-            stack.set(DataComponentRegistry.ZOMBIES, zombies);
+            NBTHelper.setZombies(stack, zombies);
         }
     }
 

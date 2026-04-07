@@ -83,7 +83,7 @@ public class HydraFirePuddleEntity extends Entity implements TraceableEntity {
         this.refreshDimensions();
 
         if (level().isClientSide) {
-            float time = tickCount % 40 + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+            float time = tickCount % 40 + Minecraft.getInstance().getPartialTick();
 
             for (int i = 0; i < 360; i += 20) {
                 Vec3 direction = new Vec3(1, 0, 0).yRot((float) Math.toRadians(i + time * 2));
@@ -133,8 +133,9 @@ public class HydraFirePuddleEntity extends Entity implements TraceableEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DAMAGE, 1F);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DAMAGE, 1F);
     }
 
     @Override

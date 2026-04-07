@@ -18,16 +18,13 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
-import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
-import top.theillusivec4.curios.common.CuriosHelper;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class HydraHeartItem extends RelicItem {
     @Override
     public RelicData constructDefaultRelicData() {
@@ -112,7 +109,7 @@ public class HydraHeartItem extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void onLivingHurt(LivingDamageEvent.Post e) {
+    public static void onLivingHurt(LivingDamageEvent e) {
         LivingEntity entity = e.getEntity();
         if (entity.level().isClientSide
                 || !entity.isAlive()

@@ -6,12 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.MobEffectTextureManager;
-import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientChromaticCloakTooltip extends ClientBundleLikeTooltip {
@@ -37,7 +35,7 @@ public class ClientChromaticCloakTooltip extends ClientBundleLikeTooltip {
     @Override
     public void renderItem(ItemStack stack, int x, int y, GuiGraphics guiGraphics, Font font) {
         super.renderItem(stack, x+1, y+1, guiGraphics, font);
-        Holder<MobEffect> effect = ItemRegistry.CHROMATIC_EFFECTS.get(stack.getItem());
+        MobEffect effect = ItemRegistry.CHROMATIC_EFFECTS.get(stack.getItem());
         if (effect == null) {
             return;
         }

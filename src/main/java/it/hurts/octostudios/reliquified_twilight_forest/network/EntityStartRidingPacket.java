@@ -1,47 +1,42 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
-import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
-public record EntityStartRidingPacket(int entityID, int vehicleID) implements CustomPacketPayload {
-    public static final Type<EntityStartRidingPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "entity_start_riding"));
+import java.util.function.Supplier;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, EntityStartRidingPacket> STREAM_CODEC = CustomPacketPayload.codec(
-            EntityStartRidingPacket::write, EntityStartRidingPacket::new
-    );
+public class EntityStartRidingPacket {
+    private final int entityID;
+    private final int vehicleID;
 
-    public EntityStartRidingPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), buf.readInt());
+    public EntityStartRidingPacket(int entityID, int vehicleID) {
+        this.entityID = entityID;
+        this.vehicleID = vehicleID;
     }
 
-    public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeInt(entityID);
-        buf.writeInt(vehicleID);
+    public static void encode(EntityStartRidingPacket packet, FriendlyByteBuf buf) {
+        buf.writeInt(packet.entityID);
+        buf.writeInt(packet.vehicleID);
     }
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static EntityStartRidingPacket decode(FriendlyByteBuf buf) {
+        return new EntityStartRidingPacket(buf.readInt(), buf.readInt());
     }
 
-    public static void handle(EntityStartRidingPacket packet, IPayloadContext ctx) {
-        if (ctx.flow().isServerbound()) {
-            return;
+    public static void handle(EntityStartRidingPacket packet, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            ctx.get().enqueueWork(() -> {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.level == null) return;
+                Entity entity = mc.level.getEntity(packet.entityID);
+                Entity vehicle = mc.level.getEntity(packet.vehicleID);
+                if (entity == null || vehicle == null) return;
+                entity.startRiding(vehicle, true);
+            });
         }
-        ctx.enqueueWork(() -> {
-            Entity entity = ctx.player().level().getEntity(packet.entityID);
-            Entity vehicle = ctx.player().level().getEntity(packet.vehicleID);
-
-            if (entity == null || vehicle == null) {
-                return;
-            }
-
-            entity.startRiding(vehicle, true);
-        });
+        ctx.get().setPacketHandled(true);
     }
 }

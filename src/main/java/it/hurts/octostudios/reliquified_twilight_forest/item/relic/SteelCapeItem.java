@@ -15,18 +15,17 @@ import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
 import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import twilightforest.entity.projectile.ChainBlock;
 import twilightforest.init.TFEntities;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class SteelCapeItem extends RelicItem {
     @Override
     public RelicData constructDefaultRelicData() {
@@ -75,7 +74,7 @@ public class SteelCapeItem extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void onLivingDamage(LivingDamageEvent.Pre e) {
+    public static void onLivingDamage(LivingHurtEvent e) {
         Entity entity = e.getSource().getEntity();
         LivingEntity victim = e.getEntity();
         ItemStack stack = EntityUtils.findEquippedCurio(victim, ItemRegistry.STEEL_CAPE.get());
@@ -85,8 +84,8 @@ public class SteelCapeItem extends RelicItem {
                 || !(stack.getItem() instanceof SteelCapeItem relic)
         ) return;
 
-        float newDamage = e.getNewDamage() - (float) relic.getStatValue(stack, "iron_guard", "flat_armor");
-        e.setNewDamage(Math.max(newDamage, 0.001f));
+        float newDamage = e.getAmount() - (float) relic.getStatValue(stack, "iron_guard", "flat_armor");
+        e.setAmount(Math.max(newDamage, 0.001f));
 
         if (newDamage <= 0
             || victim.getRandom().nextDouble() > relic.getStatValue(stack, "iron_guard", "chance")

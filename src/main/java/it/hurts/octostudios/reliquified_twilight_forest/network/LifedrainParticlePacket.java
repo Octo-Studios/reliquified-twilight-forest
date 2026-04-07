@@ -1,47 +1,47 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
-import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
-public record LifedrainParticlePacket(int entityID, Vec3 victimPos) implements CustomPacketPayload {
-    public static final Type<LifedrainParticlePacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "lifedrain_particles"));
+import java.util.function.Supplier;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, LifedrainParticlePacket> STREAM_CODEC =
-            CustomPacketPayload.codec(LifedrainParticlePacket::write, LifedrainParticlePacket::new);
+public class LifedrainParticlePacket {
+    private final int entityID;
+    private final Vec3 victimPos;
 
-    public LifedrainParticlePacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble()));
+    public LifedrainParticlePacket(int entityID, Vec3 victimPos) {
+        this.entityID = entityID;
+        this.victimPos = victimPos;
     }
 
-    public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeInt(this.entityID);
-        buf.writeDouble(this.victimPos.x());
-        buf.writeDouble(this.victimPos.y());
-        buf.writeDouble(this.victimPos.z());
+    public static void encode(LifedrainParticlePacket packet, FriendlyByteBuf buf) {
+        buf.writeInt(packet.entityID);
+        buf.writeDouble(packet.victimPos.x());
+        buf.writeDouble(packet.victimPos.y());
+        buf.writeDouble(packet.victimPos.z());
     }
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static LifedrainParticlePacket decode(FriendlyByteBuf buf) {
+        return new LifedrainParticlePacket(buf.readInt(), new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble()));
     }
 
-    public static void handle(LifedrainParticlePacket packet, IPayloadContext ctx) {
-        if (ctx.flow().isClientbound()) {
-            ctx.enqueueWork(() -> {
-                Entity entity = ctx.player().level().getEntity(packet.entityID());
+    public static void handle(LifedrainParticlePacket packet, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            ctx.get().enqueueWork(() -> {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.level == null) return;
+                Entity entity = mc.level.getEntity(packet.entityID);
                 if (entity instanceof LivingEntity living) {
-                    LichCrownItem.makeRedMagicTrail(living.level(), living, packet.victimPos());
+                    LichCrownItem.makeRedMagicTrail(living.level(), living, packet.victimPos);
                 }
             });
         }
+        ctx.get().setPacketHandled(true);
     }
 }

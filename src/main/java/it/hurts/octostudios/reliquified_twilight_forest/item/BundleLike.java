@@ -1,7 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item;
 
 import com.google.common.collect.Lists;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.NBTHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,9 +23,7 @@ public interface BundleLike {
     }
 
     default boolean tryInsert(Player player, ItemStack bundleStack, ItemStack toInsert) {
-        List<ItemStack> notMutable = bundleStack.get(DataComponentRegistry.BUNDLE_LIKE_CONTENTS);
-        if (notMutable == null) return false;
-
+        List<ItemStack> notMutable = NBTHelper.getBundleLikeContents(bundleStack);
         ArrayList<ItemStack> contents = Lists.newArrayList(notMutable);
         int maxSlots = this.getMaxSlots(bundleStack);
         int maxStackSize = this.getMaxSlotStackSize(bundleStack);
@@ -121,7 +119,7 @@ public interface BundleLike {
     }
 
     default @NotNull List<ItemStack> getContents(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.BUNDLE_LIKE_CONTENTS, List.of());
+        return NBTHelper.getBundleLikeContents(stack);
     }
 
     default void setContents(Player player, ItemStack stack, List<ItemStack> contents) {
@@ -130,7 +128,7 @@ public interface BundleLike {
             return;
         }
 
-        stack.set(DataComponentRegistry.BUNDLE_LIKE_CONTENTS, contents.stream().filter(itemStack -> !itemStack.isEmpty()).toList());
+        NBTHelper.setBundleLikeContents(stack, contents.stream().filter(itemStack -> !itemStack.isEmpty()).toList());
         this.onContentsChanged(player, stack, oldContents);
     }
 
@@ -169,4 +167,3 @@ public interface BundleLike {
         return getPredicate().test(stack);
     }
 }
-

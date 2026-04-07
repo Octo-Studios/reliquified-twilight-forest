@@ -6,7 +6,8 @@ import it.hurts.sskirillss.relics.items.misc.ICreativeTabContent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
-import twilightforest.init.TFCreativeTabs;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -24,14 +25,14 @@ public class GemItem extends Item implements Gem, ICreativeTabContent {
         super(properties);
     }
 
-    public Component getTipText(ItemStack stack, TooltipContext context) {
+    public Component getTipText(ItemStack stack) {
         return Component.translatable("item.reliquified_twilight_forest.gem.tip").withStyle(ChatFormatting.GRAY);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(this.getTipText(stack, context));
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, level, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(this.getTipText(stack));
     }
 
     @Override
