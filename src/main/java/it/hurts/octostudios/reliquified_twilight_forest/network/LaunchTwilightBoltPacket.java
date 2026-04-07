@@ -1,56 +1,51 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
-import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.NBTHelper;
+import it.hurts.octostudios.reliquified_twilight_forest.init.PacketHandler;
 import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
 import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 import twilightforest.entity.projectile.TwilightWandBolt;
 import twilightforest.init.TFDamageTypes;
 import twilightforest.init.TFSounds;
 
-public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
-    public static final Type<LaunchTwilightBoltPacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "launch_twilight_bolt"));
+import java.util.function.Supplier;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, LaunchTwilightBoltPacket> STREAM_CODEC =
-            CustomPacketPayload.codec(LaunchTwilightBoltPacket::write, LaunchTwilightBoltPacket::new);
+public class LaunchTwilightBoltPacket {
 
-    public LaunchTwilightBoltPacket(RegistryFriendlyByteBuf buf) {
-        this();
+    public LaunchTwilightBoltPacket() {
     }
 
-    public void write(RegistryFriendlyByteBuf buf) {}
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static void encode(LaunchTwilightBoltPacket packet, FriendlyByteBuf buf) {
+        // no data
     }
 
-    public static void handle(LaunchTwilightBoltPacket packet, IPayloadContext ctx) {
-        Player entity = ctx.player();
-        switch (ctx.flow()) {
-            case SERVERBOUND -> ctx.enqueueWork(() -> {
+    public static LaunchTwilightBoltPacket decode(FriendlyByteBuf buf) {
+        return new LaunchTwilightBoltPacket();
+    }
+
+    public static void handle(LaunchTwilightBoltPacket packet, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+            ctx.get().enqueueWork(() -> {
+                Player entity = ctx.get().getSender();
+                if (entity == null) return;
                 ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.LICH_CROWN.get());
                 if (!(stack.getItem() instanceof LichCrownItem relic)
                         || relic.getAbilityLevel(stack, "twilight") <= 0
-//                        || entity.getAttackStrengthScale(0) < 1
-                        || stack.getOrDefault(DataComponentRegistry.TWILIGHT_TIME, 0) > 0
+                        || NBTHelper.getTwilightTime(stack) > 0
                 ) return;
 
                 TwilightWandBolt bolt = new TwilightWandBolt(entity.level(), entity) {
@@ -69,7 +64,7 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                             this.discard();
                         }
 
-                        this.setAge(this.getAge()-1);
+                        this.setAge(this.getAge() - 1);
                     }
 
                     @Override
@@ -111,12 +106,15 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                 bolt.setDeltaMovement(entity.getViewVector(1f).scale(relic.getStatValue(stack, "twilight", "speed_scale")));
                 entity.level().addFreshEntity(bolt);
 
-                stack.set(DataComponentRegistry.TWILIGHT_TIME, LichCrownAbilities.MAX_TWILIGHT_TIME);
+                NBTHelper.setTwilightTime(stack, LichCrownAbilities.MAX_TWILIGHT_TIME);
 
                 // Confirm this with the player
-                PacketDistributor.sendToPlayer((ServerPlayer) entity, new LaunchTwilightBoltPacket());
+                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new LaunchTwilightBoltPacket());
             });
-            case CLIENTBOUND -> ctx.enqueueWork(() -> {
+        } else if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            ctx.get().enqueueWork(() -> {
+                Player entity = net.minecraft.client.Minecraft.getInstance().player;
+                if (entity == null) return;
                 entity.playSound(
                         TFSounds.TWILIGHT_SCEPTER_USE.get(),
                         1.0F,
@@ -124,5 +122,6 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                 );
             });
         }
+        ctx.get().setPacketHandled(true);
     }
 }

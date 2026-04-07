@@ -1,8 +1,8 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.NBTHelper;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -11,21 +11,17 @@ import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
-import net.minecraft.network.chat.Component;
+import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingHealEvent;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.init.TFItems;
 
-import javax.swing.text.html.parser.Entity;
-
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class MapleSyrupBottleItem extends RelicItem {
     @Override
     public RelicData constructDefaultRelicData() {
@@ -69,12 +65,12 @@ public class MapleSyrupBottleItem extends RelicItem {
             return;
         }
 
-        int regenerationTicks = stack.getOrDefault(DataComponentRegistry.REGENERATION_TICKS, 0);
+        int regenerationTicks = NBTHelper.getRegenerationTicks(stack);
         if (regenerationTicks > 0) {
             regenerationTicks--;
         }
 
-        stack.set(DataComponentRegistry.REGENERATION_TICKS, regenerationTicks);
+        NBTHelper.setRegenerationTicks(stack, regenerationTicks);
     }
 
     @SubscribeEvent
@@ -86,11 +82,11 @@ public class MapleSyrupBottleItem extends RelicItem {
         ) return;
 
         if (e.getEntity().getRandom().nextDouble() > relic.getStatValue(stack, "sugar_rush", "chance")) {
-            e.getItem().remove(DataComponentRegistry.DONT_EAT);
+            NBTHelper.removeKey(e.getItem(), NBTHelper.DONT_EAT);
             return;
         }
 
-        e.getItem().set(DataComponentRegistry.DONT_EAT, true);
+        NBTHelper.setDontEat(e.getItem(), true);
     }
 
     @SubscribeEvent
@@ -102,14 +98,14 @@ public class MapleSyrupBottleItem extends RelicItem {
         }
 
         if (!e.getEntity().level().isClientSide && MapleSyrupBottleItem.isAcceptable(e.getItem())) {
-            int regenerationTicks = stack.getOrDefault(DataComponentRegistry.REGENERATION_TICKS, 0);
+            int regenerationTicks = NBTHelper.getRegenerationTicks(stack);
             int toAdd = (int) Math.round(relic.getStatValue(stack, "sugar_rush", "regen_time"));
 
-            stack.set(DataComponentRegistry.REGENERATION_TICKS, regenerationTicks + toAdd);
+            NBTHelper.setRegenerationTicks(stack, regenerationTicks + toAdd);
             relic.spreadRelicExperience(e.getEntity(), stack, 1);
         }
 
-        if (original.has(DataComponentRegistry.DONT_EAT)) {
+        if (NBTHelper.hasDontEat(original)) {
             e.setResultStack(original);
         }
     }
@@ -119,7 +115,7 @@ public class MapleSyrupBottleItem extends RelicItem {
         ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MAPLE_SYRUP_BOTTLE.get());
         if (e.getEntity().level().isClientSide
                 || !(stack.getItem() instanceof MapleSyrupBottleItem relic)
-                || stack.getOrDefault(DataComponentRegistry.REGENERATION_TICKS, 0) <= 0
+                || NBTHelper.getRegenerationTicks(stack) <= 0
         ) return;
 
         e.setAmount(e.getAmount() * (float) (1f + relic.getStatValue(stack, "sugar_rush", "regen_multiplier")));

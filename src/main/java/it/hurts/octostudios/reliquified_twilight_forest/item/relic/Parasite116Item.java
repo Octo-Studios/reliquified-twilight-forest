@@ -1,7 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicAttributeModifier;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -96,7 +95,7 @@ public class Parasite116Item extends Parasite115Item {
 
     @Override
     public @Nullable RelicAttributeModifier getRelicAttributeModifiers(ItemStack stack) {
-        float percentage = stack.getOrDefault(DataComponentRegistry.TIME, 0) / 200f;
+        float percentage = (stack.hasTag() && stack.getTag().contains("time") ? stack.getTag().getInt("time") : 0) / 200f;
         float multiplier = (float) this.getStatValue(stack, "rage_consumption", "multiplier") * percentage;
         return RelicAttributeModifier.builder()
                 .attribute(new RelicAttributeModifier.Modifier(Attributes.ATTACK_DAMAGE, multiplier, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL))
@@ -108,13 +107,13 @@ public class Parasite116Item extends Parasite115Item {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        int time = (stack.hasTag() && stack.getTag().contains("time") ? stack.getTag().getInt("time") : 0);
         if (slotContext.entity().level().isClientSide
                 || time <= 0
         ) return;
 
         time--;
-        stack.set(DataComponentRegistry.TIME, time);
+        stack.getOrCreateTag().putInt("time", time);
     }
 
     @Override

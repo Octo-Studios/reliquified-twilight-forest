@@ -5,9 +5,9 @@ import it.hurts.octostudios.reliquified_twilight_forest.api.ExtraDataDamageSourc
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DamageTypeRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.PacketHandler;
 import it.hurts.octostudios.reliquified_twilight_forest.network.ParasiteEvolveParticlePacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.*;
@@ -33,14 +33,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import sun.misc.Unsafe;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
@@ -52,7 +51,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class Parasite115Item extends RelicItem {
     public static final String INFECTIONS = ReliquifiedTwilightForest.MOD_ID + ":infections";
 
@@ -114,12 +113,12 @@ public class Parasite115Item extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void attackEntity(LivingDamageEvent.Post e) {
+    public static void attackEntity(LivingDamageEvent e) {
         if (e.getEntity().level().isClientSide
                 || e.getSource().is(DamageTypeRegistry.INFECTIOUS_BLOOM)
                 || !(e.getSource().getEntity() instanceof LivingEntity livingEntity)
                 || e.getEntity() == livingEntity
-                || e.getNewDamage() < 1
+                || e.getAmount() < 1
         ) return;
 
         Optional<ICuriosItemHandler> inventory = CuriosApi.getCuriosInventory(livingEntity);
@@ -162,15 +161,15 @@ public class Parasite115Item extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void effectTick(EntityTickEvent.Post e) {
-        if (!(e.getEntity().level() instanceof ServerLevel serverLevel)
-                || !(e.getEntity() instanceof LivingEntity livingEntity)
+    public static void effectTick(LivingEvent.LivingUpdateEvent e) {
+        LivingEntity livingEntity = e.getEntity();
+        if (!(livingEntity.level() instanceof ServerLevel serverLevel)
                 || livingEntity.getPersistentData().getCompound(INFECTIONS).isEmpty()
         ) return;
 
-        if (e.getEntity().tickCount % 2 == 0) {
+        if (livingEntity.tickCount % 2 == 0) {
             ParticleOptions particle = ParticleUtils.constructSimpleSpark(Color.RED, 0.25f, 10, 0.8f);
-            serverLevel.sendParticles(particle, e.getEntity().getRandomX(0.5), e.getEntity().getRandomY(), e.getEntity().getRandomZ(0.5), 1, 0, 0, 0, 0);
+            serverLevel.sendParticles(particle, livingEntity.getRandomX(0.5), livingEntity.getRandomY(), livingEntity.getRandomZ(0.5), 1, 0, 0, 0, 0);
         }
 
         CompoundTag infections = livingEntity.getPersistentData().getCompound(INFECTIONS);
@@ -287,9 +286,9 @@ public class Parasite115Item extends RelicItem {
         CuriosApi.getCuriosInventory(entity).get().setEquippedCurio(identifier, index, evolvedParasite);
         entity.level().playSound(null, entity, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1f, 0.5f);
         entity.level().playSound(null, entity, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1f, 1.5f);
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new ParasiteEvolveParticlePacket(entity.getId()));
+        PacketHandler.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ParasiteEvolveParticlePacket(entity.getId()));
         if (entity instanceof ServerPlayer player) {
-            PacketDistributor.sendToPlayer(player, new PacketItemActivation(evolvedParasite));
+            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new PacketItemActivation(evolvedParasite));
         }
     }
 
@@ -316,9 +315,9 @@ public class Parasite115Item extends RelicItem {
                 || !relic.isAbilityUnlocked(stack, "rage_consumption")
         ) return;
 
-        int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        int time = (stack.hasTag() && stack.getTag().contains("time") ? stack.getTag().getInt("time") : 0);
         time = (int) Mth.clamp(time + relic.getStatValue(stack, "rage_consumption", "amount_restored"), 0, 200);
-        stack.set(DataComponentRegistry.TIME, time);
+        stack.getOrCreateTag().putInt("time", time);
         relic.spreadRelicExperience(entity, stack, 1);
     }
 }

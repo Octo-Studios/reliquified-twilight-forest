@@ -39,7 +39,7 @@ public class TFItemStackUtilsMixin {
             isDone.set(true);
             ItemStack brokenStack = brokenCharm.getDefaultInstance();
             brokenStack.setDamageValue(brokenStack.getMaxDamage() - 1);
-            CharmEvents.getPlayerData(player).put(CharmEvents.CONSUMED_CHARM_TAG, stack.save(player.registryAccess()));
+            CharmEvents.getPlayerData(player).put(CharmEvents.CONSUMED_CHARM_TAG, stack.save(new CompoundTag()));
             return brokenStack;
         }).toList();
 

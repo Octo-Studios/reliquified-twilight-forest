@@ -6,7 +6,6 @@ import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightFores
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
 import it.hurts.sskirillss.relics.client.models.items.SidedCurioModel;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -27,7 +26,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -36,19 +34,20 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import java.util.List;
+import java.util.UUID;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
-    private static final ResourceLocation MOVEMENT_MODIFIER = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "momentum_rush");
+    private static final UUID MOVEMENT_MODIFIER = UUID.nameUUIDFromBytes((ReliquifiedTwilightForest.MOD_ID + ":momentum_rush").getBytes());
 
     private static final int MAX_TIME = 60;
 
@@ -93,11 +92,11 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
     }
 
     public int getTime(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        return stack.hasTag() && stack.getTag().contains("time") ? stack.getTag().getInt("time") : 0;
     }
 
     public void setTime(ItemStack stack, int time) {
-        stack.set(DataComponentRegistry.TIME, Math.clamp(time, 0, MAX_TIME));
+        stack.getOrCreateTag().putInt("time", Mth.clamp(time, 0, MAX_TIME));
     }
 
     public void addTime(ItemStack stack, int time) {
@@ -130,9 +129,9 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
         addTime(stack, player.isSprinting() ? 1 : -1);
         if (time == 0) return;
 
-        movementSpeed.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, maxSpeedMultiplier * time / (float) MAX_TIME, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
-        knockbackResistance.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, time / (float) MAX_TIME, AttributeModifier.Operation.ADD_VALUE));
-        stepHeight.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, isActive(stack) ? 0.55 : 0, AttributeModifier.Operation.ADD_VALUE));
+        movementSpeed.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, "Momentum Rush Speed", maxSpeedMultiplier * time / (float) MAX_TIME, AttributeModifier.Operation.MULTIPLY_BASE));
+        knockbackResistance.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, "Momentum Rush Knockback", time / (float) MAX_TIME, AttributeModifier.Operation.ADDITION));
+        stepHeight.addOrUpdateTransientModifier(new AttributeModifier(MOVEMENT_MODIFIER, "Momentum Rush Step Height", isActive(stack) ? 0.55 : 0.0, AttributeModifier.Operation.ADDITION));
 
         if (!relic.isActive(stack)) return;
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(0.025), target -> !target.getStringUUID().equals(player.getStringUUID()));
@@ -166,7 +165,7 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
     }
 
     @SubscribeEvent
-    public static void onDamageTaken(LivingIncomingDamageEvent e) {
+    public static void onDamageTaken(LivingHurtEvent e) {
         ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), ItemRegistry.MINOTAUR_HOOF.get());
         if (!(stack.getItem() instanceof MinotaurHoofItem relic)) return;
         double reducedDamage = e.getAmount() * Mth.clamp(1 - relic.getStatValue(stack, "momentum_rush", "damage_reduction"), 0, 1);

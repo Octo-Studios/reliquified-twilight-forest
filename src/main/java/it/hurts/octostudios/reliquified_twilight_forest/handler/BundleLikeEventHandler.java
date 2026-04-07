@@ -1,14 +1,15 @@
 package it.hurts.octostudios.reliquified_twilight_forest.handler;
 
+import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLike;
 import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class BundleLikeEventHandler {
     @SubscribeEvent
     public static void onSlotClick(ContainerSlotClickEvent event) {

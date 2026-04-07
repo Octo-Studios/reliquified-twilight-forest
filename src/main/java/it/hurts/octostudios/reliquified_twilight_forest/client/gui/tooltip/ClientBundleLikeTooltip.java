@@ -8,12 +8,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientBundleLikeTooltip implements ClientTooltipComponent {
-    public static final ResourceLocation EMPTY_SLOT = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "textures/gui/tooltip/bundle_like/empty_slot.png");
+    public static final ResourceLocation EMPTY_SLOT = new ResourceLocation(ReliquifiedTwilightForest.MOD_ID, "textures/gui/tooltip/bundle_like/empty_slot.png");
     public BundleLikeContents contents;
 
     public ClientBundleLikeTooltip(BundleLikeTooltip tooltip) {

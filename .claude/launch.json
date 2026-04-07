@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Minecraft Client (NeoForge 1.21.1)",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "gradle", "--no-daemon", "runClient"],
+      "port": 0
+    },
+    {
+      "name": "Minecraft Server (NeoForge 1.21.1)",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "gradle", "--no-daemon", "runServer"],
+      "port": 25565
+    },
+    {
+      "name": "Game Test Server",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "gradle", "--no-daemon", "runGameTestServer"],
+      "port": 25565
+    },
+    {
+      "name": "Data Generator",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "gradle", "--no-daemon", "runData"],
+      "port": 0
+    }
+  ]
+}

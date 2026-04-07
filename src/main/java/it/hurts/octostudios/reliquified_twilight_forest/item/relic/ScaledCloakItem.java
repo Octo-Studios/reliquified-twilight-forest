@@ -4,10 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.NBTHelper;
+import it.hurts.octostudios.reliquified_twilight_forest.init.PacketHandler;
 import it.hurts.octostudios.reliquified_twilight_forest.network.ScaledCloakWallClimbPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.client.models.items.CurioModel;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
@@ -39,18 +40,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import java.util.List;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
     @Override
     public RelicData constructDefaultRelicData() {
@@ -104,7 +105,7 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity entity = slotContext.entity();
         Level level = entity.level();
-        int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        int time = (stack.hasTag() && stack.getTag().contains("time") ? stack.getTag().getInt("time") : 0);
         boolean isColliding = false;
 
         if (!level.isClientSide
@@ -123,11 +124,11 @@ public class ScaledCloakItem extends RelicItem implements IRenderableCurio {
             entity.setDeltaMovement(deltaMovement.x, deltaY, deltaMovement.z);
         }
 
-        PacketDistributor.sendToServer(new ScaledCloakWallClimbPacket(isColliding));
+        PacketHandler.CHANNEL.sendToServer(new ScaledCloakWallClimbPacket(isColliding));
     }
 
     @SubscribeEvent
-    public static void onDamage(LivingIncomingDamageEvent e) {
+    public static void onDamage(LivingHurtEvent e) {
         LivingEntity entity = e.getEntity();
         Entity attacker = e.getSource().getEntity();
         EntityHitResult result = getEntityLookingAt(entity, 100);

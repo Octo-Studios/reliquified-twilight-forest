@@ -4,6 +4,7 @@ import com.mojang.blaze3d.shaders.FogShape;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ConfigRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.PacketHandler;
 import it.hurts.octostudios.reliquified_twilight_forest.item.BundleLikeRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.api.OreCache;
 import it.hurts.octostudios.reliquified_twilight_forest.network.UpdateChunkPacket;
@@ -36,14 +37,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.awt.Color;
@@ -115,8 +117,8 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, level, tooltipComponents, tooltipFlag);
 
         if (!ConfigRegistry.GENERAL.isEnabledOreScanner()) {
             tooltipComponents.add(Component.literal(" "));
@@ -134,7 +136,7 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
         return (int) Math.round(relic.getStatValue(stack, "vein_seeker", "filter_slots"));
     }
 
-    @EventBusSubscriber
+    @Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
     public static class CommonEvents {
         @SubscribeEvent
         public static void onChunkLoad(ChunkEvent.Load event) {
@@ -152,7 +154,7 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
 
             if (ConfigRegistry.GENERAL.isEnabledOreScanner()) {
                 ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
-                PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+                PacketHandler.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk.getPos()), new UpdateChunkPacket(chunk.getPos()));
             }
         }
 
@@ -163,7 +165,7 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
 
             if (ConfigRegistry.GENERAL.isEnabledOreScanner()) {
                 ChunkAccess chunk = event.getLevel().getChunk(event.getPos());
-                PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) event.getLevel(), chunk.getPos(), new UpdateChunkPacket(chunk.getPos()));
+                PacketHandler.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk.getPos()), new UpdateChunkPacket(chunk.getPos()));
             }
 
             if (stack.getItem() instanceof GoblinNoseItem relic
@@ -185,10 +187,10 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
         }
     }
 
-    @EventBusSubscriber(Dist.CLIENT)
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ReliquifiedTwilightForest.MOD_ID)
     public static class ClientEvents {
         @SubscribeEvent
-        public static void changeFog(ViewportEvent.RenderFog event) {
+        public static void changeFog(EntityViewRenderEvent.FogDensity event) {
             ItemStack stack = EntityUtils.findEquippedCurio(Minecraft.getInstance().player, ItemRegistry.GOBLIN_NOSE.get());
             if (!(stack.getItem() instanceof GoblinNoseItem relic)
                     || !relic.isAbilityTicking(stack, "vein_seeker")
@@ -196,9 +198,7 @@ public class GoblinNoseItem extends BundleLikeRelicItem {
             ) return;
 
             float newDistance = (float) relic.getStatValue(stack, "vein_seeker", "radius");
-            event.scaleNearPlaneDistance(newDistance / 15f);
-            event.scaleFarPlaneDistance(newDistance / 15f);
-            event.setFogShape(FogShape.SPHERE);
+            event.setDensity(newDistance / 15f);
             event.setCanceled(true);
         }
     }

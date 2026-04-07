@@ -3,7 +3,6 @@ package it.hurts.octostudios.reliquified_twilight_forest.item.relic;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
@@ -19,9 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFParticleType;
@@ -87,8 +84,8 @@ public class FireflyQueenItem extends RelicItem {
         int maxTime = (int) Math.round(relic.getStatValue(stack, "glowkeeper", "cooldown"));
         int maxCharges = (int) Math.round(relic.getStatValue(stack, "glowkeeper", "max_charges"));
 
-        int time = stack.getOrDefault(DataComponentRegistry.TIME, maxTime);
-        int charge = stack.getOrDefault(DataComponentRegistry.CHARGE, 0);
+        int time = (stack.hasTag() && stack.getTag().contains("time") ? stack.getTag().getInt("time") : maxTime);
+        int charge = (stack.hasTag() && stack.getTag().contains("charge") ? stack.getTag().getInt("charge") : 0);
 
         BlockPos pos = entity.blockPosition();
         BlockState state = TFBlocks.FIREFLY.get().defaultBlockState();
@@ -116,8 +113,8 @@ public class FireflyQueenItem extends RelicItem {
             time--;
         }
 
-        stack.set(DataComponentRegistry.TIME, time);
-        stack.set(DataComponentRegistry.CHARGE, charge);
+        stack.getOrCreateTag().putInt("time", time);
+        stack.getOrCreateTag().putInt("charge", charge);
     }
 
     @Override

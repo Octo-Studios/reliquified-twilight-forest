@@ -21,15 +21,15 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 import java.util.Objects;
 
-@EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
 public class ThornCrownItem extends RelicItem {
     @Override
     public RelicData constructDefaultRelicData() {
@@ -100,7 +100,7 @@ public class ThornCrownItem extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void onLivingDamage(LivingIncomingDamageEvent e) {
+    public static void onLivingDamage(LivingHurtEvent e) {
         LivingEntity entity = e.getEntity();
         ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.THORN_CROWN.get());
         ResourceKey<DamageType> type = e.getSource().typeHolder().getKey();

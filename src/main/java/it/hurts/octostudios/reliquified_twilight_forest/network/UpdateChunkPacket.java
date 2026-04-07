@@ -1,43 +1,36 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
-import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.api.OreCache;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.ChunkPos;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
 
-public record UpdateChunkPacket(ChunkPos pos) implements CustomPacketPayload {
-    public static final Type<UpdateChunkPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "update_chunk"));
+import java.util.function.Supplier;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateChunkPacket> STREAM_CODEC = CustomPacketPayload.codec(
-            UpdateChunkPacket::write, UpdateChunkPacket::new
-    );
+public class UpdateChunkPacket {
+    private final ChunkPos pos;
 
-    public UpdateChunkPacket(RegistryFriendlyByteBuf buf) {
-        this(new ChunkPos(buf.readLong()));
+    public UpdateChunkPacket(ChunkPos pos) {
+        this.pos = pos;
     }
 
-    public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeLong(pos.toLong());
+    public static void encode(UpdateChunkPacket packet, FriendlyByteBuf buf) {
+        buf.writeLong(packet.pos.toLong());
     }
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static UpdateChunkPacket decode(FriendlyByteBuf buf) {
+        return new UpdateChunkPacket(new ChunkPos(buf.readLong()));
     }
 
-    public static void handle(UpdateChunkPacket packet, IPayloadContext ctx) {
-        if (!ctx.flow().isClientbound()) {
-            return;
-        }
-
-        ctx.enqueueWork(() -> {
+    public static void handle(UpdateChunkPacket packet, Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
             if (OreCache.hasChunk(packet.pos)) {
-                OreCache.scanChunkAsync(ctx.player().level(), ctx.player().level().getChunk(packet.pos.x, packet.pos.z));
+                net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+                if (mc.level != null) {
+                    OreCache.scanChunkAsync(mc.level, mc.level.getChunk(packet.pos.x, packet.pos.z));
+                }
             }
         });
+        ctx.get().setPacketHandled(true);
     }
 }

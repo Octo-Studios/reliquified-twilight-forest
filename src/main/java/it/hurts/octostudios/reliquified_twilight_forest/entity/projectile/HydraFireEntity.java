@@ -33,8 +33,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -104,11 +104,6 @@ public class HydraFireEntity extends ThrowableProjectile {
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0.05;
-    }
-
-    @Override
     public void onRemovedFromLevel() {
         super.onRemovedFromLevel();
 
@@ -147,15 +142,16 @@ public class HydraFireEntity extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(RELIC_STACK, ItemStack.EMPTY);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(RELIC_STACK, ItemStack.EMPTY);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
 
-        tag.put("relic_stack", getRelicStack().save(this.registryAccess()));
+        tag.put("relic_stack", getRelicStack().save(new CompoundTag()));
         tag.putInt("Age", this.getAge());
     }
 
@@ -163,7 +159,7 @@ public class HydraFireEntity extends ThrowableProjectile {
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        setRelicStack(ItemStack.parseOptional(this.registryAccess(), tag.getCompound("relic_stack")));
+        setRelicStack(ItemStack.of(tag.getCompound("relic_stack")));
         setAge(tag.getInt("Age"));
     }
 
