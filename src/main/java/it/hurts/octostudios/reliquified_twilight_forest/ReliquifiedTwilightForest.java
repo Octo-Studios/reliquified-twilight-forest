@@ -13,11 +13,11 @@ public class ReliquifiedTwilightForest {
         bus.addListener(this::setupCommon);
 
         ConfigRegistry.register();
-        ItemRegistry.register(bus);
+        RTItems.register(bus);
         EffectRegistry.register(bus);
-        EntityRegistry.register(bus);
+        RTEntities.register(bus);
         ParticleRegistry.register(bus);
-        DataComponentRegistry.register(bus);
+        RTDataComponent.register(bus);
         GlobalLootModifierSerializerCodecRegistry.register(bus);
     }
 

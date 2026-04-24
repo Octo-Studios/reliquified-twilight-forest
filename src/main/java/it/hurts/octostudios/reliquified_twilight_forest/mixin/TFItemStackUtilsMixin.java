@@ -1,7 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.mixin;
 
-import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.CharmBackpackItem;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.CharmBackpackItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TFItemStackUtilsMixin {
     @Inject(method = "consumeInventoryItem(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/ItemLike;Lnet/minecraft/nbt/CompoundTag;Z)Z", at = @At("HEAD"), cancellable = true)
     private static void injected(Player player, ItemLike item, CompoundTag persistentTag, boolean saveItemToTag, CallbackInfoReturnable<Boolean> cir) {
-        ItemStack backpack = EntityUtils.findEquippedCurio(player, ItemRegistry.CHARM_BACKPACK.get());
-        Item brokenCharm = ItemRegistry.CHARMS.apply(item.asItem());
+        ItemStack backpack = EntityUtils.findEquippedCurio(player, RTItems.CHARM_BACKPACK.get());
+        Item brokenCharm = RTItems.CHARMS.apply(item.asItem());
         if (!(backpack.getItem() instanceof CharmBackpackItem relic)
                 || brokenCharm == Items.AIR
         ) return;

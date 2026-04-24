@@ -1,7 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.DeerAntlerItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.DeerAntlerItem;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

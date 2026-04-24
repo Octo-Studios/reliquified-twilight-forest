@@ -3,8 +3,8 @@ package it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.GoblinNoseItem;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.GoblinNoseItem;
 import it.hurts.sskirillss.relics.items.relics.feet.PhantomBootItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.data.GUIRenderer;
@@ -25,7 +25,7 @@ public class VignetteLayer implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft MC = Minecraft.getInstance();
         Player player = MC.player;
-        ItemStack stack = EntityUtils.findEquippedCurio(player, ItemRegistry.GOBLIN_NOSE.get());
+        ItemStack stack = EntityUtils.findEquippedCurio(player, RTItems.GOBLIN_NOSE.get());
 
         if (player == null || !(stack.getItem() instanceof GoblinNoseItem relic) || !relic.isAbilityTicking(stack, "vein_seeker")) {
             return;

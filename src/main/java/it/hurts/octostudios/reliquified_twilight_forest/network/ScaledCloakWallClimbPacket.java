@@ -1,8 +1,8 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.ScaledCloakItem;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.ScaledCloakItem;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -40,7 +40,7 @@ public record ScaledCloakWallClimbPacket(boolean isColliding) implements CustomP
 
         ctx.enqueueWork(() -> {
             Player player = ctx.player();
-            ItemStack stack = EntityUtils.findEquippedCurio(player, ItemRegistry.SCALED_CLOAK.get());
+            ItemStack stack = EntityUtils.findEquippedCurio(player, RTItems.SCALED_CLOAK.get());
             int time = stack.getOrDefault(DataComponentRegistry.TIME, 0);
 
             if (!(stack.getItem() instanceof ScaledCloakItem relic)) {

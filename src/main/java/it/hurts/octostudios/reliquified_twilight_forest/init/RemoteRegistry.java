@@ -25,13 +25,13 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 public class RemoteRegistry {
     @SubscribeEvent
     public static void setupClient(final FMLClientSetupEvent event) {
-        EntityTrailRegistry.registerProvider(EntityRegistry.HYDRA_FIRE.get(), HydraFireEntity.TrailProvider::new);
+        EntityTrailRegistry.registerProvider(RTEntities.HYDRA_FIRE.get(), HydraFireEntity.TrailProvider::new);
     }
 
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(EntityRegistry.HYDRA_FIRE.get(), NullRenderer::new);
-        event.registerEntityRenderer(EntityRegistry.HYDRA_FIRE_PUDDLE.get(), NullRenderer::new);
+        event.registerEntityRenderer(RTEntities.HYDRA_FIRE.get(), NullRenderer::new);
+        event.registerEntityRenderer(RTEntities.HYDRA_FIRE_PUDDLE.get(), NullRenderer::new);
     }
 
     @SubscribeEvent

@@ -1,6 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.mixin;
 
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.Parasite115Item;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.Parasite115Item;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;

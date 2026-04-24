@@ -1,10 +1,10 @@
 package it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.ability.LichCrownAbilities;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.LichCrownItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,7 @@ public class TwilightIndicatorLayer implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
-        ItemStack stack = EntityUtils.findEquippedCurio(mc.player, ItemRegistry.LICH_CROWN.get());
+        ItemStack stack = EntityUtils.findEquippedCurio(mc.player, RTItems.LICH_CROWN.get());
         if (mc.player == null
                 || !(stack.getItem() instanceof LichCrownItem relic)
                 || relic.getAbilityLevel(stack, "twilight") <= 0
@@ -39,7 +39,7 @@ public class TwilightIndicatorLayer implements LayeredDraw.Layer {
         int itemY = guiGraphics.guiHeight();
 
         int scissorOffset = Math.round(Mth.map(
-                stack.getOrDefault(DataComponentRegistry.TWILIGHT_TIME, 0),
+                stack.getOrDefault(RTDataComponent.LICH_CROWN_TWILIGHT_TIME, 0),
                 0,
                 LichCrownAbilities.MAX_TWILIGHT_TIME,
                 0,
@@ -60,7 +60,7 @@ public class TwilightIndicatorLayer implements LayeredDraw.Layer {
                 (int) (12 * guiScale - scissorOffset)
         );
 
-        guiGraphics.renderItem(ItemRegistry.TWILIGHT_GEM.get().getDefaultInstance(), itemX, itemY);
+        guiGraphics.renderItem(RTItems.TWILIGHT_GEM.get().getDefaultInstance(), itemX, itemY);
         guiGraphics.pose().popPose();
 
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

@@ -1,10 +1,10 @@
 package it.hurts.octostudios.reliquified_twilight_forest.network;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.init.DataComponentRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.ability.LichCrownAbilities;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.LichCrownItem;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.ability.LichCrownAbilities;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.LichCrownItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,11 +46,11 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
         Player entity = ctx.player();
         switch (ctx.flow()) {
             case SERVERBOUND -> ctx.enqueueWork(() -> {
-                ItemStack stack = EntityUtils.findEquippedCurio(entity, ItemRegistry.LICH_CROWN.get());
+                ItemStack stack = EntityUtils.findEquippedCurio(entity, RTItems.LICH_CROWN.get());
                 if (!(stack.getItem() instanceof LichCrownItem relic)
                         || relic.getAbilityLevel(stack, "twilight") <= 0
 //                        || entity.getAttackStrengthScale(0) < 1
-                        || stack.getOrDefault(DataComponentRegistry.TWILIGHT_TIME, 0) > 0
+                        || stack.getOrDefault(RTDataComponent.LICH_CROWN_TWILIGHT_TIME, 0) > 0
                 ) return;
 
                 TwilightWandBolt bolt = new TwilightWandBolt(entity.level(), entity) {
@@ -111,7 +111,7 @@ public record LaunchTwilightBoltPacket() implements CustomPacketPayload {
                 bolt.setDeltaMovement(entity.getViewVector(1f).scale(relic.getStatValue(stack, "twilight", "speed_scale")));
                 entity.level().addFreshEntity(bolt);
 
-                stack.set(DataComponentRegistry.TWILIGHT_TIME, LichCrownAbilities.MAX_TWILIGHT_TIME);
+                stack.set(RTDataComponent.LICH_CROWN_TWILIGHT_TIME, LichCrownAbilities.MAX_TWILIGHT_TIME);
 
                 // Confirm this with the player
                 PacketDistributor.sendToPlayer((ServerPlayer) entity, new LaunchTwilightBoltPacket());

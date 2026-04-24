@@ -1,17 +1,12 @@
 package it.hurts.octostudios.reliquified_twilight_forest.entity.projectile;
 
-import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
 import it.hurts.octostudios.octolib.module.particle.trail.EntityTrailProvider;
-import it.hurts.octostudios.octolib.module.particle.trail.TrailProvider;
 import it.hurts.octostudios.reliquified_twilight_forest.entity.HydraFirePuddleEntity;
-import it.hurts.octostudios.reliquified_twilight_forest.init.EntityRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.HydraHeartItem;
-import it.hurts.sskirillss.relics.entities.misc.ITargetableEntity;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTEntities;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.HydraHeartItem;
 import it.hurts.sskirillss.relics.init.EffectRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
-import it.hurts.sskirillss.relics.network.NetworkHandler;
 import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityTargetPacket;
-import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import lombok.Getter;
@@ -22,24 +17,18 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.List;
-import java.util.Vector;
 
 public class HydraFireEntity extends ThrowableProjectile {
     private static final EntityDataAccessor<ItemStack> RELIC_STACK = SynchedEntityData.defineId(HydraFireEntity.class, EntityDataSerializers.ITEM_STACK);
@@ -137,7 +126,7 @@ public class HydraFireEntity extends ThrowableProjectile {
                 relic.spreadRelicExperience(player, stack, 1);
             }
 
-            HydraFirePuddleEntity puddle = new HydraFirePuddleEntity(EntityRegistry.HYDRA_FIRE_PUDDLE.get(), level());
+            HydraFirePuddleEntity puddle = new HydraFirePuddleEntity(RTEntities.HYDRA_FIRE_PUDDLE.get(), level());
             puddle.setPos(block.getLocation());
             puddle.setLifetime(lifetime);
             puddle.setDamage(damage);

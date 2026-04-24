@@ -1,6 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip;
 
-import it.hurts.octostudios.reliquified_twilight_forest.item.component.BundleLikeContents;
+import it.hurts.octostudios.reliquified_twilight_forest.items.component.BundleLikeContents;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 

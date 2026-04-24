@@ -3,9 +3,8 @@ package it.hurts.octostudios.reliquified_twilight_forest.client.gui.layer;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.hurts.octostudios.reliquified_twilight_forest.init.ItemRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.GoblinNoseItem;
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.Parasite116Item;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.Parasite116Item;
 import it.hurts.sskirillss.relics.init.DataComponentRegistry;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.data.GUIRenderer;
@@ -15,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.opengl.GL11;
@@ -27,7 +25,7 @@ public class RedVignetteLayer implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft MC = Minecraft.getInstance();
         Player player = MC.player;
-        ItemStack stack = EntityUtils.findEquippedCurio(player, ItemRegistry.PARASITE_116.get());
+        ItemStack stack = EntityUtils.findEquippedCurio(player, RTItems.PARASITE_116.get());
 
         if (player == null || !(stack.getItem() instanceof Parasite116Item relic) || !relic.isAbilityUnlocked(stack, "rage_consumption")) {
             return;

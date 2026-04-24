@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.init;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.effect.CicadaInfestationEffect;
+import it.hurts.sskirillss.relics.effects.ParalysisEffect;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.neoforged.bus.api.IEventBus;
@@ -13,6 +14,7 @@ public class EffectRegistry {
 
     public static final DeferredHolder<MobEffect, MobEffect> CICADA_INFESTATION = EFFECTS.register("cicada_infestation", CicadaInfestationEffect::new);
     //public static final DeferredHolder<MobEffect, MobEffect> INFECTIOUS_BLOOM = EFFECTS.register("infectious_bloom", InfectiousBloomEffect::new);
+    public static final DeferredHolder<MobEffect, MobEffect> PARALYSIS = EFFECTS.register("paralysis", ParalysisEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);

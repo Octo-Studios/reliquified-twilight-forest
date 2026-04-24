@@ -1,6 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.mixin;
 
-import it.hurts.octostudios.reliquified_twilight_forest.item.relic.SteelCapeItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.SteelCapeItem;
 import it.hurts.sskirillss.relics.init.EffectRegistry;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
