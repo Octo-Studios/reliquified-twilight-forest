@@ -1,4 +1,4 @@
-package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
+package it.hurts.octostudios.reliquified_twilight_forest.items.relics.back;
 
 import it.hurts.octostudios.reliquified_twilight_forest.gui.tooltip.ChromaticCloakTooltip;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
@@ -10,11 +10,7 @@ import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
-import it.hurts.sskirillss.relics.api.relics.data.LevelingData;
 import it.hurts.sskirillss.relics.init.RelicsScalingModels;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
@@ -30,7 +26,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

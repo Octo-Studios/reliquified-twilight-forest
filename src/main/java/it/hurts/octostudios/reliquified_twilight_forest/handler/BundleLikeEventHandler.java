@@ -1,7 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.handler;
 
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.BundleLike;
-import it.hurts.sskirillss.relics.api.events.common.ContainerSlotClickEvent;
+import it.hurts.sskirillss.relics.api.events.utility.ContainerSlotClickEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.item.ItemStack;

@@ -1,4 +1,4 @@
-package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
+package it.hurts.octostudios.reliquified_twilight_forest.items.relics.charm;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.init.DamageTypeRegistry;
@@ -96,7 +96,7 @@ public class TwilightFeatherItem extends RTWearableRelicItem {
     public static boolean hasPerformedExecution(LivingEntity source, LivingEntity victim) {
         if (!victim.hurt(new DamageSource(victim.level().damageSources().damageTypes.getHolderOrThrow(DamageTypeRegistry.EXECUTION), source), 99999)) {
             return false;
-        };
+        }
         victim.deathTime = 19;
         if (victim instanceof TinyBird) {
             return false;
@@ -112,10 +112,5 @@ public class TwilightFeatherItem extends RTWearableRelicItem {
         victim.level().playSound(null, birb, SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1f, 0.8f);
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(victim, new ExecutionEffectPacket(victim.getId(), color));
         return true;
-    }
-
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
     }
 }

@@ -1,17 +1,17 @@
-package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
+package it.hurts.octostudios.reliquified_twilight_forest.items.relics.charm;
 
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTWearableRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.sskirillss.relics.api.relics.RelicTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
+import it.hurts.sskirillss.relics.init.RelicsScalingModels;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,9 +22,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.init.TFItems;
 
 @EventBusSubscriber
-public class MapleSyrupBottleItem extends RelicItem {
+public class MapleSyrupBottleItem extends RTWearableRelicItem {
     @Override
-    public RelicTemplate constructDefaultRelicData() {
+    public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("sugar_rush")
@@ -40,16 +40,12 @@ public class MapleSyrupBottleItem extends RelicItem {
                                         .initialValue(140, 200).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 20)
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .build())
-                                .build())
-                        .build())
-                .leveling(LevelingData.builder()
-                        .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("sugar_rush")
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
+                                .experienceSources(ExperienceSourcesTemplate.builder()
+                                        .source("eaten")
                                         .build())
                                 .build())
                         .build())
-                .loot(LootData.builder()
+                .loot(LootTemplate.builder()
                         .entry(LootEntries.LABYRINTH)
                         .entry(LootEntries.STRONGHOLD)
                         .build())
@@ -78,7 +74,7 @@ public class MapleSyrupBottleItem extends RelicItem {
                 || !MapleSyrupBottleItem.isAcceptable(e.getItem())
         ) return;
 
-        if (e.getEntity().getRandom().nextDouble() > relic.getStatValue(stack, "sugar_rush", "chance")) {
+        if (e.getEntity().getRandom().nextDouble() > relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("sugar_rush").getStatData("chance").getValue()) {
             e.getItem().remove(RTDataComponent.MAPLE_SYRUP_DONT_EAT);
             return;
         }
@@ -87,23 +83,23 @@ public class MapleSyrupBottleItem extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void eat(LivingEntityUseItemEvent.Finish e) {
-        ItemStack original = e.getItem();
-        ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), RTItems.MAPLE_SYRUP_BOTTLE.get());
+    public static void eat(LivingEntityUseItemEvent.Finish event) {
+        ItemStack original = event.getItem();
+        ItemStack stack = EntityUtils.findEquippedCurio(event.getEntity(), RTItems.MAPLE_SYRUP_BOTTLE.get());
         if (stack.isEmpty() || !(stack.getItem() instanceof MapleSyrupBottleItem relic)) {
             return;
         }
 
-        if (!e.getEntity().level().isClientSide && MapleSyrupBottleItem.isAcceptable(e.getItem())) {
+        if (!event.getEntity().level().isClientSide && MapleSyrupBottleItem.isAcceptable(event.getItem())) {
             int regenerationTicks = stack.getOrDefault(RTDataComponent.MAPLE_SYRUP_REGENERATION_TICKS, 0);
-            int toAdd = (int) Math.round(relic.getStatValue(stack, "sugar_rush", "regen_time"));
+            int toAdd = (int) Math.round(relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("sugar_rush").getStatData("regen_time").getValue());
 
             stack.set(RTDataComponent.MAPLE_SYRUP_REGENERATION_TICKS, regenerationTicks + toAdd);
-            relic.spreadRelicExperience(e.getEntity(), stack, 1);
+            relic.getRelicData(event.getEntity(), stack).getLevelingData().addExperience("sugar_rush", "eaten", 1D);
         }
 
         if (original.has(RTDataComponent.MAPLE_SYRUP_DONT_EAT)) {
-            e.setResultStack(original);
+            event.setResultStack(original);
         }
     }
 
@@ -115,7 +111,7 @@ public class MapleSyrupBottleItem extends RelicItem {
                 || stack.getOrDefault(RTDataComponent.MAPLE_SYRUP_REGENERATION_TICKS, 0) <= 0
         ) return;
 
-        e.setAmount(e.getAmount() * (float) (1f + relic.getStatValue(stack, "sugar_rush", "regen_multiplier")));
+        e.setAmount(e.getAmount() * (float) (1f + relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("sugar_rush").getStatData("regen_multiplier").getValue()));
     }
 
     public static boolean isAcceptable(ItemStack stack) {

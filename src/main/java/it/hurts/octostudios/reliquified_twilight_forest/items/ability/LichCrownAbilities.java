@@ -1,65 +1,19 @@
 package it.hurts.octostudios.reliquified_twilight_forest.items.ability;
 
-import com.google.common.collect.Lists;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.GemItem;
-import it.hurts.octostudios.reliquified_twilight_forest.items.relics.LichCrownItem;
-import it.hurts.octostudios.reliquified_twilight_forest.network.LaunchTwilightBoltPacket;
-import it.hurts.octostudios.reliquified_twilight_forest.network.LifedrainParticlePacket;
-import it.hurts.octostudios.reliquified_twilight_forest.util.EntitiesButCool;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
-import it.hurts.sskirillss.relics.api.relics.data.AbilityTemplate;
 import it.hurts.sskirillss.relics.init.RelicsScalingModels;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityStatTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import org.jetbrains.annotations.Nullable;
-import top.theillusivec4.curios.api.SlotContext;
-import twilightforest.components.entity.FortificationShieldAttachment;
-import twilightforest.entity.monster.LoyalZombie;
-import twilightforest.entity.projectile.TwilightWandBolt;
-import twilightforest.init.*;
-import twilightforest.item.LifedrainScepterItem;
 
 import java.util.*;
 
@@ -80,6 +34,9 @@ public class LichCrownAbilities {
                     .initialValue(200, 160)
                     .upgradeModifier(RelicsScalingModels.EXPONENTIAL.get(), -0.125f)
                     .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
+                    .build())
+            .experienceSources(ExperienceSourcesTemplate.builder()
+                    .source("shielded")
                     .build())
             .build(), RTItems.SHIELDING_GEM);
 
@@ -177,7 +134,7 @@ public class LichCrownAbilities {
                     .build())
             .build(), RTItems.FRENZY_GEM);
 
-    public static void fortificationUnequip(SlotContext slotContext, ItemStack stack) {
+/*    public static void fortificationUnequip(SlotContext slotContext, ItemStack stack) {
         slotContext.entity().getData(TFDataAttachments.FORTIFICATION_SHIELDS).setShields(slotContext.entity(), 0, false);
     }
 
@@ -197,14 +154,14 @@ public class LichCrownAbilities {
         ) return;
 
         FortificationShieldAttachment attachment = entity.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
-        int maxTime = (int) Math.round(relic.getStatValue(stack, "fortification", "interval"));
+        int maxTime = (int) Math.round(relic.getRelicData(entity, stack).getAbilitiesData().getAbilityData("fortification").getStatData("interval").getValue());
         int time = stack.getOrDefault(RTDataComponent.LICH_CROWN_FORTIFICATION_TIME, 0);
 
-        if (attachment.permanentShieldsLeft() < relic.getStatValue(stack, "fortification", "max_shields")) {
+        if (attachment.permanentShieldsLeft() < relic.getRelicData(entity, stack).getAbilitiesData().getAbilityData("fortification").getStatData("max_shields").getValue()) {
             if (time <= 0) {
                 attachment.addShields(entity, 1, false);
                 time = maxTime;
-                relic.spreadRelicExperience(entity, stack, 1);
+                relic.getRelicData(entity, stack).getLevelingData().addExperience("fortification", "shielded", 1D);
             } else time--;
         }
 
@@ -217,13 +174,13 @@ public class LichCrownAbilities {
                 || !entity.isAlive()
         ) return;
 
-        int maxTime = (int) Math.round(relic.getStatValue(stack, "lifedrain", "interval")) + MAX_LIFEDRAIN_TIME;
+        int maxTime = (int) Math.round(relic.getRelicData(entity, stack).getAbilitiesData().getAbilityData("lifedrain").getStatData("interval").getValue()) + MAX_LIFEDRAIN_TIME;
         int time = stack.getOrDefault(RTDataComponent.LICH_CROWN_LIFEDRAIN_TIME, 0);
-        float healAmount = (float) (entity.getMaxHealth() * relic.getStatValue(stack, "lifedrain", "heal_percentage"));
+        float healAmount = (float) (entity.getMaxHealth() * relic.getRelicData(entity, stack).getAbilitiesData().getAbilityData("lifedrain").getStatData("heal_percentage").getValue());
         DamageSource dmg = TFDamageTypes.getEntityDamageSource(entity.level(), TFDamageTypes.LIFEDRAIN, entity);
 
         if (time > maxTime - MAX_LIFEDRAIN_TIME && entity.getHealth() < entity.getMaxHealth() && entity.tickCount % 5 == 0) {
-            List<LivingEntity> toAbsorb = EntitiesButCool.findEligibleEntities(entity, relic.getStatValue(stack, "lifedrain", "radius"),
+            List<LivingEntity> toAbsorb = EntitiesButCool.findEligibleEntities(entity, relic.getRelicData(entity, stack).getAbilitiesData().getAbilityData("lifedrain").getStatData("radius").getValue(),
                     e -> !EntityUtils.isAlliedTo(entity, e)
                             && e.isAlive()
                             && entity.hasLineOfSight(e)
@@ -652,7 +609,7 @@ public class LichCrownAbilities {
         zombie.setSilent(true);
         return zombie;
     }
-
+*/
     public static BlockPos findSafeSpawn(BlockPos position, ServerLevel world, int radius) {
         Random random = new Random();
         for (int attempts = 0; attempts < 10; attempts++) { // Try 10 times to find a valid location

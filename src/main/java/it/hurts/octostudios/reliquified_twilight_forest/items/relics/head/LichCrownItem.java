@@ -1,91 +1,25 @@
-package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
+package it.hurts.octostudios.reliquified_twilight_forest.items.relics.head;
 
-import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.api.HurtByTargetGoalWithPredicate;
-import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTBundleLikeRelicItem;
-import it.hurts.octostudios.reliquified_twilight_forest.items.base.Gem;
 import it.hurts.octostudios.reliquified_twilight_forest.items.ability.LichCrownAbilities;
-import it.hurts.octostudios.reliquified_twilight_forest.mixin.NearestAttackableTargetGoalAccessor;
 import it.hurts.sskirillss.relics.api.relics.RelicTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
-import it.hurts.sskirillss.relics.client.models.items.CurioModel;
-import it.hurts.sskirillss.relics.init.EffectRegistry;
 import it.hurts.sskirillss.relics.init.RelicsScalingModels;
-import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.TooltipData;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.LevelingTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
-import it.hurts.sskirillss.relics.utils.ParticleUtils;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.monster.AbstractSkeleton;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.client.ICurioRenderer;
-import twilightforest.components.entity.FortificationShieldAttachment;
-import twilightforest.data.tags.EntityTagGenerator;
-import twilightforest.entity.monster.LoyalZombie;
-import twilightforest.init.TFDamageTypes;
-import twilightforest.init.TFDataAttachments;
-import twilightforest.init.TFDimension;
-import twilightforest.loot.TFLootTables;
-import twilightforest.util.entities.EntityUtil;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import java.util.function.Predicate;
 
-import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
-
-@EventBusSubscriber
-public class LichCrownItem extends RTBundleLikeRelicItem implements  {
+public class LichCrownItem extends RTBundleLikeRelicItem  {
     public static final Predicate<LivingEntity> HAS_CROWN = target -> !EntityUtils.findEquippedCurio(target, RTItems.LICH_CROWN.get()).isEmpty();
 
     @Override
-    public RelicTemplate constructDefaultRelicData() {
+    public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("bone_pact").initialMaxLevel(0).build())
@@ -110,34 +44,13 @@ public class LichCrownItem extends RTBundleLikeRelicItem implements  {
                                 .initialMaxLevel(0)
                                 .build())
                         .build())
-
-                .leveling(LevelingData.builder()
+                .leveling(LevelingTemplate.builder()
                         .initialCost(250)
                         .step(250)
-                        .maxLevel(15)
-                        .sources(LevelingSourcesData.builder()
-                                .source(getSource(LichCrownAbilities.FORTIFICATION, GemColor.YELLOW))
-                                .source(getSource(LichCrownAbilities.LIFEDRAIN, GemColor.RED))
-                                .source(getSource(LichCrownAbilities.TWILIGHT, GemColor.BLUE))
-                                .source(getSource(LichCrownAbilities.ZOMBIE, GemColor.GREEN))
-                                .source(getSource(LichCrownAbilities.FROSTBITE, GemColor.CYAN))
-                                .source(getSource(LichCrownAbilities.BIOME_BURN, GemColor.RED))
-                                .source(getSource(LichCrownAbilities.ETHEREAL_GUARD, GemColor.PURPLE))
-                                .source(getSource(LichCrownAbilities.VENDETTA, GemColor.YELLOW))
-                                .source(getSource(LichCrownAbilities.MIRROR_LEECH, GemColor.RED))
-                                .source(getSource(LichCrownAbilities.FRENZY, GemColor.ORANGE))
-                                .build())
-                        .build())
-                .style(StyleData.builder()
-                        .tooltip(TooltipData.builder()
-                                .borderTop(0xff4f4e52)
-                                .borderBottom(0xff45434c)
-                                .textured(true)
-                                .build())
                         .build())
                 .build();
     }
-
+/*
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         if (!(stack.getItem() instanceof LichCrownItem relic)) return;
@@ -465,4 +378,5 @@ public class LichCrownItem extends RTBundleLikeRelicItem implements  {
     public static LevelingSourceData getSource(AbilityTemplate data, GemColor color) {
         return LevelingSourceData.abilityBuilder(data.getId()).gem(GemShape.SQUARE, color).build();
     }
+    */
 }

@@ -1,7 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.mixin;
 
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
-import it.hurts.octostudios.reliquified_twilight_forest.items.relics.CharmBackpackItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.back.CharmBackpackItem;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -45,7 +45,6 @@ public class TFItemStackUtilsMixin {
 
         if (isDone.get()) {
             relic.setContents(player, backpack, contents);
-            relic.spreadRelicExperience(player, backpack, 1);
             cir.setReturnValue(true);
             cir.cancel();
         }

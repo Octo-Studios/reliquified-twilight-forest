@@ -1,21 +1,15 @@
 package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
 
-import com.mojang.blaze3d.shaders.FogShape;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
-import it.hurts.octostudios.reliquified_twilight_forest.init.ConfigRegistry;
-import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTBundleLikeRelicItem;
-import it.hurts.octostudios.reliquified_twilight_forest.api.OreCache;
-import it.hurts.octostudios.reliquified_twilight_forest.network.UpdateChunkPacket;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.client.particles.BasicColoredParticle;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.cast.CastData;
-import it.hurts.sskirillss.relics.items.relics.base.data.cast.misc.CastType;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.api.relics.RelicTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
+import it.hurts.sskirillss.relics.init.RelicsScalingModels;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -52,7 +46,7 @@ import java.util.function.Predicate;
 
 public class GoblinNoseItem extends RTBundleLikeRelicItem {
     @Override
-    public RelicTemplate constructDefaultRelicData() {
+    public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("vein_seeker")
@@ -64,26 +58,19 @@ public class GoblinNoseItem extends RTBundleLikeRelicItem {
                                         .initialValue(0, 0).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 1)
                                         .formatValue(Math::round)
                                         .build())
-                                .active(CastData.builder()
-                                        .type(CastType.TOGGLEABLE)
+                                .modes("enabled", "disabled")
+                                .experienceSources(ExperienceSourcesTemplate.builder()
+                                        .source("block_broken")
                                         .build())
-                                .maxLevel(5)
+                                .initialMaxLevel(5)
                                 .build())
                         .build())
-                .leveling(LevelingData.builder()
-                        .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("vein_seeker")
-                                        .gem(GemShape.SQUARE, GemColor.GREEN)
-                                        .build())
-                                .build())
-                        .maxLevel(5)
-                        .build())
-                .loot(LootData.builder()
+                .loot(LootTemplate.builder()
                         .entry(LootEntries.TROLL)
                         .build())
                 .build();
     }
-
+/*
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity livingEntity = slotContext.entity();
@@ -97,7 +84,7 @@ public class GoblinNoseItem extends RTBundleLikeRelicItem {
 
         if (livingEntity.level().isClientSide && livingEntity == Minecraft.getInstance().player) {
             // Cached list of found ore positions.
-            List<BlockPos> ORES = OreCache.getNearbyOres(livingEntity.level(), livingEntity.blockPosition(), (float) relic.getStatValue(stack, "vein_seeker", "radius"));
+            List<BlockPos> ORES = OreCache.getNearbyOres(livingEntity.level(), livingEntity.blockPosition(), (float) relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("vein_seeker").getStatData("radius").getValue());
             ORES.forEach(bp -> {
                 BlockState state = livingEntity.level().getBlockState(bp);
                 if (livingEntity.getRandom().nextFloat() < 0.66f
@@ -128,7 +115,7 @@ public class GoblinNoseItem extends RTBundleLikeRelicItem {
             return 0;
         }
 
-        return (int) Math.round(relic.getStatValue(stack, "vein_seeker", "filter_slots"));
+        return (int) Math.round(relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("vein_seeker").getStatData("filter_slots").getValue());
     }
 
     @EventBusSubscriber
@@ -252,4 +239,5 @@ public class GoblinNoseItem extends RTBundleLikeRelicItem {
     public Predicate<ItemStack> getPredicate() {
         return stack -> stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock().defaultBlockState().is(Tags.Blocks.ORES);
     }
+    */
 }

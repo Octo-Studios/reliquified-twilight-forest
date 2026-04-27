@@ -1,31 +1,18 @@
-package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
+package it.hurts.octostudios.reliquified_twilight_forest.items.relics.feet;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
-import it.hurts.sskirillss.relics.client.models.items.CurioModel;
-import it.hurts.sskirillss.relics.client.models.items.SidedCurioModel;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
-import it.hurts.sskirillss.relics.items.relics.base.IRenderableCurio;
-import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
+import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTWearableRelicItem;
+import it.hurts.sskirillss.relics.api.relics.RelicTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
+import it.hurts.sskirillss.relics.init.RelicsScalingModels;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.LevelingTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,24 +22,21 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import java.util.List;
 
 @EventBusSubscriber
-public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
+public class MinotaurHoofItem extends RTWearableRelicItem {
     private static final ResourceLocation MOVEMENT_MODIFIER = ResourceLocation.fromNamespaceAndPath(ReliquifiedTwilightForest.MOD_ID, "momentum_rush");
 
     private static final int MAX_TIME = 60;
 
     @Override
-    public RelicTemplate constructDefaultRelicData() {
+    public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("momentum_rush")
@@ -69,32 +53,24 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
                                         .initialValue(1, 2)
                                         .formatValue(value -> MathUtils.round(value, 1)).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 1f)
                                         .build())
-                                .build())
-                        .build())
-                .leveling(LevelingData.builder()
-                        .initialCost(100)
-                        .step(125)
-                        .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("momentum_rush")
-                                        .gem(GemShape.SQUARE, GemColor.PURPLE)
+                                .experienceSources(ExperienceSourcesTemplate.builder()
+                                        .source("entity_hurt")
                                         .build())
                                 .build())
                         .build())
-                .style(StyleData.builder()
-                        .beams(BeamsData.builder()
-                                .startColor(0xffe0400c)
-                                .endColor(0x0088410c)
-                                .build())
+                .leveling(LevelingTemplate.builder()
+                        .initialCost(100)
+                        .step(125)
                         .build())
                 .build();
     }
 
     public int getTime(ItemStack stack) {
-        return stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        return stack.getOrDefault(RTDataComponent.MINOTAUR_HOOF_TIME, 0);
     }
 
     public void setTime(ItemStack stack, int time) {
-        stack.set(DataComponentRegistry.TIME, Math.clamp(time, 0, MAX_TIME));
+        stack.set(RTDataComponent.MINOTAUR_HOOF_TIME, Math.clamp(time, 0, MAX_TIME));
     }
 
     public void addTime(ItemStack stack, int time) {
@@ -121,7 +97,7 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
         AttributeInstance stepHeight = player.getAttribute(Attributes.STEP_HEIGHT);
 
         if (movementSpeed == null || knockbackResistance == null || stepHeight == null) return;
-        double maxSpeedMultiplier = relic.getStatValue(stack, "momentum_rush", "max_speed_multiplier");
+        double maxSpeedMultiplier = relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("momentum_rush").getStatData("max_speed_multiplier").getValue();
 
         int time = getTime(stack);
         addTime(stack, player.isSprinting() ? 1 : -1);
@@ -135,8 +111,8 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(0.025), target -> !target.getStringUUID().equals(player.getStringUUID()));
 
         for (LivingEntity entity : entities) {
-            if (entity.hurt(player.damageSources().playerAttack(player), (float) relic.getStatValue(stack, "momentum_rush", "damage"))) {
-                relic.spreadRelicExperience(player, stack, 1);
+            if (entity.hurt(player.damageSources().playerAttack(player), (float) relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("momentum_rush").getStatData("damage").getValue())) {
+                relic.getRelicData(player, stack).getLevelingData().addExperience("momentum_rush", "entity_hurt", 1D);
             }
         }
     }
@@ -166,68 +142,11 @@ public class MinotaurHoofItem extends RelicItem implements IRenderableCurio {
     public static void onDamageTaken(LivingIncomingDamageEvent e) {
         ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), RTItems.MINOTAUR_HOOF.get());
         if (!(stack.getItem() instanceof MinotaurHoofItem relic)) return;
-        double reducedDamage = e.getAmount() * Mth.clamp(1 - relic.getStatValue(stack, "momentum_rush", "damage_reduction"), 0, 1);
+        double reducedDamage = e.getAmount() * Mth.clamp(1 - relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("momentum_rush").getStatData("damage_reduction").getValue(), 0, 1);
         //e.getEntity().sendSystemMessage(Component.literal(e.getAmount()+" : "+reducedDamage));
 
         if (!relic.isActive(stack)) return;
         e.setAmount((float) reducedDamage);
 
-    }
-
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public CurioModel getModel(ItemStack stack) {
-        return new SidedCurioModel(stack.getItem());
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public List<String> bodyParts() {
-        return List.of("right_leg", "left_leg");
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public LayerDefinition constructLayerDefinition() {
-        MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.4f), 0);
-        PartDefinition partdefinition = meshdefinition.getRoot();
-        PartDefinition right_leg = partdefinition.addOrReplaceChild("right_leg", CubeListBuilder.create().texOffs(16, 0).addBox(-2.0F, 10.0F, -2.0F, 4.0F, 2.0F, 4.0F, new CubeDeformation(0.5F)), PartPose.offset(-1.9F, 12.0F, 0.0F));
-        PartDefinition left_leg = partdefinition.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(16, 0).addBox(-2.0F, 10.0F, -2.0F, 4.0F, 2.0F, 4.0F, new CubeDeformation(0.5F)), PartPose.offset(-1.9F, 12.0F, 0.0F));
-
-        return LayerDefinition.create(meshdefinition, 32, 32);
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        CurioModel model = getModel(stack);
-
-        if (!(model instanceof SidedCurioModel sidedModel))
-            return;
-
-        sidedModel.setSlot(slotContext.index());
-
-        matrixStack.pushPose();
-
-        LivingEntity entity = slotContext.entity();
-
-        sidedModel.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
-        sidedModel.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-
-        ICurioRenderer.followBodyRotations(entity, sidedModel);
-
-        VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.armorCutoutNoCull(getTexture(stack)), stack.hasFoil());
-
-        matrixStack.translate(0, 0, 0);
-        matrixStack.scale(1.0047f, 1.0047f, 1.0047f);
-
-        sidedModel.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
-
-        matrixStack.popPose();
     }
 }

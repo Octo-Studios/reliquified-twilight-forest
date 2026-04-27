@@ -28,9 +28,14 @@ public class RTDataComponent {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<UUID>>> LICH_CROWN_ENTITIES =              construct("lich_crown/entities", UUIDUtil.CODEC.listOf());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Float>>      LICH_CROWN_MULTIPLIER = construct("lich_crown/multiplier", Codec.FLOAT);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>>    LICH_CROWN_TIME =                  construct("lich_crown/time", Codec.INT);
-
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SCALED_CLOAK_TIME = construct("scaled_cloak/time", Codec.INT);
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> INVISIBILITY_CLOAK_TIME = construct("invisibility_cloak/time", Codec.INT);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> MAPLE_SYRUP_DONT_EAT =             construct("maple_syrup/dont_eat", Codec.BOOL);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> MAPLE_SYRUP_REGENERATION_TICKS =   construct("maple_syrup/regeneration_ticks", Codec.INT);
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FIREFLY_QUEEN_TIME = construct("firefly_queen/time", Codec.INT);
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FIREFLY_QUEEN_CHARGE = construct("firefly_queen/charge", Codec.INT);
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> MINOTAUR_HOOF_TIME = construct("minotaur_hoof/time", Codec.INT);
+
 
 
     public static void register(IEventBus bus) {

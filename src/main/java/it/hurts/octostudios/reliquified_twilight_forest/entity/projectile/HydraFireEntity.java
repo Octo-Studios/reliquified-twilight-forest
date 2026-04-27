@@ -4,9 +4,6 @@ import it.hurts.octostudios.octolib.module.particle.trail.EntityTrailProvider;
 import it.hurts.octostudios.reliquified_twilight_forest.entity.HydraFirePuddleEntity;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTEntities;
 import it.hurts.octostudios.reliquified_twilight_forest.items.relics.HydraHeartItem;
-import it.hurts.sskirillss.relics.init.EffectRegistry;
-import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
-import it.hurts.sskirillss.relics.network.packets.sync.S2CEntityTargetPacket;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import lombok.Getter;
@@ -121,9 +118,9 @@ public class HydraFireEntity extends ThrowableProjectile {
             int lifetime = 100;
             float damage = 1f;
             if (stack.getItem() instanceof HydraHeartItem relic && this.getOwner() instanceof Player player) {
-                lifetime = (int) Math.round(relic.getStatValue(stack, "hydra_fire", "lifetime"));
-                damage = (float) relic.getStatValue(stack, "hydra_fire", "damage");
-                relic.spreadRelicExperience(player, stack, 1);
+                lifetime = (int) Math.round(relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("hydra_fire").getStatData("lifetime").getValue());
+                damage = (float) relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("hydra_fire").getStatData("damage").getValue();
+                relic.getRelicData(player, stack).getLevelingData().addExperience("hydra_fire", "blood_droplet", 1D);
             }
 
             HydraFirePuddleEntity puddle = new HydraFirePuddleEntity(RTEntities.HYDRA_FIRE_PUDDLE.get(), level());

@@ -2,6 +2,7 @@ package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTWearableRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
@@ -68,11 +69,11 @@ public class FireflyQueenItem extends RTWearableRelicItem {
             return;
         }
 
-        int maxTime = (int) Math.round(relic.getStatValue(stack, "glowkeeper", "cooldown"));
-        int maxCharges = (int) Math.round(relic.getStatValue(stack, "glowkeeper", "max_charges"));
+        int maxTime = (int) Math.round(relic.getRelicData(entity, stack).getAbilitiesData().getAbilityData("glowkeeper").getStatData("cooldown").getValue());
+        int maxCharges = (int) Math.round(relic.getRelicData(entity, stack).getAbilitiesData().getAbilityData("glowkeeper").getStatData("max_charges").getValue());
 
-        int time = stack.getOrDefault(DataComponentRegistry.TIME, maxTime);
-        int charge = stack.getOrDefault(DataComponentRegistry.CHARGE, 0);
+        int time = stack.getOrDefault(RTDataComponent.FIREFLY_QUEEN_TIME, maxTime);
+        int charge = stack.getOrDefault(RTDataComponent.FIREFLY_QUEEN_CHARGE, 0);
 
         BlockPos pos = entity.blockPosition();
         BlockState state = TFBlocks.FIREFLY.get().defaultBlockState();
@@ -87,7 +88,7 @@ public class FireflyQueenItem extends RTWearableRelicItem {
                 && posState.canBeReplaced()
         ) {
             level.setBlock(pos, state, 0b00000011);
-            relic.spreadRelicExperience(entity, stack, 1);
+            relic.getRelicData(entity, stack).getLevelingData().addExperience("glowkeeper", "fireflies_spawned", 1D);
             charge--;
         }
 
@@ -100,12 +101,7 @@ public class FireflyQueenItem extends RTWearableRelicItem {
             time--;
         }
 
-        stack.set(DataComponentRegistry.TIME, time);
-        stack.set(DataComponentRegistry.CHARGE, charge);
-    }
-
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
+        stack.set(RTDataComponent.FIREFLY_QUEEN_TIME, time);
+        stack.set(RTDataComponent.FIREFLY_QUEEN_CHARGE, charge);
     }
 }

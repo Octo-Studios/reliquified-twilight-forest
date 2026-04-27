@@ -1,14 +1,13 @@
 package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
 
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
+import it.hurts.sskirillss.relics.api.relics.RelicTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
+import it.hurts.sskirillss.relics.init.RelicsScalingModels;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicAttributeModifier;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
 import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
@@ -23,7 +22,7 @@ import java.awt.Color;
 
 public class Parasite116Item extends Parasite115Item {
     @Override
-    public RelicTemplate constructDefaultRelicData() {
+    public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("infectious_bloom")
@@ -45,7 +44,10 @@ public class Parasite116Item extends Parasite115Item {
                                         .initialValue(2, 5).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 1)
                                         .formatValue(Math::round)
                                         .build())
-                                .maxLevel(10)
+                                .experienceSources(ExperienceSourcesTemplate.builder()
+                                        .source("enemies_infected")
+                                        .build())
+                                .initialMaxLevel(10)
                                 .build())
                         .ability(AbilityTemplate.builder("rage_consumption")
                                 .stat(AbilityStatTemplate.builder("amount_restored")
@@ -56,39 +58,16 @@ public class Parasite116Item extends Parasite115Item {
                                         .initialValue(0.4, 0.75).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 0.25)
                                         .formatValue(MathButCool::percentage)
                                         .build())
-                                .maxLevel(5)
+                                .experienceSources(ExperienceSourcesTemplate.builder()
+                                        .source("rage_consumed")
+                                        .build())
+                                .initialMaxLevel(5)
                                 .requiredLevel(5)
-                                .build())
                         .build())
-                .leveling(LevelingData.builder()
-                        .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("infectious_bloom")
-                                        .gem(GemShape.SQUARE, GemColor.YELLOW)
-                                        .build())
-                                .source(LevelingSourceData.abilityBuilder("rage_consumption")
-                                        .gem(GemShape.SQUARE, GemColor.ORANGE)
-                                        .build())
-                                .build())
-                        .maxLevel(10)
-                        .build())
-                .style(StyleData.builder()
-                        .beams((player, stack) -> {
-                            float ticks = player.tickCount + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
-                            float lerp = (float) (Math.sin(ticks/5f)/2f+0.5f);
-
-                            float r = 1f;
-                            float g = Mth.lerp(lerp, 127, 233) / 255f;
-                            float b = Mth.lerp(lerp, 39, 0) / 255f;
-
-                            return BeamsData.builder()
-                                    .startColor(new Color(r,g,b,1).getRGB())
-                                    .endColor(new Color(r,g,b,0).getRGB())
-                                    .build();
-                        })
-                        .build())
-                .build();
+                .build())
+        .build();
     }
-
+/*
     @Override
     public @Nullable RelicAttributeModifier getRelicAttributeModifiers(ItemStack stack) {
         float percentage = stack.getOrDefault(DataComponentRegistry.TIME, 0) / 200f;
@@ -111,14 +90,5 @@ public class Parasite116Item extends Parasite115Item {
         time--;
         stack.set(DataComponentRegistry.TIME, time);
     }
-
-    @Override
-    public void evolve(String identifier, int index, ItemStack stack, LivingEntity entity) {
-        super.evolve(identifier, index, stack, entity);
-    }
-
-    @Override
-    public boolean isEvolved() {
-        return true;
-    }
+ */
 }

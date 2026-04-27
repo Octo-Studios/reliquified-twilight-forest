@@ -1,7 +1,7 @@
 package it.hurts.octostudios.reliquified_twilight_forest.mixin;
 
-import it.hurts.octostudios.reliquified_twilight_forest.items.relics.SteelCapeItem;
-import it.hurts.sskirillss.relics.init.EffectRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.init.EffectRegistry;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.back.SteelCapeItem;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -26,10 +26,10 @@ public abstract class ChainBlockMixin {
         }
 
         ChainBlock self = (ChainBlock) (Object) this;
-        if (instance.hurt(source, (float) relic.getStatValue(stack, "iron_guard", "damage"))) {
+        if (instance.hurt(source, (float) relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("iron_guard").getStatData("damage").getValue())) {
             self.playSound(TFSounds.BLOCK_AND_CHAIN_HIT.get(), 1.0f, self.getRandom().nextFloat());
             if (instance instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(EffectRegistry.STUN, (int) relic.getStatValue(stack, "iron_guard", "stun_duration"), 0, false, true, true));
+                living.addEffect(new MobEffectInstance(EffectRegistry.STUN, (int) relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("iron_guard").getStatData("stun_duration").getValue(), 0, false, true, true));
             }
             return false;
         }

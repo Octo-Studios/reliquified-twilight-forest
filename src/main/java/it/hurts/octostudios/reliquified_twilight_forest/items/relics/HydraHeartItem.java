@@ -115,9 +115,4 @@ public class HydraHeartItem extends RTWearableRelicItem {
             entity.level().addFreshEntity(fire);
         }
     }
-
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
 }

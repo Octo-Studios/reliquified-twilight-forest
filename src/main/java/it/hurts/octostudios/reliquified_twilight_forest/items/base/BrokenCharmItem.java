@@ -1,6 +1,6 @@
 package it.hurts.octostudios.reliquified_twilight_forest.items.base;
 
-import it.hurts.octostudios.reliquified_twilight_forest.items.relics.CharmBackpackItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.back.CharmBackpackItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

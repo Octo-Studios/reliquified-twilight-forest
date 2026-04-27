@@ -1,33 +1,25 @@
-package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
+package it.hurts.octostudios.reliquified_twilight_forest.items.relics.back;
 
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
+import it.hurts.octostudios.reliquified_twilight_forest.init.RTDataComponent;
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTWearableRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.api.relics.RelicTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
-import it.hurts.sskirillss.relics.init.DataComponentRegistry;
-import it.hurts.sskirillss.relics.init.EffectRegistry;
+import it.hurts.sskirillss.relics.init.RelicsMobEffects;
 import it.hurts.sskirillss.relics.init.RelicsScalingModels;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.BeamsData;
-import it.hurts.sskirillss.relics.items.relics.base.data.style.StyleData;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.curios.api.SlotContext;
 
-import java.awt.Color;
-
 public class InvisibilityCloakItem extends RTWearableRelicItem {
     @Override
-    public RelicTemplate constructDefaultRelicData() {
+    public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("cosmetic_armor")
@@ -39,25 +31,12 @@ public class InvisibilityCloakItem extends RTWearableRelicItem {
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .thresholdValue(1, 9999)
                                         .build())
-                                .build())
-                        .build())
-                .leveling(LevelingData.builder()
-                        .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("invisibility")
-                                        .gem(GemShape.SQUARE, GemColor.CYAN)
+                                .experienceSources(ExperienceSourcesTemplate.builder()
+                                        .source("going_invisible")
                                         .build())
                                 .build())
                         .build())
-                .style(StyleData.builder()
-                        .beams((player, stack) -> {
-                            float ticks = player.tickCount + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
-                            return BeamsData.builder()
-                                    .startColor(new Color(0.5f, 0.5f, 0.5f, Mth.sin(ticks/10f)/2f+0.5f).getRGB())
-                                    .endColor(0x00444444)
-                                    .build();
-                        })
-                        .build())
-                .loot(LootData.builder()
+                .loot(LootTemplate.builder()
                         .entry(LootEntries.HEDGE)
                         .build())
                 .build();
@@ -70,7 +49,7 @@ public class InvisibilityCloakItem extends RTWearableRelicItem {
         }
 
         LivingEntity entity = slotContext.entity();
-        int idleTicks = stack.getOrDefault(DataComponentRegistry.TIME, 0);
+        int idleTicks = stack.getOrDefault(RTDataComponent.INVISIBILITY_CLOAK_TIME, 0);
         int maxIdleTicks = this.getMaxIdleTicks(slotContext, stack);
         double lengthSqr = slotContext.entity().getKnownMovement().lengthSqr();
         double movementThreshold = 0.005;
@@ -79,20 +58,20 @@ public class InvisibilityCloakItem extends RTWearableRelicItem {
             if (idleTicks < maxIdleTicks) {
                 idleTicks++;
             } else {
-                if (!entity.hasEffect(EffectRegistry.VANISHING)) {
-                    this.spreadRelicExperience(entity, stack, 1);
+                if (!entity.hasEffect(RelicsMobEffects.VANISHING)) {
+                    this.getRelicData(entity, stack).getLevelingData().addExperience("invisibility", "going_invisible", 1D);
                 }
-                entity.addEffect(new MobEffectInstance(EffectRegistry.VANISHING, 24, 0, true, false));
+                entity.addEffect(new MobEffectInstance(RelicsMobEffects.VANISHING, 24, 0, true, false));
             }
         } else {
             idleTicks = 0;
-            entity.removeEffect(EffectRegistry.VANISHING);
+            entity.removeEffect(RelicsMobEffects.VANISHING);
         }
 
-        stack.set(DataComponentRegistry.TIME, idleTicks);
+        stack.set(RTDataComponent.INVISIBILITY_CLOAK_TIME, idleTicks);
     }
 
     public int getMaxIdleTicks(SlotContext slotContext, ItemStack stack) {
-        return (int) Math.round(this.getStatValue(stack, "invisibility", "duration"));
+        return (int) Math.round(this.getRelicData(null, stack).getAbilitiesData().getAbilityData("invisibility").getStatData("duration").getValue());
     }
 }

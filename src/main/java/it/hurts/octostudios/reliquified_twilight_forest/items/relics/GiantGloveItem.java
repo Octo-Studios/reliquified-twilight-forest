@@ -1,18 +1,18 @@
 package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
 
 import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightForest;
-import it.hurts.octostudios.reliquified_twilight_forest.client.event.RenderItemInHandEvent;
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTWearableRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.EntitiesButCool;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
-import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicAttributeModifier;
-import it.hurts.sskirillss.relics.items.relics.base.data.RelicTemplate;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemColor;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.GemShape;
-import it.hurts.sskirillss.relics.items.relics.base.data.leveling.misc.UpgradeOperation;
-import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootData;
+import it.hurts.sskirillss.relics.api.relics.RelicTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilitiesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.AbilityTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
+import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
+import it.hurts.sskirillss.relics.init.RelicsScalingModels;
+import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +20,6 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -31,15 +30,15 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
 
 import java.util.List;
+import java.util.Objects;
 
-public class GiantGloveItem extends RelicItem {
+public class GiantGloveItem extends RTWearableRelicItem {
     @Override
-    public RelicTemplate constructDefaultRelicData() {
+    public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("oversized_grip")
@@ -47,20 +46,19 @@ public class GiantGloveItem extends RelicItem {
                                         .initialValue(0.05, 0.15).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 0.035)
                                         .formatValue(MathButCool::percentage)
                                         .build())
-                                .build())
-                        .build())
-                .leveling(LevelingData.builder()
-                        .sources(LevelingSourcesData.builder()
-                                .source(LevelingSourceData.abilityBuilder("oversized_grip")
-                                        .gem(GemShape.SQUARE, GemColor.BLUE)
+                                .experienceSources(ExperienceSourcesTemplate.builder()
+                                        .source("entity_hit")
+                                        .source("block_broken")
                                         .build())
                                 .build())
                         .build())
-                .loot(LootData.builder()
+                .loot(LootTemplate.builder()
                         .entry(LootEntries.TROLL)
                         .build())
                 .build();
     }
+
+/*  Figure out new way to change Interaction range
 
     @Override
     public @Nullable RelicAttributeModifier getRelicAttributeModifiers(ItemStack stack) {
@@ -70,7 +68,7 @@ public class GiantGloveItem extends RelicItem {
                 .attribute(new RelicAttributeModifier.Modifier(Attributes.ENTITY_INTERACTION_RANGE, 2.5F*(1+multiplier), AttributeModifier.Operation.ADD_VALUE))
                 .build();
     }
-
+*/
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         super.onUnequip(slotContext, newStack, stack);
@@ -79,23 +77,18 @@ public class GiantGloveItem extends RelicItem {
         }
     }
 
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
-
     @EventBusSubscriber
     public static class CommonEvents {
         @SubscribeEvent
-        public static void entityHit(LivingDamageEvent.Post e) {
-            ItemStack stack = EntityUtils.findEquippedCurio(e.getSource().getDirectEntity(), RTItems.GIANT_GLOVE.get());
-            if (e.getEntity().level().isClientSide
+        public static void entityHit(LivingDamageEvent.Post event) {
+            ItemStack stack = EntityUtils.findEquippedCurio(event.getSource().getDirectEntity(), RTItems.GIANT_GLOVE.get());
+            if (event.getEntity().level().isClientSide
                     || !(stack.getItem() instanceof GiantGloveItem relic)
-                    || !(e.getSource().getDirectEntity() instanceof LivingEntity source)
+                    || !(event.getSource().getDirectEntity() instanceof LivingEntity source)
                     || source.getMainHandItem().isEmpty()
             ) return;
 
-            relic.spreadRelicExperience(source, stack, 1);
+            relic.getRelicData(null, stack).getLevelingData().addExperience("oversized_grip", "entity_hit", 1D);
         }
 
         @SubscribeEvent
@@ -107,7 +100,7 @@ public class GiantGloveItem extends RelicItem {
                     || e.getPlayer().getMainHandItem().isEmpty()
             ) return;
 
-            relic.spreadRelicExperience(e.getPlayer(), stack, 1);
+            relic.getRelicData(null, stack).getLevelingData().addExperience("oversized_grip", "block_broken", 1D);
         }
 
         @SubscribeEvent
@@ -127,7 +120,7 @@ public class GiantGloveItem extends RelicItem {
 
                 removeAttributes(slotResult.slotContext());
 
-                float multiplier = (float) relic.getStatValue(stack, "oversized_grip", "multiplier");
+                float multiplier = (float) relic.getRelicData(null, stack).getAbilitiesData().getAbilityData("oversized_grip").getStatData("multiplier").getValue();
                 living.getMainHandItem().getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attributeHolder, attributeModifier) -> {
                     if (!(living.getAttribute(attributeHolder) instanceof AttributeInstance instance)) {
                         return;
@@ -138,7 +131,7 @@ public class GiantGloveItem extends RelicItem {
                                 rl,
                                 Math.abs(instance.getValue() * multiplier),
                                 AttributeModifier.Operation.ADD_VALUE
-                        ));;
+                        ));
                         return;
                     }
 
@@ -160,35 +153,7 @@ public class GiantGloveItem extends RelicItem {
                 return;
             }
 
-            slotContext.entity().getAttributes().getInstance(holder).removeModifier(rl);
+            Objects.requireNonNull(slotContext.entity().getAttributes().getInstance(holder)).removeModifier(rl);
         });
-    }
-
-    @EventBusSubscriber(Dist.CLIENT)
-    public static class ClientEvents {
-        @SubscribeEvent
-        public static void renderItem(RenderItemInHandEvent e) {
-            ItemStack stack = EntityUtils.findEquippedCurio(e.getEntity(), RTItems.GIANT_GLOVE.get());
-            if (!(stack.getItem() instanceof GiantGloveItem relic)) {
-                return;
-            }
-
-            float scale;
-            if (e.getDisplayContext().firstPerson()) {
-                scale = (float) (1.25d + relic.getStatValue(stack, "oversized_grip", "multiplier") * 1.8d);
-
-                e.getPoseStack().scale(scale,scale,scale);
-                e.getPoseStack().translate(0,-0.1,0);
-
-                if (e.getItemStack().is(Tags.Items.TOOLS_SHIELD)) {
-                    e.getPoseStack().translate(0.1 * (e.getDisplayContext() == ItemDisplayContext.FIRST_PERSON_LEFT_HAND ? -1 : 1), -0.2, 0);
-                }
-                return;
-            }
-
-            scale = (float) (2d + relic.getStatValue(stack, "oversized_grip", "multiplier") * 6d);
-            e.getPoseStack().scale(scale,scale,scale);
-            e.getPoseStack().translate(0,0,-0.075f);
-        }
     }
 }

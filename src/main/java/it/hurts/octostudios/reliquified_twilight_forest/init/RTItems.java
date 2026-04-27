@@ -5,6 +5,13 @@ import it.hurts.octostudios.reliquified_twilight_forest.items.base.BrokenCharmIt
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.GemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.items.base.WandGemItem;
 import it.hurts.octostudios.reliquified_twilight_forest.items.relics.*;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.back.*;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.charm.CicadaBottleItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.charm.MapleSyrupBottleItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.charm.TwilightFeatherItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.feet.MinotaurHoofItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.head.LichCrownItem;
+import it.hurts.octostudios.reliquified_twilight_forest.items.relics.head.ThornCrownItem;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;

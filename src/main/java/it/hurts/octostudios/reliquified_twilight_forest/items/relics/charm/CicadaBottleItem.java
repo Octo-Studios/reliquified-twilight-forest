@@ -1,4 +1,4 @@
-package it.hurts.octostudios.reliquified_twilight_forest.items.relics;
+package it.hurts.octostudios.reliquified_twilight_forest.items.relics.charm;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -6,6 +6,7 @@ import it.hurts.octostudios.reliquified_twilight_forest.ReliquifiedTwilightFores
 import it.hurts.octostudios.reliquified_twilight_forest.data.loot.LootEntries;
 import it.hurts.octostudios.reliquified_twilight_forest.init.EffectRegistry;
 import it.hurts.octostudios.reliquified_twilight_forest.init.RTItems;
+import it.hurts.octostudios.reliquified_twilight_forest.items.base.RTWearableRelicItem;
 import it.hurts.octostudios.reliquified_twilight_forest.util.MathButCool;
 import it.hurts.sskirillss.relics.api.relics.AbilityMetricTemplate;
 import it.hurts.sskirillss.relics.api.relics.AbilityStatisticTemplate;
@@ -16,7 +17,6 @@ import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourceTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
 import it.hurts.sskirillss.relics.init.RelicsScalingModels;
-import it.hurts.sskirillss.relics.items.relics.base.RelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.MathUtils;
@@ -45,7 +45,7 @@ import twilightforest.client.model.entity.CicadaModel;
 import twilightforest.network.CreateMovingCicadaSoundPacket;
 
 @EventBusSubscriber(modid = ReliquifiedTwilightForest.MOD_ID)
-public class CicadaBottleItem extends RelicItem {
+public class CicadaBottleItem extends RTWearableRelicItem {
     @Override
     public RelicTemplate constructDefaultRelicTemplate() {
         return RelicTemplate.builder()
@@ -118,14 +118,14 @@ public class CicadaBottleItem extends RelicItem {
     }
 
     @SubscribeEvent
-    public static void onEffectAdded(MobEffectEvent.Added e) {
-        LivingEntity livingEntity = e.getEntity();
+    public static void onEffectAdded(MobEffectEvent.Added event) {
+        LivingEntity livingEntity = event.getEntity();
         if (livingEntity.level().isClientSide
-                || (e.getOldEffectInstance() != null
-                && e.getEffectInstance().getEffect() == e.getOldEffectInstance().getEffect())
+                || (event.getOldEffectInstance() != null
+                && event.getEffectInstance().getEffect() == event.getOldEffectInstance().getEffect())
         ) return;
 
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(e.getEntity(), new CreateMovingCicadaSoundPacket(e.getEntity().getId()));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(event.getEntity(), new CreateMovingCicadaSoundPacket(event.getEntity().getId()));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -182,10 +182,5 @@ public class CicadaBottleItem extends RelicItem {
                 poseStack.popPose();
             }
         }
-    }
-
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
     }
 }
