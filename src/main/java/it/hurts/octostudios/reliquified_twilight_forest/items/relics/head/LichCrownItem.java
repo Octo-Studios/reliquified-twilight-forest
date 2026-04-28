@@ -315,11 +315,6 @@ public class LichCrownItem extends RTBundleLikeRelicItem  {
     }
 
     @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
-
-    @Override
     @OnlyIn(Dist.CLIENT)
     public List<String> headParts() {
         return List.of("head");

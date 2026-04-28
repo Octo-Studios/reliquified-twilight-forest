@@ -142,10 +142,6 @@ public class DeerAntlerItem extends RTWearableRelicItem {
         return box.getXsize() * box.getYsize() * box.getZsize();
     }
 
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
 /*
     @Override
     @OnlyIn(Dist.CLIENT)

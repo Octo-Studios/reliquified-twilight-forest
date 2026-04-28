@@ -123,8 +123,4 @@ public class ScaledCloakItem extends RTWearableRelicItem {
                 maxDistance * maxDistance);
     }
 
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
 }

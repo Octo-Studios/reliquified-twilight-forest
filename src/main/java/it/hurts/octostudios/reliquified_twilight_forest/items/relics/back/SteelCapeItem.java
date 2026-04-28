@@ -88,9 +88,4 @@ public class SteelCapeItem extends RTWearableRelicItem {
             relicData.getLevelingData().addExperience("iron_guard","steel_orbs_released", 1D);
         }
     }
-
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
 }

@@ -17,9 +17,10 @@ import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourceTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.ExperienceSourcesTemplate;
 import it.hurts.sskirillss.relics.api.relics.abilities.stats.AbilityStatTemplate;
 import it.hurts.sskirillss.relics.init.RelicsScalingModels;
+import it.hurts.sskirillss.relics.items.relics.base.data.leveling.LevelingTemplate;
 import it.hurts.sskirillss.relics.items.relics.base.data.loot.LootTemplate;
+import it.hurts.sskirillss.relics.items.relics.base.data.research.ResearchTemplate;
 import it.hurts.sskirillss.relics.utils.EntityUtils;
-import it.hurts.sskirillss.relics.utils.MathUtils;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -40,6 +41,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import top.theillusivec4.curios.api.SlotContext;
 import twilightforest.TwilightForestMod;
 import twilightforest.client.model.entity.CicadaModel;
 import twilightforest.network.CreateMovingCicadaSoundPacket;
@@ -51,6 +53,7 @@ public class CicadaBottleItem extends RTWearableRelicItem {
         return RelicTemplate.builder()
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("cicada_infestation")
+                                .initialMaxLevel(10)
                                 .stat(AbilityStatTemplate.builder("chance")
                                         .initialValue(0.1, 0.2)
                                         .upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 0.1)
@@ -58,19 +61,30 @@ public class CicadaBottleItem extends RTWearableRelicItem {
                                         .build())
                                 .stat(AbilityStatTemplate.builder("duration")
                                         .initialValue(60, 140)
-                                        .upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 20)
+                                        .upgradeModifier(RelicsScalingModels.MULTIPLICATIVE_BASE.get(), 0.09)
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .build())
                                 .experienceSources(ExperienceSourcesTemplate.builder()
-                                        .source(ExperienceSourceTemplate.builder("entity_infested").build())
-                                        .build())
-                                .initialMaxLevel(5)
-                                .statistic(AbilityStatisticTemplate.builder()
-                                        .metric(AbilityMetricTemplate.builder("entities_infested")
-                                                .formatValue(value -> String.valueOf(Math.max(0, (int) MathUtils.round(value, 0))))
+                                        .source(ExperienceSourceTemplate.builder("entity_infested")
                                                 .build())
                                         .build())
+                                .statistic(AbilityStatisticTemplate.builder()
+                                        .metric(AbilityMetricTemplate.builder("entities_infested")
+                                                .formatValue(value -> String.valueOf(value.intValue()))
+                                                .build())
+                                        .build())
+                                .research(ResearchTemplate.builder()
+                                        .star(0,2,2).star(1,20,2).star(2,11,11)
+                                        .star(3,2,16).star(4,11,16).star(5,15,18)
+                                        .star(6,20,16).star(7,2,25).star(8,11,26)
+                                        .star(9,16,24)
+                                        .link(0,2).link(1,2).link(3,2).link(6,2).link(2,4).link(4,5).link(5,9).link(4,7).link(4,8)
+                                        .build())
                                 .build())
+                        .build())
+                .leveling(LevelingTemplate.builder()
+                        .initialCost(20)
+                        .step(50)
                         .build())
                 .loot(LootTemplate.builder()
                         .entry(LootEntries.TWILIGHT)
@@ -79,10 +93,10 @@ public class CicadaBottleItem extends RTWearableRelicItem {
 
     }
 
-    /*@Override
+    @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         super.curioTick(slotContext, stack);
-    } */
+    }
 
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent.Post event) {
@@ -109,10 +123,8 @@ public class CicadaBottleItem extends RTWearableRelicItem {
                     EffectRegistry.CICADA_INFESTATION,
                     (int) ability.getStatData("duration").getValue(), 0
             ));
-
-            relicData.getLevelingData().addExperience("cicada_infestation","entity_infested",1D);
-
             ability.getStatisticData().getMetricData("entities_infested").addValue(1D);
+            relicData.getLevelingData().addExperience("cicada_infestation","entity_infested",1D);
 
         }
     }
@@ -145,13 +157,13 @@ public class CicadaBottleItem extends RTWearableRelicItem {
         private static final ResourceLocation TEXTURE = TwilightForestMod.getModelTexture("cicada-model.png");
 
         @SubscribeEvent
-        public static void renderLivingEntity(RenderLivingEvent.Post<?, ?> e) {
-            if (!e.getEntity().hasEffect(EffectRegistry.CICADA_INFESTATION)) {
+        public static void renderLivingEntity(RenderLivingEvent.Post<?, ?> event) {
+            if (!event.getEntity().hasEffect(EffectRegistry.CICADA_INFESTATION)) {
                 return;
             }
 
-            float bbWidth = e.getEntity().getBbWidth();
-            float bbHeight = e.getEntity().getBbHeight();
+            float bbWidth = event.getEntity().getBbWidth();
+            float bbHeight = event.getEntity().getBbHeight();
             float bbMin = Math.min(bbWidth, bbHeight);
             float scale = Math.clamp(bbMin/1.5f, 0.25f, 1.5f);
 
@@ -159,11 +171,11 @@ public class CicadaBottleItem extends RTWearableRelicItem {
 
             for (int i = 0; i < max; i++) {
                 CicadaModel model = new CicadaModel(CicadaModel.create().bakeRoot());
-                float time = (e.getEntity().tickCount + e.getPartialTick());
+                float time = (event.getEntity().tickCount + event.getPartialTick());
                 float sine = Mth.sin(time / 4f + i);
                 float cosine = Mth.cos(time / 4f + i);
 
-                PoseStack poseStack = e.getPoseStack();
+                PoseStack poseStack = event.getPoseStack();
 
                 poseStack.pushPose();
                 poseStack.mulPose(Axis.YP.rotationDegrees(time * 2 + 360f / (max) * i));
@@ -175,7 +187,7 @@ public class CicadaBottleItem extends RTWearableRelicItem {
                 poseStack.scale(scale, -scale, scale);
                 model.renderToBuffer(
                         poseStack,
-                        e.getMultiBufferSource().getBuffer(RenderType.entityCutoutNoCull(TEXTURE)),
+                        event.getMultiBufferSource().getBuffer(RenderType.entityCutoutNoCull(TEXTURE)),
                         LightTexture.FULL_BRIGHT,
                         OverlayTexture.NO_OVERLAY
                 );

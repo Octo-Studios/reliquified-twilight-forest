@@ -102,9 +102,4 @@ public class ThornCrownItem extends RTWearableRelicItem {
 
         event.setCanceled(true);
     }
-
-    @Override
-    public String getConfigRoute() {
-        return ReliquifiedTwilightForest.MOD_ID;
-    }
 }
