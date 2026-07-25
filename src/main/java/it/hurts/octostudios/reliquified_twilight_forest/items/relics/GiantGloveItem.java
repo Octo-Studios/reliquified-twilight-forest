@@ -43,7 +43,7 @@ public class GiantGloveItem extends RTWearableRelicItem {
                 .abilities(AbilitiesTemplate.builder()
                         .ability(AbilityTemplate.builder("oversized_grip")
                                 .stat(AbilityStatTemplate.builder("multiplier")
-                                        .initialValue(0.05, 0.15).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 0.035)
+                                        .initialValue(0.05, 0.15).targetValue(RelicsScalingModels.ADDITIVE.get(), 0.035)
                                         .formatValue(MathButCool::percentage)
                                         .build())
                                 .experienceSources(ExperienceSourcesTemplate.builder()

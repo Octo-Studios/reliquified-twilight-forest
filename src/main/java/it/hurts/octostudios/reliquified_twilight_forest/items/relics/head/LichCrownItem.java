@@ -26,7 +26,7 @@ public class LichCrownItem extends RTBundleLikeRelicItem  {
                         .ability(AbilityTemplate.builder("soulbound_gems")
                                 .stat(AbilityStatTemplate.builder("gem_amount")
                                         .initialValue(1, 3)
-                                        .formatValue(Math::round).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 1)
+                                        .formatValue(Math::round).targetValue(RelicsScalingModels.ADDITIVE.get(), 1)
                                         .build())
                                 .initialMaxLevel(15)
                                 .build())

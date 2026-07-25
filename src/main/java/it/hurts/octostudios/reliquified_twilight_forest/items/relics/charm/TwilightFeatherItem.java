@@ -51,7 +51,7 @@ public class TwilightFeatherItem extends RTWearableRelicItem {
                         .ability(AbilityTemplate.builder("execution")
                                 .stat(AbilityStatTemplate.builder("chance")
                                         .initialValue(0.005, 0.01)
-                                        .formatValue(value -> MathUtils.round(value * 100, 1)).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), 0.004)
+                                        .formatValue(value -> MathUtils.round(value * 100, 1)).targetValue(RelicsScalingModels.ADDITIVE.get(), 0.004)
                                         .build())
                                 .initialMaxLevel(10)
                                 .experienceSources(ExperienceSourcesTemplate.builder()

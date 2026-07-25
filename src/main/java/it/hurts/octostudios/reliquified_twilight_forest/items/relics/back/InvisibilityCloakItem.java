@@ -27,7 +27,7 @@ public class InvisibilityCloakItem extends RTWearableRelicItem {
                                 .build())
                         .ability(AbilityTemplate.builder("invisibility")
                                 .stat(AbilityStatTemplate.builder("duration")
-                                        .initialValue(160, 120).upgradeModifier(RelicsScalingModels.ADDITIVE.get(), -10)
+                                        .initialValue(160, 120).targetValue(RelicsScalingModels.ADDITIVE.get(), -10)
                                         .formatValue(MathButCool::ticksToSecondsAndRoundSingleDigit)
                                         .thresholdValue(1, 9999)
                                         .build())

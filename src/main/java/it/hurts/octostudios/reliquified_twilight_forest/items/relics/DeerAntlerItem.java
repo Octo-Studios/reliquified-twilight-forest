@@ -40,7 +40,7 @@ public class DeerAntlerItem extends RTWearableRelicItem {
                         .ability(AbilityTemplate.builder("ride_along")
                                 .stat(AbilityStatTemplate.builder("entity_volume")
                                         .initialValue(0.5d, 2d)
-                                        .upgradeModifier(RelicsScalingModels.EXPONENTIAL.get(), 1d)
+                                        .targetValue(RelicsScalingModels.EXPONENTIAL.get(), 1d)
                                         .formatValue(MathButCool::roundSingleDigit)
                                         .build())
                                 .experienceSources(ExperienceSourcesTemplate.builder()
