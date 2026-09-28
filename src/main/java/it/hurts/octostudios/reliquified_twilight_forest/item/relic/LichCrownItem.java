@@ -54,7 +54,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import top.theillusivec4.curios.api.SlotContext;
@@ -76,7 +75,6 @@ import java.util.function.Predicate;
 
 import static twilightforest.item.LifedrainScepterItem.animateTargetShatter;
 
-@EventBusSubscriber
 public class LichCrownItem extends BundleLikeRelicItem implements IRenderableCurio {
     public static final Predicate<LivingEntity> HAS_CROWN = target -> !EntityUtils.findEquippedCurio(target, ItemRegistry.LICH_CROWN.get()).isEmpty();
 
