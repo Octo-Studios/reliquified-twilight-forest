@@ -41,7 +41,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -50,7 +49,6 @@ import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import java.util.List;
 
-@EventBusSubscriber
 public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
     public static final String ON_ANTLERS = "reliquified_twilight_forest:on_antlers";
 
@@ -159,7 +157,6 @@ public class DeerAntlerItem extends RelicItem implements IRenderableCurio {
             PacketDistributor.sendToPlayersTrackingEntityAndSelf(e.getEntityMounting(), new EntityStopRidingPacket(e.getEntityMounting().getId()));
         }
     }
-
 
     @SubscribeEvent
     public static void livingDamage(LivingIncomingDamageEvent e) {
